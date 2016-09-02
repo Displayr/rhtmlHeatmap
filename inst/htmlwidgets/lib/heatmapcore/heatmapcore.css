@@ -13,6 +13,12 @@ body.theme-dark {
   width: 820px;
   height: 700px;
   overflow: hidden;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .rhtmlHeatmap .domain {
   fill: none;

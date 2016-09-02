@@ -542,8 +542,9 @@ function heatmap(selector, data, options) {
         })
         .call(axis);
 
-    var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size']
-        || Math.min(18, Math.max(9, scale.rangeBand() - (rotated ? 11: 8))) + "px";
+    var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size'] + "px";
+    //var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size']
+    //    || Math.min(18, Math.max(9, scale.rangeBand() - (rotated ? 11: 8))) + "px";
     axisNodes.selectAll("text").style("font-size", fontSize);
 
     var mouseTargets = svg.append("g")
