@@ -118,7 +118,7 @@ Heatmap <- function(x,
   digits = 3L,
   cellnote,
   cellnote_scale = FALSE,
-  shownote_in_cell = FALSE,
+  show_cellnote_in_cell = FALSE,
 
   ##TODO: decide later which names/conventions to keep
   theme = NULL,
@@ -348,7 +348,7 @@ Heatmap <- function(x,
       yaxis_title_font_size = yaxis_title_font_size,
       brush_color = brush_color,
       show_grid = show_grid,
-      shownote_in_cell = shownote_in_cell,
+      shownote_in_cell = show_cellnote_in_cell,
       anim_duration = anim_duration
   ))
 

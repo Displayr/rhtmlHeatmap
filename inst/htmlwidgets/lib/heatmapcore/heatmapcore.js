@@ -318,6 +318,8 @@ function heatmap(selector, data, options) {
 
     var x = d3.scale.linear().domain([0, cols]).range([0, width]);
     var y = d3.scale.linear().domain([0, rows]).range([0, height]);
+    var old_x = d3.scale.linear().domain([0, cols]).range([0, width]);
+    var old_y = d3.scale.linear().domain([0, rows]).range([0, height]);
     var tip = d3.tip()
         .attr('class', 'rhtmlHeatmap-tip')
         .html(function(d, i) {
@@ -411,6 +413,52 @@ function heatmap(selector, data, options) {
 
     draw(rect);
 
+    var new_ft_size;
+    function draw_text(selection, old_x, old_y) {
+
+      if (arguments.length == 3) {
+        x_scale = old_x;
+        y_scale = old_y;
+      } else {
+        x_scale = x;
+        y_scale = y;
+      }
+
+      var box_w = x_scale(1) - x_scale(0) - spacing;
+      var box_h = y_scale(1) - y_scale(0) - spacing;
+      var ft_size = Math.min(Math.floor(box_h/1.5), 30);
+
+      selection
+        .attr("x", function(d, i) {
+          return x_scale(i % cols) + (box_w)/2;
+        })
+        .attr("y", function(d, i) {
+          return y_scale(Math.floor(i / cols)) + (box_h)/2;
+        })
+        .style("font-size", ft_size + "px");
+
+      var out_of_bounds;
+      do {
+        out_of_bounds = 0;
+
+        selection
+          .each(function() {
+            if (this.getBBox().width > box_w) {
+              out_of_bounds += 1;
+            }
+          });
+
+        if (out_of_bounds > 0) {
+          ft_size -= 1;
+        }
+
+        selection.style("font-size", ft_size + "px");
+      } while (out_of_bounds > 0 && ft_size > 3);
+
+      return ft_size;
+
+    }
+
     if (opts.shownote_in_cell) {
 
       cellnote_incell = svg.selectAll("text").data(merged);
@@ -418,21 +466,40 @@ function heatmap(selector, data, options) {
         .text(function(d) {
           return d.label;
         })
-        .attr("x", function(d, i) {
-          return x(i % cols) + ((x(1) - x(0)) - spacing)/2;
-        })
-        .attr("y", function(d, i) {
-          return y(Math.floor(i / cols)) - ((y(1) - y(0)) - spacing)/2;
-        })
         .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "central")
-        .style("font-size", ((y(1) - y(0)) - spacing)/ 1.5 );
+        .attr("alignment-baseline", "central");
+
+      new_ft_size = draw_text(cellnote_incell);
     }
 
     controller.on('transform.colormap', function(_) {
+
+      old_box_w = x(1) - x(0) - spacing;
+      old_box_h = y(1) - y(0) - spacing;
+
       x.range([_.translate[0], width * _.scale[0] + _.translate[0]]);
       y.range([_.translate[1], height * _.scale[1] + _.translate[1]]);
       draw(rect.transition().duration(opts.anim_duration).ease("linear"));
+
+      if (opts.shownote_in_cell) {
+        new_ft_size = draw_text(cellnote_incell);
+        draw_text(cellnote_incell, old_x, old_y);
+
+        old_x.range([_.translate[0], width * _.scale[0] + _.translate[0]]);
+        old_y.range([_.translate[1], height * _.scale[1] + _.translate[1]]);
+
+        cellnote_incell
+          .transition()
+          .duration(opts.anim_duration)
+          .ease("linear")
+          .attr("x", function(d, i) {
+            return x(i % cols) + ((x(1) - x(0)) - spacing)/2;
+          })
+          .attr("y", function(d, i) {
+            return y(Math.floor(i / cols)) + ((y(1) - y(0)) - spacing)/2;
+          })
+          .style("font-size", new_ft_size + "px");
+      }
     });
 
 
