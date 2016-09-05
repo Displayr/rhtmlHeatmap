@@ -467,7 +467,10 @@ function heatmap(selector, data, options) {
           return d.label;
         })
         .attr("text-anchor", "middle")
-        .attr("alignment-baseline", "central");
+        .attr("alignment-baseline", "central")
+        .style("fill", function(d) {
+          return d.cellnote_color;
+        });
 
       new_ft_size = draw_text(cellnote_incell);
     }

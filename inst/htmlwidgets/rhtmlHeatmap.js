@@ -47,9 +47,14 @@ HTMLWidgets.widget({
         var g = imgData[i*4+1];
         var b = imgData[i*4+2];
         var a = imgData[i*4+3];
+        // calculate color contrast
+        // http://stackoverflow.com/questions/11867545/change-text-color-based-on-brightness-of-the-covered-background-area
+        var o = Math.round(((r * 299) + (g * 587) + (b * 114)) / 1000);
+        var cellnote_color = (o > 125) ? 'black': 'white';
         merged.push({
           label: x.matrix.data[i],
-          color: "rgba(" + [r,g,b,a/255].join(",") + ")"
+          color: "rgba(" + [r,g,b,a/255].join(",") + ")",
+          cellnote_color: cellnote_color
         })
       }
       x.matrix.merged = merged;
