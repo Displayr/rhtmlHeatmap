@@ -12,10 +12,10 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   reorderfun = function(d, w) reorder(d, w), k_row, k_col, symm = FALSE,
   revC, scale = c("none", "row", "column"), na.rm = TRUE,
   labRow = rownames(x), labCol = colnames(x), cexRow, cexCol, digits = 3L,
-  cellnote, cellnote_scale = FALSE, shownote_in_cell = FALSE,
+  cellnote, cellnote_scale = FALSE, show_cellnote_in_cell = FALSE,
   theme = NULL, colors = "RdYlBu", width = NULL, height = NULL,
-  xaxis_height = 80, yaxis_width = 120, xaxis_font_size = NULL,
-  yaxis_font_size = NULL, xaxis_location = "bottom",
+  xaxis_height = 80, yaxis_width = 120, xaxis_font_size = 12,
+  yaxis_font_size = 11, xaxis_location = "bottom",
   yaxis_location = "right", xaxis_title = NULL, yaxis_title = NULL,
   xaxis_title_font_size = 14, yaxis_title_font_size = 14,
   brush_color = "#0000FF", show_grid = TRUE, anim_duration = 500, ...)
@@ -68,6 +68,8 @@ If missing, it will use \code{x}, after rounding it based on the \code{digits} p
 \item{cellnote_scale}{logical (default is FALSE). IF cellnote is missing and x is used,
 should cellnote be scaled if x is also scaled?}
 
+\item{show_cellnote_in_cell}{If \code{TRUE}, print cellnotes in the cells. Defaults to FALSE.}
+
 \item{theme}{A custom CSS theme to use. Currently the only valid values are
 \code{""} and \code{"dark"}. \code{"dark"} is primarily intended for
 standalone visualizations, not R Markdown or Shiny.}
@@ -81,13 +83,25 @@ standalone visualizations, not R Markdown or Shiny.}
 
 \item{height}{Height in pixels (optional, defaults to automatic sizing).}
 
-\item{xaxis_height}{Size of axes, in pixels.}
+\item{xaxis_height}{Size of axes, in pixels. Default is calculated automatically with axis font size specified.}
 
-\item{yaxis_width}{Size of axes, in pixels.}
+\item{yaxis_width}{Size of axes, in pixels. Default is calculated automatically with axis font size specified.}
 
-\item{xaxis_font_size}{Font size of axis labels, as a CSS size (e.g. "14px" or "12pt").}
+\item{xaxis_font_size}{Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 12.}
 
-\item{yaxis_font_size}{Font size of axis labels, as a CSS size (e.g. "14px" or "12pt").}
+\item{yaxis_font_size}{Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 11.}
+
+\item{xaxis_location}{Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".}
+
+\item{yaxis_location}{Location of the y axis, c("right", "left"). Defaults to "right". "left" only works when dendrogram is "none".}
+
+\item{xaxis_title}{Title text of the x axis.}
+
+\item{yaxis_title}{Title text of the y axis.}
+
+\item{xaxis_title_font_size}{Size of axis title text. Defaults to 14.}
+
+\item{yaxis_title_font_size}{Size of axis title text. Defaults to 14.}
 
 \item{brush_color}{The base color to be used for the brush. The brush will be
 filled with a low-opacity version of this color. \code{"#RRGGBB"} format

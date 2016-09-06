@@ -26,10 +26,17 @@ NULL
 #' @param width Width in pixels (optional, defaults to automatic sizing).
 #' @param height Height in pixels (optional, defaults to automatic sizing).
 #'
-#' @param xaxis_height Size of axes, in pixels.
-#' @param yaxis_width Size of axes, in pixels.
-#' @param xaxis_font_size Font size of axis labels, as a CSS size (e.g. "14px" or "12pt").
-#' @param yaxis_font_size Font size of axis labels, as a CSS size (e.g. "14px" or "12pt").
+#' @param xaxis_height Size of axes, in pixels. Default is calculated automatically with axis font size specified.
+#' @param yaxis_width Size of axes, in pixels. Default is calculated automatically with axis font size specified.
+#' @param xaxis_font_size Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 12.
+#' @param yaxis_font_size Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 11.
+#' @param xaxis_location Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".
+#' @param yaxis_location Location of the y axis, c("right", "left"). Defaults to "right". "left" only works when dendrogram is "none".
+#' @param xaxis_title Title text of the x axis.
+#' @param yaxis_title Title text of the y axis.
+#' @param xaxis_title_font_size Size of axis title text. Defaults to 14.
+#' @param yaxis_title_font_size Size of axis title text. Defaults to 14.
+#'
 #'
 #' @param brush_color The base color to be used for the brush. The brush will be
 #'   filled with a low-opacity version of this color. \code{"#RRGGBB"} format
@@ -63,6 +70,7 @@ NULL
 #' If missing, it will use \code{x}, after rounding it based on the \code{digits} parameter.
 #' @param cellnote_scale logical (default is FALSE). IF cellnote is missing and x is used,
 #' should cellnote be scaled if x is also scaled?
+#' @param show_cellnote_in_cell If \code{TRUE}, print cellnotes in the cells. Defaults to FALSE.
 #'
 #' @param cexRow positive numbers. If not missing, it will override \code{xaxis_font_size}
 #' and will give it a value cexRow*14

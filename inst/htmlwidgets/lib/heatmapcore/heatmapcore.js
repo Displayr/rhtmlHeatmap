@@ -140,6 +140,8 @@ function heatmap(selector, data, options) {
     opts.show_grid = true;
   }
   opts.brush_color = options.brush_color || "#0000FF";
+  opts.xaxis_offset = options.xaxis_offset || 20;
+  opts.yaxis_offset = options.yaxis_offset || 20;
   opts.xaxis_font_size = options.xaxis_font_size;
   opts.yaxis_font_size = options.yaxis_font_size;
   opts.xaxis_location = options.xaxis_location;
@@ -157,14 +159,57 @@ function heatmap(selector, data, options) {
   opts.xclust_height = options.xclust_height || opts.height * 0.12;
   opts.topEl_height = opts.xclust_height;
   opts.leftEl_width = opts.yclust_width;
-  opts.bottomEl_height = options.xaxis_height || 80;
-  opts.rightEl_width = options.yaxis_width || 120;
+
+  // estimate proper x axis height and y axis width
+  (function() {
+    var inner = el.append("div").classed("inner", true);
+    var info = inner.append("div").classed("info", true);
+    var dummySvg = inner.append("svg");
+
+    var dummyXAxis = dummySvg.append("g").attr("class", "axis");
+    var dummyYAxis = dummySvg.append("g").attr("class", "axis");
+
+    // The data variable is either cluster info, or a flat list of names.
+    // If the former, transform it to simply a list of names.
+    var xlabels, ylabels;
+    if (data.matrix.cols.length) {
+      xlabels = data.matrix.cols;
+    }
+
+    if (data.matrix.rows.length) {
+      ylabels = data.matrix.rows;
+    }
+
+    var xText = dummyXAxis.selectAll("text").data(xlabels);
+    xText.enter().append("text").text(function(d) { return d;}).style("font-size", opts.xaxis_font_size + "px");
+    var yText = dummyYAxis.selectAll("text").data(ylabels);
+    yText.enter().append("text").text(function(d) { return d;}).style("font-size", opts.yaxis_font_size + "px");
+
+    var xlength = 0, ylength = 0;
+    xText.each(function() {
+      xlength = xlength < this.getBBox().width ? this.getBBox().width : xlength;
+    });
+    yText.each(function() {
+      ylength = ylength < this.getBBox().width ? this.getBBox().width : ylength;
+    });
+
+    opts.xaxis_height = xlength / 1.41 + opts.xaxis_offset + opts.axis_padding;
+    opts.yaxis_width = ylength + opts.yaxis_offset + opts.axis_padding;
+
+    opts.xaxis_height = opts.xaxis_height > opts.height / 3 ? opts.height / 3 : opts.xaxis_height;
+    opts.yaxis_width = opts.yaxis_width > opts.width / 3 ? opts.width / 3 : opts.yaxis_width;
+    dummySvg.remove();
+
+  })();
+
+  opts.bottomEl_height = opts.xaxis_height || 80;
+  opts.rightEl_width = opts.yaxis_width || 120;
 
   if (!data.rows) {
     opts.yclust_width = 0;
     opts.leftEl_width = 0;
     if (opts.yaxis_location === "left") {
-      opts.leftEl_width = options.yaxis_width || 120;
+      opts.leftEl_width = opts.yaxis_width || 120;
       opts.rightEl_width = 0;
     }
   } else {
@@ -175,7 +220,7 @@ function heatmap(selector, data, options) {
     opts.xclust_height = 0;
     opts.topEl_height = 0;
     if (opts.xaxis_location === "top") {
-      opts.topEl_height = options.xaxis_height || 80;
+      opts.topEl_height = opts.xaxis_height || 80;
       opts.bottomEl_height = 0;
     }
   } else {
@@ -260,8 +305,8 @@ function heatmap(selector, data, options) {
 
   // Create DOM structure
   (function() {
-    var inner = el.append("div").classed("inner", true);
-    var info = inner.append("div").classed("info", true);
+    var inner = el.select(".inner");
+    var info = inner.select(".info");
     var xtitle = !opts.xaxis_title ? null : inner.append("svg").classed("xtitle", true).style(cssify(xtitleBounds));
     var ytitle = !opts.yaxis_title ? null : inner.append("svg").classed("ytitle", true).style(cssify(ytitleBounds));
     var colDend = !data.cols ? null : inner.append("svg").classed("dendrogram colDend", true).style(cssify(colDendBounds));
@@ -468,6 +513,7 @@ function heatmap(selector, data, options) {
         })
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "central")
+        .style("font-family", "sans-serif")
         .style("fill", function(d) {
           return d.cellnote_color;
         });
