@@ -14,12 +14,12 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   labRow = rownames(x), labCol = colnames(x), cexRow, cexCol,
   left_columns = NULL, left_columns_font_size = 11, right_columns = NULL,
   right_columns_font_size = 11, digits = 3L, cellnote,
-  cellnote_scale = FALSE, show_cellnote_in_cell = FALSE, theme = NULL,
-  colors = "RdYlBu", width = NULL, height = NULL, xaxis_hidden = FALSE,
-  xaxis_height = 80, xaxis_font_size = 12, xaxis_title = NULL,
-  xaxis_title_font_size = 14, xaxis_location = "bottom",
-  yaxis_hidden = FALSE, yaxis_width = 120, yaxis_font_size = 11,
-  yaxis_location = "right", yaxis_title = NULL,
+  cellnote_scale = FALSE, show_cellnote_in_cell = FALSE,
+  cell_font_size = 12, theme = NULL, colors = "RdYlBu", width = NULL,
+  height = NULL, xaxis_hidden = FALSE, xaxis_height = 80,
+  xaxis_font_size = 12, xaxis_title = NULL, xaxis_title_font_size = 14,
+  xaxis_location = "bottom", yaxis_hidden = FALSE, yaxis_width = 120,
+  yaxis_font_size = 11, yaxis_location = "right", yaxis_title = NULL,
   yaxis_title_font_size = 14, brush_color = "#0000FF", show_grid = TRUE,
   anim_duration = 500, ...)
 }
@@ -72,6 +72,8 @@ If missing, it will use \code{x}, after rounding it based on the \code{digits} p
 should cellnote be scaled if x is also scaled?}
 
 \item{show_cellnote_in_cell}{If \code{TRUE}, print cellnotes in the cells. Defaults to FALSE.}
+
+\item{cell_font_size}{Sets the maximum font size of cellnotes. Defauls to 12.}
 
 \item{theme}{A custom CSS theme to use. Currently the only valid values are
 \code{""} and \code{"dark"}. \code{"dark"} is primarily intended for

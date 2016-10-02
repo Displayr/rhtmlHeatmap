@@ -141,6 +141,7 @@ function heatmap(selector, data, options) {
   }
   opts.brush_color = options.brush_color || "#0000FF";
 
+  opts.cell_font_size = options.cell_font_size || 15;
   opts.xaxis_offset = options.xaxis_offset || 20;
   opts.yaxis_offset = options.yaxis_offset || 20;
   opts.xaxis_font_size = options.xaxis_font_size;
@@ -714,7 +715,7 @@ function heatmap(selector, data, options) {
 
       var box_w = x_scale(1) - x_scale(0) - spacing;
       var box_h = y_scale(1) - y_scale(0) - spacing;
-      var ft_size = Math.min(Math.floor(box_h/1.5), 30);
+      var ft_size = Math.min(Math.floor(box_h/1.5), opts.cell_font_size);
 
       selection
         .attr("x", function(d, i) {
@@ -731,7 +732,7 @@ function heatmap(selector, data, options) {
 
         selection
           .each(function() {
-            if (this.getBBox().width > box_w) {
+            if (this.getBBox().width > box_w - 4) {
               out_of_bounds += 1;
             }
           });
