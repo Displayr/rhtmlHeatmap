@@ -126,7 +126,7 @@ function heatmap(selector, data, options) {
 
   var controller = new Controller();
 
-  // Set option defaults
+  // Set option defaults & copy settings
   var opts = {};
   options = options || {};
   opts.shownote_in_cell = options.shownote_in_cell;
@@ -140,6 +140,7 @@ function heatmap(selector, data, options) {
     opts.show_grid = true;
   }
   opts.brush_color = options.brush_color || "#0000FF";
+
   opts.xaxis_offset = options.xaxis_offset || 20;
   opts.yaxis_offset = options.yaxis_offset || 20;
   opts.xaxis_font_size = options.xaxis_font_size;
@@ -155,15 +156,217 @@ function heatmap(selector, data, options) {
     opts.anim_duration = 500;
   }
 
-  opts.yclust_width = options.yclust_width || opts.width * 0.12;
-  opts.xclust_height = options.xclust_height || opts.height * 0.12;
-  opts.topEl_height = opts.xclust_height;
-  opts.leftEl_width = opts.yclust_width;
+  opts.left_columns = options.left_columns;
+  opts.left_columns_font_size = options.left_columns_font_size;
+  opts.right_columns = options.right_columns;
+  opts.right_columns_font_size = options.right_columns_font_size;
+  opts.xaxis_hidden = options.xaxis_hidden;
+  opts.yaxis_hidden = options.yaxis_hidden;
 
-  // estimate proper x axis height and y axis width
+  opts.row_element_names = ["*"];
+  opts.col_element_names = ["*"];
+  opts.row_element_map = {};
+  opts.col_element_map = {};
+  opts.row_element_map["*"] = "*";
+  opts.col_element_map["*"] = "*";
+
+  // get the number of rows and columns for the GridSizer
+
   (function() {
     var inner = el.append("div").classed("inner", true);
     var info = inner.append("div").classed("info", true);
+
+
+    var compute_col_text_widths = function(input, text_widths, left_or_right) {
+      var dummySvg = inner.append("svg");
+      var dummy_g = dummySvg
+        .append("g")
+        .classed("dummy_g", true);
+
+      var dummy_cols = dummy_g
+        .selectAll(".dummy")
+        .data(input);
+
+      var dummy_cols_each = dummy_cols.enter()
+        .append("g")
+        .attr("data-index", function(d,i) { return i;})
+        .selectAll(".dummy")
+        .data(function(d) {return d;});
+
+      dummy_cols_each.enter()
+        .append("text")
+        .text(function(d){return d;})
+        .style("font-family", "sans-serif")
+        .style("font-size", left_or_right ? opts.left_columns_font_size : opts.right_columns_font_size)
+        .each(function(d,i) {
+          var parent_index = this.parentNode.attr("data-index");
+          text_widths[parent_index] += this.getComputedTextLength();
+        });
+
+      dummySvg.remove();
+    };
+
+    var compute_axis_label_dim = function(input, x_or_y) {
+      var dummySvg = inner.append("svg");
+      var dummy_g = dummySvg
+        .append("g")
+        .attr("class", "axis");
+
+      var texts = dummy_g
+        .selectAll("text")
+        .data(input);
+
+      texts.enter()
+        .append("text")
+        .text(function(d) { return d;})
+        .style("font-size", x_or_y ? opts.xaxis_font_size : opts.yaxis_font_size);
+
+      var text_length = 0;
+      texts.each(function() {
+        text_length = text_length < this.getBBox().width ? this.getBBox().width : text_length;
+      });
+
+      var output;
+
+      if (x_or_y) {
+        output = text_length / 1.41 + opts.xaxis_offset + opts.axis_padding;
+        output = output > opts.height / 3 ? opts.height / 3 : output;
+      } else {
+        output = text_length + opts.yaxis_offset + opts.axis_padding;
+        output = output > opts.width / 3 ? opts.width / 3 : output;
+      }
+      dummySvg.remove();
+      return output;
+    };
+
+    var i = 0, j = 0, x_texts, y_texts;
+    // deal with x axis and its title
+    if (!opts.xaxis_hidden) {
+      if (data.cols) {
+        opts.xaxis_location = "bottom";
+      }
+
+      if (opts.xaxis_location === "bottom") {
+        opts.row_element_names.push("xaxis");
+      } else {
+        opts.row_element_names.unshift("xaxis");
+      }
+
+      if (opts.xaxis_title) {
+        if (opts.xaxis_location === "bottom") {
+          opts.row_element_names.push("xtitle");
+        } else {
+          opts.row_element_names.unshift("xtitle");
+        }
+        opts.row_element_map["xtitle"] = opts.xaxis_title_font_size * 1.5 + 5;
+      }
+
+      if (data.matrix.cols.length) {
+        x_texts = data.matrix.cols;
+      } else {
+        x_texts = [data.matrix.cols];
+      }
+
+      opts.row_element_map["xaxis"] = compute_axis_label_dim(x_texts, true);
+
+    }
+
+    if (!opts.yaxis_hidden) {
+      if (data.rows) {
+        opts.yaxis_location = "right";
+      }
+
+      if (opts.yaxis_location === "right") {
+        opts.col_element_names.push("yaxis");
+      } else {
+        opts.col_element_names.unshift("yaxis");
+      }
+
+      if (data.matrix.rows.length) {
+        y_texts = data.matrix.rows;
+      } else {
+        y_texts = [data.matrix.rows];
+      }
+
+      opts.col_element_map["yaxis"] = compute_axis_label_dim(y_texts, false);
+    }
+
+    // row dendrogram, add one more column
+    if (data.rows) {
+      opts.col_element_names.unshift("row_dendro");
+      opts.col_element_map["row_dendro"] = options.yclust_width || opts.width * 0.12;
+    }
+
+    // column dendrogram, add one more row
+    if (data.cols) {
+      opts.row_element_names.unshift("col_dendro");
+      opts.row_element_map["col_dendro"] = options.xclust_height || opts.height * 0.12;
+    }
+
+    // columns to the left of the main plot data
+    if (opts.left_columns) {
+
+      var left_cols_widths = [];
+      for (i = 0;i < opts.left_columns.length; i++) {
+        left_cols_widths.push(0);
+        opts.col_element_names.unshift("left_col" + i);
+      }
+
+      // compute mean column width
+      compute_col_text_widths(opts.left_columns, left_cols_widths, true);
+
+      for (i = 0;i < opts.left_columns.length; i++) {
+        left_cols_widths[i] = left_cols_widths[i] / opts.left_columns[0].length;
+        if (left_cols_widths[i] > opts.width * 0.25) {
+          left_cols_widths[i] = opts.width * 0.25;
+          opts.col_element_map["left_col" + i] = left_cols_widths[i];
+        }
+      }
+    }
+
+    // columns to the right of the main plot data
+    if (opts.right_columns) {
+
+      var right_cols_widths = [];
+      for (i = 0;i < opts.right_columns.length; i++) {
+        right_cols_widths.push(0);
+        opts.col_element_names.push("right_col" + i);
+      }
+
+      // compute mean column width
+      compute_col_text_widths(opts.right_columns, right_cols_widths, false);
+
+      for (i = 0;i < opts.right_columns.length; i++) {
+        right_cols_widths[i] = right_cols_widths[i] / opts.right_columns[0].length;
+        if (right_cols_widths[i] > opts.width * 0.25) {
+          right_cols_widths[i] = opts.width * 0.25;
+          opts.col_element_map["right_col" + i] = right_cols_widths[i];
+        }
+      }
+    }
+
+    if (!opts.yaxis_hidden) {
+      if (opts.yaxis_title) {
+        if (opts.yaxis_location === "right") {
+          opts.col_element_names.push("ytitle");
+        } else {
+          opts.col_element_names.unshift("ytitle");
+        }
+        opts.col_element_map["ytitle"] = opts.yaxis_title_font_size * 1.5 + 5;
+      }
+    }
+
+  })();
+
+  /*opts.yclust_width = options.yclust_width || opts.width * 0.12;
+  opts.xclust_height = options.xclust_height || opts.height * 0.12;
+  opts.topEl_height = opts.xclust_height;
+  opts.leftEl_width = opts.yclust_width;*/
+
+  // estimate proper x axis height and y axis width
+  /*(function() {
+    var inner = el.select(".inner");
+    var info = inner.select(".info");
     var dummySvg = inner.append("svg");
 
     var dummyXAxis = dummySvg.append("g").attr("class", "axis");
@@ -174,6 +377,9 @@ function heatmap(selector, data, options) {
     var xlabels, ylabels;
     if (data.matrix.cols.length) {
       xlabels = data.matrix.cols;
+    } else {
+      // is a number not an array
+      xlabels = [data.matrix.cols];
     }
 
     if (data.matrix.rows.length) {
@@ -200,12 +406,12 @@ function heatmap(selector, data, options) {
     opts.yaxis_width = opts.yaxis_width > opts.width / 3 ? opts.width / 3 : opts.yaxis_width;
     dummySvg.remove();
 
-  })();
+  })();*/
 
-  opts.bottomEl_height = opts.xaxis_height || 80;
-  opts.rightEl_width = opts.yaxis_width || 120;
+  // opts.bottomEl_height = opts.xaxis_height || 80;
+  // opts.rightEl_width = opts.yaxis_width || 120;
 
-  if (!data.rows) {
+  /*if (!data.rows) {
     opts.yclust_width = 0;
     opts.leftEl_width = 0;
     if (opts.yaxis_location === "left") {
@@ -225,10 +431,10 @@ function heatmap(selector, data, options) {
     }
   } else {
     opts.xaxis_location = "bottom";
-  }
+  }*/
 
 
-  opts.leftTitle_width = 0;
+  /*opts.leftTitle_width = 0;
   opts.rightTitle_width = opts.yaxis_title ? opts.yaxis_title_font_size * 1.5 + 5 : 0;
   if (opts.yaxis_location === "left" && !data.rows) {
     opts.rightTitle_width = 0;
@@ -240,16 +446,46 @@ function heatmap(selector, data, options) {
   if (opts.xaxis_location === "top" && !data.cols) {
     opts.bottomTitle_height = 0;
     opts.topTitle_height = opts.xaxis_title ? opts.xaxis_title_font_size * 1.5 + 5 : 0;
-  }
+  }*/
 
-  var gridSizer = new GridSizer(
+  /*var gridSizer = new GridSizer(
     [opts.leftTitle_width, opts.leftEl_width, "*", opts.rightEl_width, opts.rightTitle_width],
     [opts.topTitle_height, opts.topEl_height, "*", opts.bottomEl_height, opts.bottomTitle_height],
     opts.width,
     opts.height
+  );*/
+
+  var row_heights = [], col_widths = [], i = 0, j = 0;
+  for (i = 0; i < opts.col_element_names.length; i++) {
+    col_widths.push(opts.col_element_map[opts.col_element_names[i]]);
+  }
+
+
+  for (i = 0; i < opts.row_element_names.length; i++) {
+    row_heights.push(opts.row_element_map[opts.row_element_names[i]]);
+  }
+
+  var gridSizer = new GridSizer(
+    col_widths,
+    row_heights,
+    opts.width,
+    opts.height
   );
 
-  var colormapBounds = gridSizer.getCellBounds(2, 2);
+  var colormapBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("*"));
+
+  var colDendBounds = !data.cols ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("col_dendro"));
+
+  var rowDendBounds = !data.rows ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("row_dendro"), opts.row_element_names.indexOf("*"));
+
+  var xaxisBounds = opts.xaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("xaxis"));
+
+  var yaxisBounds = opts.yaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("yaxis"), opts.row_element_names.indexOf("*"));
+
+  var xtitleBounds = !opts.xaxis_title || opts.xaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("xtitle"));
+
+  var ytitleBounds = !opts.yaxis_title || opts.yaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("ytitle"), opts.row_element_names.indexOf("*"));
+/*
   var topElBounds = gridSizer.getCellBounds(2, 1);
   var leftElBounds = gridSizer.getCellBounds(1, 2);
   var rightElBounds = gridSizer.getCellBounds(3, 2);
@@ -265,7 +501,8 @@ function heatmap(selector, data, options) {
     xtitleBounds = gridSizer.getCellBounds(2, 0);
   }
 
-  var colDendBounds, rowDendBounds, yaxisBounds, xaxisBounds;
+
+
   if (!data.rows) {
     if (opts.yaxis_location === "right") {
       yaxisBounds = rightElBounds;
@@ -286,7 +523,7 @@ function heatmap(selector, data, options) {
   } else {
     xaxisBounds = bottomElBounds;
     colDendBounds = topElBounds;
-  }
+  }*/
 
   //var colDendBounds = gridSizer.getCellBounds(1, 0);
   //var rowDendBounds = gridSizer.getCellBounds(0, 1);
@@ -307,28 +544,34 @@ function heatmap(selector, data, options) {
   (function() {
     var inner = el.select(".inner");
     var info = inner.select(".info");
-    var xtitle = !opts.xaxis_title ? null : inner.append("svg").classed("xtitle", true).style(cssify(xtitleBounds));
-    var ytitle = !opts.yaxis_title ? null : inner.append("svg").classed("ytitle", true).style(cssify(ytitleBounds));
+    var xtitle = !opts.xaxis_title || opts.xaxis_hidden ? null : inner.append("svg").classed("xtitle", true).style(cssify(xtitleBounds));
+    var ytitle = !opts.yaxis_title || opts.yaxis_hidden ? null : inner.append("svg").classed("ytitle", true).style(cssify(ytitleBounds));
     var colDend = !data.cols ? null : inner.append("svg").classed("dendrogram colDend", true).style(cssify(colDendBounds));
     var rowDend = !data.rows ? null : inner.append("svg").classed("dendrogram rowDend", true).style(cssify(rowDendBounds));
     var colmap = inner.append("svg").classed("colormap", true).style(cssify(colormapBounds));
-    var xaxis = inner.append("svg").classed("axis xaxis", true).style(cssify(xaxisBounds));
-    var yaxis = inner.append("svg").classed("axis yaxis", true).style(cssify(yaxisBounds));
+    var xaxis = opts.xaxis_hidden ? null : inner.append("svg").classed("axis xaxis", true).style(cssify(xaxisBounds));
+    var yaxis = opts.yaxis_hidden ? null : inner.append("svg").classed("axis yaxis", true).style(cssify(yaxisBounds));
 
     // Hack the width of the x-axis to allow x-overflow of rotated labels; the
     // QtWebkit viewer won't allow svg elements to overflow:visible.
-    xaxis.style("width", (opts.width - opts.yclust_width) + "px");
-    xaxis
-      .append("defs")
-        .append("clipPath").attr("id", "xaxis-clip")
-          .append("polygon")
-            .attr("points", "" + [
-              [0, 0],
-              [xaxisBounds.width, 0],
-              [xaxisBounds.width + yaxisBounds.width, xaxisBounds.height],
-              [0, xaxisBounds.height]
-            ]);
-    xaxis.node(0).setAttribute("clip-path", "url(#xaxis-clip)");
+    if (!opts.xaxis_hidden) {
+      var overflow_width = 0;
+      if (!opts.yaxis_hidden) {
+        overflow_width = yaxisBounds.width;
+      }
+      xaxis.style("width", (opts.width - opts.yclust_width) + "px");
+      xaxis
+        .append("defs")
+          .append("clipPath").attr("id", "xaxis-clip")
+            .append("polygon")
+              .attr("points", "" + [
+                [0, 0],
+                [xaxisBounds.width, 0],
+                [xaxisBounds.width + overflow_width, xaxisBounds.height],
+                [0, xaxisBounds.height]
+              ]);
+      xaxis.node(0).setAttribute("clip-path", "url(#xaxis-clip)");
+    }
 
     inner.on("click", function() {
       controller.highlight(null, null);
@@ -342,10 +585,10 @@ function heatmap(selector, data, options) {
   var row = !data.rows ? null : dendrogram(el.select('svg.rowDend'), data.rows, false, rowDendBounds.width, rowDendBounds.height, opts.axis_padding);
   var col = !data.cols ? null : dendrogram(el.select('svg.colDend'), data.cols, true, colDendBounds.width, colDendBounds.height, opts.axis_padding);
   var colormap = colormap(el.select('svg.colormap'), data.matrix, colormapBounds.width, colormapBounds.height);
-  var xax = axisLabels(el.select('svg.xaxis'), data.cols || data.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, opts.axis_padding, opts.xaxis_location);
-  var yax = axisLabels(el.select('svg.yaxis'), data.rows || data.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding, opts.yaxis_location);
-  var xtitle = !opts.xaxis_title? null : title(el.select('svg.xtitle'), opts.xaxis_title, false, xtitleBounds);
-  var ytitle = !opts.yaxis_title? null : title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds);
+  var xax = opts.xaxis_hidden ? null : axisLabels(el.select('svg.xaxis'), data.cols || data.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, opts.axis_padding, opts.xaxis_location);
+  var yax = opts.yaxis_hidden ? null : axisLabels(el.select('svg.yaxis'), data.rows || data.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding, opts.yaxis_location);
+  var xtitle = !opts.xaxis_title || opts.xaxis_hidden ? null : title(el.select('svg.xtitle'), opts.xaxis_title, false, xtitleBounds);
+  var ytitle = !opts.yaxis_title || opts.yaxis_hidden ? null : title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds);
 
   function colormap(svg, data, width, height) {
     // Check for no data

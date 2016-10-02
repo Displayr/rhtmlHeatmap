@@ -36,6 +36,8 @@ NULL
 #' @param yaxis_title Title text of the y axis.
 #' @param xaxis_title_font_size Size of axis title text. Defaults to 14.
 #' @param yaxis_title_font_size Size of axis title text. Defaults to 14.
+#' @param xaxis_hidden Boolean variable to hide x axis. Defaults to FALSE.
+#' @param yaxis_hidden Boolean variable to hide y axis. Defaults to FALSE.
 #'
 #'
 #' @param brush_color The base color to be used for the brush. The brush will be
@@ -122,6 +124,11 @@ Heatmap <- function(x,
   cexRow,
   cexCol,
 
+  left_columns = NULL,
+  left_columns_font_size = 11,
+  right_columns = NULL,
+  right_columns_font_size = 11,
+
   ## value formatting
   digits = 3L,
   cellnote,
@@ -132,16 +139,21 @@ Heatmap <- function(x,
   theme = NULL,
   colors = "RdYlBu",
   width = NULL, height = NULL,
+
+  xaxis_hidden = FALSE,
   xaxis_height = 80,
-  yaxis_width = 120,
   xaxis_font_size = 12,
-  yaxis_font_size = 11,
-  xaxis_location = "bottom",
-  yaxis_location = "right",
   xaxis_title = NULL,
-  yaxis_title = NULL,
   xaxis_title_font_size = 14,
+  xaxis_location = "bottom",
+
+  yaxis_hidden = FALSE,
+  yaxis_width = 120,
+  yaxis_font_size = 11,
+  yaxis_location = "right",
+  yaxis_title = NULL,
   yaxis_title_font_size = 14,
+
   brush_color = "#0000FF",
   show_grid = TRUE,
   anim_duration = 500,
@@ -341,6 +353,37 @@ Heatmap <- function(x,
 
   imgUri <- encodeAsPNG(t(x), colors)
 
+  check.extra.columns <- function(input) {
+    if (is.null(input)) {
+      return(NULL)
+    }
+    name = deparse(substitute(input))
+    output = input
+
+    if (is.list(output)){
+      output = unlist(output)
+      if (length(output) != nr)
+        stop(paste0("Number of rows of ", name," not equal to input data."))
+
+    } else if (is.vector(output)){
+      if (length(output) != nr)
+        stop(paste0("Number of rows of ", name," not equal to input data."))
+
+    } else if (is.matrix(output) || is.data.frame(output)){
+      if (nrow(output) != nr)
+        stop(paste0("Number of rows of ", name," not equal to input data."))
+
+    } else {
+      stop(paste0(name, "is not a list, vector, matrix or data frame."))
+    }
+
+    output[is.na(output)] = "No Data"
+    output = as.matrix(output)
+    return(t(output))
+  }
+  left_columns = check.extra.columns(left_columns)
+  right_columns = check.extra.columns(right_columns)
+
   options <- NULL
 
   options <- c(options, list(
@@ -354,9 +397,15 @@ Heatmap <- function(x,
       yaxis_title = yaxis_title,
       xaxis_title_font_size = xaxis_title_font_size,
       yaxis_title_font_size = yaxis_title_font_size,
+      xaxis_hidden = xaxis_hidden,
+      yaxis_hidden = yaxis_hidden,
       brush_color = brush_color,
       show_grid = show_grid,
       shownote_in_cell = show_cellnote_in_cell,
+      left_columns = left_columns,
+      left_columns_font_size = left_columns_font_size,
+      right_columns = right_columns,
+      right_columns_font_size = right_columns_font_size,
       anim_duration = anim_duration
   ))
 
