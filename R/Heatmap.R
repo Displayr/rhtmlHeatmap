@@ -73,7 +73,8 @@ NULL
 #' @param cellnote_scale logical (default is FALSE). IF cellnote is missing and x is used,
 #' should cellnote be scaled if x is also scaled?
 #' @param show_cellnote_in_cell If \code{TRUE}, print cellnotes in the cells. Defaults to FALSE.
-#' @param cell_font_size Sets the maximum font size of cellnotes. Defauls to 12.
+#' @param cell_font_size Sets the maximum font size of cellnotes. Defauls to 11.
+#' @param tip_font_size Sets the font size of texts in the tooltip. Defaults to 11.
 #'
 #' @param cexRow positive numbers. If not missing, it will override \code{xaxis_font_size}
 #' and will give it a value cexRow*14
@@ -135,7 +136,8 @@ Heatmap <- function(x,
   cellnote,
   cellnote_scale = FALSE,
   show_cellnote_in_cell = FALSE,
-  cell_font_size = 12,
+  cell_font_size = 11,
+  tip_font_size = 11,
 
   ##TODO: decide later which names/conventions to keep
   theme = NULL,
@@ -401,6 +403,7 @@ Heatmap <- function(x,
       yaxis_title_font_size = yaxis_title_font_size,
       xaxis_hidden = xaxis_hidden,
       yaxis_hidden = yaxis_hidden,
+      tip_font_size = tip_font_size,
       brush_color = brush_color,
       show_grid = show_grid,
       shownote_in_cell = show_cellnote_in_cell,

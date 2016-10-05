@@ -141,6 +141,7 @@ function heatmap(selector, data, options) {
   }
   opts.brush_color = options.brush_color || "#0000FF";
 
+  opts.tip_font_size = options.tip_font_size || 11;
   opts.cell_font_size = options.cell_font_size || 15;
   opts.xaxis_offset = options.xaxis_offset || 20;
   opts.yaxis_offset = options.yaxis_offset || 20;
@@ -203,7 +204,7 @@ function heatmap(selector, data, options) {
         .append("text")
         .text(function(d){return d;})
         .style("font-family", "sans-serif")
-        .style("font-size", left_or_right ? opts.left_columns_font_size : opts.right_columns_font_size)
+        .style("font-size", (left_or_right ? opts.left_columns_font_size : opts.right_columns_font_size) + "px")
         .each(function(d,i) {
           var parent_index = this.parentNode.attr("data-index");
           text_widths[parent_index] += this.getComputedTextLength();
@@ -225,7 +226,7 @@ function heatmap(selector, data, options) {
       texts.enter()
         .append("text")
         .text(function(d) { return d;})
-        .style("font-size", x_or_y ? opts.xaxis_font_size : opts.yaxis_font_size);
+        .style("font-size", (x_or_y ? opts.xaxis_font_size : opts.yaxis_font_size) + "px");
 
       var text_length = 0, text_lengths = [], text_hash = {};
 
@@ -677,6 +678,7 @@ function heatmap(selector, data, options) {
             "</table>";
         })
         .direction("se")
+        .style("font-size", opts.tip_font_size + "px")
         .style("position", "fixed");
 
     var brush = d3.svg.brush()
@@ -908,7 +910,7 @@ function heatmap(selector, data, options) {
       .attr("transform", rotated ? "translate(" + (bounds.width/2) + "," + (bounds.height/2) + "),rotate(-90)" :
                                     "translate(" + (bounds.width/2) + "," + (bounds.height/2) + ")")
       .style("font-weight", "bold")
-      .style("font-size", rotated ? opts.yaxis_title_font_size : opts.xaxis_title_font_size)
+      .style("font-size", (rotated ? opts.yaxis_title_font_size : opts.xaxis_title_font_size) + "px")
       .style("text-anchor", "middle");
   }
 
@@ -961,7 +963,7 @@ function heatmap(selector, data, options) {
     var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size'] + "px";
     //var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size']
     //    || Math.min(18, Math.max(9, scale.rangeBand() - (rotated ? 11: 8))) + "px";
-    axisNodes.selectAll("text").style("font-size", fontSize);
+    axisNodes.selectAll("text").style("font-size", fontSize + "px");
 
     var mouseTargets = svg.append("g")
       .selectAll("g").data(leaves);
