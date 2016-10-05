@@ -171,6 +171,11 @@ function heatmap(selector, data, options) {
   opts.row_element_map["*"] = "*";
   opts.col_element_map["*"] = "*";
 
+  opts.xlabs_raw = [];
+  opts.xlabs_mod = [];
+  opts.ylabs_raw = [];
+  opts.ylabs_mod = [];
+
   // get the number of rows and columns for the GridSizer
 
   (function() {
@@ -222,20 +227,58 @@ function heatmap(selector, data, options) {
         .text(function(d) { return d;})
         .style("font-size", x_or_y ? opts.xaxis_font_size : opts.yaxis_font_size);
 
-      var text_length = 0;
-      texts.each(function() {
-        text_length = text_length < this.getBBox().width ? this.getBBox().width : text_length;
+      var text_length = 0, text_lengths = [], text_hash = {};
+
+      texts.each(function(d, i) {
+
+        var current_len = this.getBBox().width;
+        current_len = x_or_y ?
+          current_len / 1.3 + opts.xaxis_offset + opts.axis_padding :
+          current_len + opts.yaxis_offset + opts.axis_padding;
+        text_lengths.push(current_len);
+        text_length = text_length < current_len ? current_len : text_length;
       });
 
       var output;
 
       if (x_or_y) {
-        output = text_length / 1.41 + opts.xaxis_offset + opts.axis_padding;
-        output = output > opts.height / 3 ? opts.height / 3 : output;
+        output = text_length > opts.height / 3 ? opts.height / 3 : text_length;
       } else {
-        output = text_length + opts.yaxis_offset + opts.axis_padding;
-        output = output > opts.width / 3 ? opts.width / 3 : output;
+        output = text_length > opts.width / 3 ? opts.width / 3 : text_length;
       }
+
+      texts.each(function(d,i) {
+        var text_array = input[i].split(""),
+            new_text = input[i],
+            modified_text = input[i],
+            new_length,
+            c = 0,
+            ch;
+        while (text_lengths[i] > output && text_array.length > 1) {
+          ch = text_array.pop();
+          new_text = text_array.join("");
+
+          if (text_hash[new_text]) {
+            text_hash[new_text] += 1;
+            modified_text = new_text + "...-" + text_hash[new_text]; // make it unique
+          } else {
+            text_hash[new_text] = 1;
+            modified_text = new_text + "...";
+          }
+
+          new_length = d3.select(this).text(modified_text).node().getBBox().width;
+          new_length = x_or_y ?
+            new_length / 1.3 + opts.xaxis_offset + opts.axis_padding :
+            new_length + opts.yaxis_offset + opts.axis_padding;
+          text_lengths[i] = new_length;
+          c++;
+        }
+
+        if (c > 0) {
+          input[i] = modified_text;
+        }
+      });
+
       dummySvg.remove();
       return output;
     };
@@ -268,7 +311,12 @@ function heatmap(selector, data, options) {
         x_texts = [data.matrix.cols];
       }
 
-      opts.row_element_map["xaxis"] = compute_axis_label_dim(x_texts, true);
+      for (i = 0; i < x_texts.length; i++) {
+        opts.xlabs_raw.push(x_texts[i]);
+        opts.xlabs_mod.push(x_texts[i]);
+      }
+
+      opts.row_element_map["xaxis"] = compute_axis_label_dim(opts.xlabs_mod, true);
 
     }
 
@@ -289,7 +337,12 @@ function heatmap(selector, data, options) {
         y_texts = [data.matrix.rows];
       }
 
-      opts.col_element_map["yaxis"] = compute_axis_label_dim(y_texts, false);
+      for (i = 0; i < y_texts.length; i++) {
+        opts.ylabs_raw.push(y_texts[i]);
+        opts.ylabs_mod.push(y_texts[i]);
+      }
+
+      opts.col_element_map["yaxis"] = compute_axis_label_dim(opts.ylabs_mod, false);
     }
 
     // row dendrogram, add one more column
@@ -560,6 +613,9 @@ function heatmap(selector, data, options) {
       if (!opts.yaxis_hidden) {
         overflow_width = yaxisBounds.width;
       }
+      if (data.rows) {
+        opts.yclust_width = options.yclust_width || opts.width * 0.12;
+      }
       xaxis.style("width", (opts.width - opts.yclust_width) + "px");
       xaxis
         .append("defs")
@@ -586,8 +642,8 @@ function heatmap(selector, data, options) {
   var row = !data.rows ? null : dendrogram(el.select('svg.rowDend'), data.rows, false, rowDendBounds.width, rowDendBounds.height, opts.axis_padding);
   var col = !data.cols ? null : dendrogram(el.select('svg.colDend'), data.cols, true, colDendBounds.width, colDendBounds.height, opts.axis_padding);
   var colormap = colormap(el.select('svg.colormap'), data.matrix, colormapBounds.width, colormapBounds.height);
-  var xax = opts.xaxis_hidden ? null : axisLabels(el.select('svg.xaxis'), data.cols || data.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, opts.axis_padding, opts.xaxis_location);
-  var yax = opts.yaxis_hidden ? null : axisLabels(el.select('svg.yaxis'), data.rows || data.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding, opts.yaxis_location);
+  var xax = opts.xaxis_hidden ? null : axisLabels(el.select('svg.xaxis'), opts.xlabs_mod, true, xaxisBounds.width, xaxisBounds.height, opts.axis_padding, opts.xaxis_location);
+  var yax = opts.yaxis_hidden ? null : axisLabels(el.select('svg.yaxis'), opts.ylabs_mod, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding, opts.yaxis_location);
   var xtitle = !opts.xaxis_title || opts.xaxis_hidden ? null : title(el.select('svg.xtitle'), opts.xaxis_title, false, xtitleBounds);
   var ytitle = !opts.yaxis_title || opts.yaxis_hidden ? null : title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds);
 
