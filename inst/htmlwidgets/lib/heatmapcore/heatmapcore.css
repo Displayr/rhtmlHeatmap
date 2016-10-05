@@ -97,12 +97,13 @@ body.theme-dark {
   background-color: white;
   color: #444;
 }
-.rhtmlHeatmap-tip table {
+.rhtmlHeatmap-tip-table {
   border-collapse: separate;
   border-spacing: 2px;
 }
-.rhtmlHeatmap-tip th, .rhtmlHeatmap-tip td {
+.rhtmlHeatmap-tip-table th, .rhtmlHeatmap-tip-table td {
   padding: 0 1px;
+  color: white;
 }
 .xtitle {
   position: absolute;
