@@ -880,8 +880,24 @@ function heatmap(selector, data, options) {
         .call(brush)
         .call(brush.event);
     brushG.select("rect.background")
-        .on("mouseenter", function() {
-          tip.style("display", "block");
+        .on("mouseenter", function(d) {
+          var this_tip = tip.style("display", "block");
+          // height of the tip
+          var tipHeight = parseFloat(this_tip.style("height"));
+          // width of the tip
+          var tipWidth = parseFloat(this_tip.style("width"));
+
+          if (parseFloat(this_tip.style("left")) < 0) {
+            this_tip.style("left", "5px");
+          } else if (parseFloat(this_tip.style("left")) + tipWidth > opts.width) {
+            this_tip.style("left", (opts.width - 5 - tipWidth) + "px");
+          }
+
+          if (parseFloat(this_tip.style("top")) < 0) {
+            this_tip.style("top", "5px");
+          } else if (parseFloat(this_tip.style("top")) + tipHeight > opts.height) {
+            this_tip.style("top", opts.height - tipHeight - 5 + "px");
+          }
         })
         .on("mousemove", function() {
           var e = d3.event;
@@ -898,11 +914,29 @@ function heatmap(selector, data, options) {
           var col = Math.floor(x.invert(offsetX));
           var row = Math.floor(y.invert(offsetY));
           var label = merged[row*cols + col].label;
-          tip.show({col: col, row: row, label: label}).style({
+          var this_tip = tip.show({col: col, row: row, label: label}).style({
             top: d3.event.clientY + 15 + "px",
             left: d3.event.clientX + 15 + "px",
             opacity: 0.9
           });
+
+          // height of the tip
+          var tipHeight = parseFloat(this_tip.style("height"));
+          // width of the tip
+          var tipWidth = parseFloat(this_tip.style("width"));
+
+          if (parseFloat(this_tip.style("left")) < 0) {
+            this_tip.style("left", "5px");
+          } else if (parseFloat(this_tip.style("left")) + tipWidth > opts.width) {
+            this_tip.style("left", (opts.width - 5 - tipWidth) + "px");
+          }
+
+          if (parseFloat(this_tip.style("top")) < 0) {
+              this_tip.style("top", "5px");
+          } else if (parseFloat(this_tip.style("top")) + tipHeight > opts.height) {
+              this_tip.style("top", opts.height - tipHeight - 5 + "px");
+          }
+
           controller.datapoint_hover({col:col, row:row, label:label});
         })
         .on("mouseleave", function() {
