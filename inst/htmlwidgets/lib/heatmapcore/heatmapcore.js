@@ -626,7 +626,11 @@ function heatmap(selector, data, options) {
     if (!opts.xaxis_hidden) {
       var overflow_width = 0;
       if (!opts.yaxis_hidden) {
-        overflow_width = yaxisBounds.width;
+        if (opts.yaxis_location === "right") {
+          overflow_width = yaxisBounds.width;
+        } else {
+          overflow_width = xaxisBounds.height/2;
+        }
       } else {
         overflow_width = xaxisBounds.height/2;
       }
