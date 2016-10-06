@@ -344,8 +344,15 @@ function heatmap(selector, data, options) {
       }
 
       opts.col_element_map["yaxis"] = compute_axis_label_dim(opts.ylabs_mod, false);
-      if (!opts.xaxis_hidden && opts.row_element_map["xaxis"]/2 > opts.col_element_map["yaxis"]) {
-        opts.col_element_map["yaxis"] = opts.row_element_map["xaxis"]/2;
+      if (!opts.xaxis_hidden) {
+        if (opts.yaxis_location === "right") {
+          if (opts.row_element_map["xaxis"]/2 > opts.col_element_map["yaxis"]) {
+            opts.col_element_map["yaxis"] = opts.row_element_map["xaxis"]/2;
+          }
+        } else {
+          opts.col_element_names.push("yaxis_dummy");
+          opts.col_element_map["yaxis_dummy"] = opts.row_element_map["xaxis"]/2;
+        }
       }
     } else if (!opts.xaxis_hidden) {
       // keep the space to mitigate the overflow of x axis label
