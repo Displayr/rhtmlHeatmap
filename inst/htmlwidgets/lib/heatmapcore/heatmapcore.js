@@ -234,7 +234,7 @@ function heatmap(selector, data, options) {
 
         var current_len = this.getBBox().width;
         current_len = x_or_y ?
-          current_len / 1.3 + opts.xaxis_offset + opts.axis_padding :
+          current_len / 1.4 + opts.xaxis_offset + opts.axis_padding :
           current_len + opts.yaxis_offset + opts.axis_padding;
         text_lengths.push(current_len);
         text_length = text_length < current_len ? current_len : text_length;
@@ -269,7 +269,7 @@ function heatmap(selector, data, options) {
 
           new_length = d3.select(this).text(modified_text).node().getBBox().width;
           new_length = x_or_y ?
-            new_length / 1.3 + opts.xaxis_offset + opts.axis_padding :
+            new_length / 1.4 + opts.xaxis_offset + opts.axis_padding :
             new_length + opts.yaxis_offset + opts.axis_padding;
           text_lengths[i] = new_length;
           c++;
@@ -344,6 +344,13 @@ function heatmap(selector, data, options) {
       }
 
       opts.col_element_map["yaxis"] = compute_axis_label_dim(opts.ylabs_mod, false);
+      if (!opts.xaxis_hidden && opts.row_element_map["xaxis"]/2 > opts.col_element_map["yaxis"]) {
+        opts.col_element_map["yaxis"] = opts.row_element_map["xaxis"]/2;
+      }
+    } else if (!opts.xaxis_hidden) {
+      // keep the space to mitigate the overflow of x axis label
+      opts.col_element_names.push("yaxis");
+      opts.col_element_map["yaxis"] = opts.row_element_map["xaxis"]/2;
     }
 
     // row dendrogram, add one more column
@@ -613,9 +620,13 @@ function heatmap(selector, data, options) {
       var overflow_width = 0;
       if (!opts.yaxis_hidden) {
         overflow_width = yaxisBounds.width;
+      } else {
+        overflow_width = xaxisBounds.height/2;
       }
       if (data.rows) {
         opts.yclust_width = options.yclust_width || opts.width * 0.12;
+      } else {
+        opts.yclust_width = 0;
       }
       xaxis.style("width", (opts.width - opts.yclust_width) + "px");
       xaxis
