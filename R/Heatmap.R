@@ -75,6 +75,7 @@ NULL
 #' @param show_cellnote_in_cell If \code{TRUE}, print cellnotes in the cells. Defaults to FALSE.
 #' @param cell_font_size Sets the maximum font size of cellnotes. Defauls to 11.
 #' @param tip_font_size Sets the font size of texts in the tooltip. Defaults to 11.
+#' @param extra_tooltip_info A list of matrices that contains extra information to show in the tooltips. Dim of each matrix must equal to \code{x}.
 #'
 #' @param cexRow positive numbers. If not missing, it will override \code{xaxis_font_size}
 #' and will give it a value cexRow*14
@@ -138,6 +139,7 @@ Heatmap <- function(x,
   show_cellnote_in_cell = FALSE,
   cell_font_size = 11,
   tip_font_size = 11,
+  extra_tooltip_info = NULL,
 
   ##TODO: decide later which names/conventions to keep
   theme = NULL,
@@ -275,6 +277,24 @@ Heatmap <- function(x,
   if (!missing(cellnote))
     cellnote <- cellnote[rowInd, colInd]
 
+  if (!is.null(extra_tooltip_info)) {
+    if (is.matrix(extra_tooltip_info)) {
+      stop("extra_tooltip_info must be a list of matrices")
+    }
+
+    extra_tooltip_names = names(extra_tooltip_info)
+    if (is.null(extra_tooltip_names)) {
+      names(extra_tooltip_info) = paste0("param", 1:length(extra_tooltip_info))
+    }
+
+    for (i in 1:length(extra_tooltip_info)) {
+      if (!identical(dim(x), dim(extra_tooltip_info[[i]]))) {
+        stop("Matrices in extra_tooltip_info must have same dimensions as x")
+      } else {
+        extra_tooltip_info[[i]] <- as.character(t(extra_tooltip_info[[i]][rowInd, colInd]))
+      }
+    }
+  }
 
   ## Dendrograms - Update the labels and change to dendToTree
   ##=======================
@@ -388,6 +408,7 @@ Heatmap <- function(x,
   left_columns = check.extra.columns(left_columns)
   right_columns = check.extra.columns(right_columns)
 
+
   options <- NULL
 
   options <- c(options, list(
@@ -412,6 +433,7 @@ Heatmap <- function(x,
       left_columns_font_size = left_columns_font_size,
       right_columns = right_columns,
       right_columns_font_size = right_columns_font_size,
+      extra_tooltip_info = extra_tooltip_info,
       anim_duration = anim_duration
   ))
 

@@ -141,6 +141,7 @@ function heatmap(selector, data, options) {
   }
   opts.brush_color = options.brush_color || "#0000FF";
 
+  opts.extra_tooltip_info = options.extra_tooltip_info;
   opts.tip_font_size = options.tip_font_size || 11;
   opts.cell_font_size = options.cell_font_size || 15;
   opts.xaxis_offset = options.xaxis_offset || 20;
@@ -693,10 +694,19 @@ function heatmap(selector, data, options) {
         .html(function(d, i) {
           var rowTitle = opts.yaxis_title ? opts.yaxis_title : "Row";
           var colTitle = opts.xaxis_title ? opts.xaxis_title : "Column";
+          var txt = "";
+          if (opts.extra_tooltip_info) {
+            var tt_info = opts.extra_tooltip_info;
+            var tt_names = Object.keys(opts.extra_tooltip_info);
+            for (var j = 0; j < tt_names.length; j++) {
+              txt = txt + "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px'>" + tt_names[j] + "</th><td style='font-size:" + opts.tip_font_size +"px'>" + htmlEscape(tt_info[tt_names[j]][d.row*cols + d.col]) + "</td></tr>";
+            }
+          }
+
           return "<table class='rhtmlHeatmap-tip-table'>" +
             "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px'>" + rowTitle + "</th><td style='font-size:" + opts.tip_font_size +"px'>" + htmlEscape(data.rows[d.row]) + "</td></tr>" +
             "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px'>" + colTitle + "</th><td style='font-size:" + opts.tip_font_size +"px'>" + htmlEscape(data.cols[d.col]) + "</td></tr>" +
-            "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px'>Value</th><td style='font-size:" + opts.tip_font_size +"px'>" + htmlEscape(d.label) + "</td></tr>" +
+            "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px'>Value</th><td style='font-size:" + opts.tip_font_size +"px'>" + htmlEscape(d.label) + "</td></tr>" + txt +
             "</table>";
         })
         .direction("se")
