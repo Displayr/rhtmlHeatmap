@@ -904,6 +904,11 @@ function heatmap(selector, data, options) {
 
           var col = Math.floor(x.invert(offsetX));
           var row = Math.floor(y.invert(offsetY));
+          if (options.lower_triangle) {
+            if (row < col) {
+              return;
+            }
+          }
           var label = merged[row*cols + col].label;
           var this_tip = tip.show({col: col, row: row, label: label}).style({
             top: d3.event.clientY + 15 + "px",
@@ -940,6 +945,12 @@ function heatmap(selector, data, options) {
 
           var col = Math.floor(x.invert(offsetX));
           var row = Math.floor(y.invert(offsetY));
+          if (options.lower_triangle) {
+            if (row < col) {
+              tip.hide();
+              return;
+            }
+          }
           var label = merged[row*cols + col].label;
           var this_tip = tip.show({col: col, row: row, label: label}).style({
             top: d3.event.clientY + 15 + "px",

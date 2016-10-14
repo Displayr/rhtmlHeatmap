@@ -140,6 +140,8 @@ Heatmap <- function(x,
   cell_font_size = 11,
   tip_font_size = 11,
   extra_tooltip_info = NULL,
+  color_range = NULL,
+  lower_triangle = FALSE,
 
   ##TODO: decide later which names/conventions to keep
   theme = NULL,
@@ -180,7 +182,6 @@ Heatmap <- function(x,
   #   if(nr <= 1 || nc <= 1)
   #     stop("`x' must have at least 2 rows and 2 columns")
 
-
   ## Labels for Row/Column
   ##======================
   rownames(x) <- labRow %||% paste(1:nrow(x))
@@ -219,6 +220,12 @@ Heatmap <- function(x,
     Rowv <- rowMeans(x, na.rm = na.rm)
   }
   if (is.numeric(Rowv)) {
+    if (sum(is.na(x)) > 0) {
+      if (sum(rowSums(is.na(x)) == nc) > 0) {
+        stop("Row dendrogram cannot be computed when one or more rows contain missing values only.
+             Inspect the data and try to remove these rows or set dendrogram = 'none'.")
+      }
+    }
     Rowv <- reorderfun(as.dendrogram(hclustfun(distfun(x))), Rowv)
   }
   if (is.dendrogram(Rowv)) {
@@ -240,6 +247,12 @@ Heatmap <- function(x,
     Colv <- colMeans(x, na.rm = na.rm)
   }
   if (is.numeric(Colv)) {
+    if (sum(is.na(x)) > 0) {
+      if (sum(colSums(is.na(x)) == nr) > 0) {
+        stop("Column dendrogram cannot be computed when one or more columns contain missing values only.
+             Inspect the data and try to remove these columns or set dendrogram = 'none'.")
+      }
+    }
     Colv <- reorderfun(as.dendrogram(hclustfun(distfun(t(x)))), Colv)
   }
   if (is.dendrogram(Colv)) {
@@ -357,6 +370,19 @@ Heatmap <- function(x,
   ## Final touches before htmlwidgets
   ##=======================
 
+  if (lower_triangle) {
+    if (nr != nc) stop("dim(x)[1] must equal to dim(x)[2] if lower_triangle = TRUE")
+    for (i in 1:nr) {
+      for (j in 1:nc) {
+        if (j > i) {
+          x[i,j] = NA
+        }
+      }
+    }
+  }
+
+  cellnote[is.na(cellnote)] = "No data"
+
   mtx <- list(data = as.character(t(cellnote)),
               dim = dim(x),
               rows = rownames(x),
@@ -434,6 +460,7 @@ Heatmap <- function(x,
       right_columns = right_columns,
       right_columns_font_size = right_columns_font_size,
       extra_tooltip_info = extra_tooltip_info,
+      lower_triangle = lower_triangle,
       anim_duration = anim_duration
   ))
 
