@@ -50,7 +50,7 @@ HTMLWidgets.widget({
         // calculate color contrast
         // http://stackoverflow.com/questions/11867545/change-text-color-based-on-brightness-of-the-covered-background-area
         var o = Math.round(((r * 299) + (g * 587) + (b * 114)) / 1000);
-        var cellnote_color = (o > 125) ? 'black': 'white';
+        var cellnote_color = x.matrix.data[i] === "No data" ? "transparent" : (o > 125) ? 'black': 'white';
         merged.push({
           label: x.matrix.data[i],
           color: "rgba(" + [r,g,b,a/255].join(",") + ")",
