@@ -81,7 +81,7 @@ should cellnote be scaled if x is also scaled?}
 
 \item{extra_tooltip_info}{A list of matrices that contains extra information to show in the tooltips. Dim of each matrix must equal to \code{x}.}
 
-\item{color_range}{}
+\item{color_range}{A vector of length 2 that specifies the range of values that colors get mapped to. The default is computed from \code{x}.}
 
 \item{lower_triangle}{A logical value to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.}
 

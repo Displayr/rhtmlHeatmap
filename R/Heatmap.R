@@ -77,7 +77,7 @@ NULL
 #' @param tip_font_size Sets the font size of texts in the tooltip. Defaults to 11.
 #' @param extra_tooltip_info A list of matrices that contains extra information to show in the tooltips. Dim of each matrix must equal to \code{x}.
 #' @param lower_triangle A logical value to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.
-#' @param color_range
+#' @param color_range A vector of length 2 that specifies the range of values that colors get mapped to. The default is computed from \code{x}.
 #'
 #' @param cexRow positive numbers. If not missing, it will override \code{xaxis_font_size}
 #' and will give it a value cexRow*14
@@ -395,12 +395,24 @@ Heatmap <- function(x,
   if (is.factor(x)) {
     colors <- scales::col_factor(colors, x, na.color = "transparent")
   } else {
-    rng <- range(x, na.rm = TRUE)
-    if (scale %in% c("row", "column")) {
-      rng <- c(max(abs(rng)), -max(abs(rng)))
+    if (!is.null(color_range)) {
+      if (!is.vector(color_range) || length(color_range) != 2) {
+        stop("color_range must be a vector with length 2.")
+      }
+      if (max(x) > max(color_range) || min(x) < min(color_range)) {
+        stop("Range of color_range must not be smaller than range of x.
+             If this is not the case, make sure scale is set to 'none'")
+      }
+      colors <- scales::col_numeric(colors, color_range, na.color = "transparent")
+    } else {
+      rng <- range(x, na.rm = TRUE)
+      if (scale %in% c("row", "column")) {
+        rng <- c(max(abs(rng)), -max(abs(rng)))
+      }
+
+      colors <- scales::col_numeric(colors, rng, na.color = "transparent")
     }
 
-    colors <- scales::col_numeric(colors, rng, na.color = "transparent")
   }
 
   imgUri <- encodeAsPNG(t(x), colors)
