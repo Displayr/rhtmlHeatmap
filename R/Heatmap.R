@@ -76,7 +76,7 @@ NULL
 #' @param cell_font_size Sets the maximum font size of cellnotes. Defauls to 11.
 #' @param tip_font_size Sets the font size of texts in the tooltip. Defaults to 11.
 #' @param extra_tooltip_info A list of matrices that contains extra information to show in the tooltips. Dim of each matrix must equal to \code{x}.
-#' @param lower_triangle A logical to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.
+#' @param lower_triangle A logical value to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.
 #' @param color_range
 #'
 #' @param cexRow positive numbers. If not missing, it will override \code{xaxis_font_size}

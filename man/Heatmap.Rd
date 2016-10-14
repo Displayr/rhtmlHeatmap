@@ -83,7 +83,7 @@ should cellnote be scaled if x is also scaled?}
 
 \item{color_range}{}
 
-\item{lower_triangle}{A logical to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.}
+\item{lower_triangle}{A logical value to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.}
 
 \item{theme}{A custom CSS theme to use. Currently the only valid values are
 \code{""} and \code{"dark"}. \code{"dark"} is primarily intended for
