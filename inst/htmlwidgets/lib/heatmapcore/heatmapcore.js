@@ -347,18 +347,18 @@ function heatmap(selector, data, options) {
       opts.col_element_map["yaxis"] = compute_axis_label_dim(opts.ylabs_mod, false);
       if (!opts.xaxis_hidden) {
         if (opts.yaxis_location === "right") {
-          if (opts.row_element_map["xaxis"]/2 > opts.col_element_map["yaxis"]) {
-            opts.col_element_map["yaxis"] = opts.row_element_map["xaxis"]/2;
+          if (opts.row_element_map["xaxis"]/1.2 > opts.col_element_map["yaxis"]) {
+            opts.col_element_map["yaxis"] = opts.row_element_map["xaxis"]/1.2;
           }
         } else {
           opts.col_element_names.push("yaxis_dummy");
-          opts.col_element_map["yaxis_dummy"] = opts.row_element_map["xaxis"]/2;
+          opts.col_element_map["yaxis_dummy"] = opts.row_element_map["xaxis"]/1.2;
         }
       }
     } else if (!opts.xaxis_hidden) {
       // keep the space to mitigate the overflow of x axis label
       opts.col_element_names.push("yaxis");
-      opts.col_element_map["yaxis"] = opts.row_element_map["xaxis"]/2;
+      opts.col_element_map["yaxis"] = opts.row_element_map["xaxis"]/1.2;
     }
 
     // row dendrogram, add one more column
@@ -967,9 +967,15 @@ function heatmap(selector, data, options) {
           if (parseFloat(this_tip.style("left")) + tipWidth > opts.width) {
             this_tip.style("left", left - tipWidth - 15 + "px");
           }
+          if (parseFloat(this_tip.style("left")) < 0) {
+            this_tip.style("left", left + "px");
+          }
 
           if (parseFloat(this_tip.style("top")) + tipHeight > opts.height) {
             this_tip.style("top", top - tipHeight - 15 + "px");
+          }
+          if (parseFloat(this_tip.style("top")) < 0) {
+            this_tip.style("top", top + "px");
           }
 
           controller.datapoint_hover({col:col, row:row, label:label});
