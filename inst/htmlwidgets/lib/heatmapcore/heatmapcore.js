@@ -348,20 +348,20 @@ function heatmap(selector, data, options) {
       opts.col_element_map["yaxis"] = compute_axis_label_dim(opts.ylabs_mod, false);
       if (!opts.xaxis_hidden) {
         var x_texts_net = opts.row_element_map["xaxis"];
-        var y_width_net = x_texts_net/1.1 - opts.xaxis_font_size;
+        var y_width_net = x_texts_net/1.1;
         if (opts.yaxis_location === "right") {
           if (y_width_net > opts.col_element_map["yaxis"]) {
             opts.col_element_map["yaxis"] = y_width_net;
           }
         } else {
           opts.col_element_names.push("yaxis_dummy");
-          opts.col_element_map["yaxis_dummy"] = y_width_net/1.1 - opts.xaxis_font_size;
+          opts.col_element_map["yaxis_dummy"] = y_width_net/1.1;
         }
       }
     } else if (!opts.xaxis_hidden) {
       // keep the space to mitigate the overflow of x axis label
       var x_texts_net = opts.row_element_map["xaxis"];
-      var y_width_net = x_texts_net/1.1 - opts.xaxis_font_size;
+      var y_width_net = x_texts_net/1.1;
       opts.col_element_names.push("yaxis");
       opts.col_element_map["yaxis"] = y_width_net;
     }
