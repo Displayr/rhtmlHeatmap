@@ -1040,7 +1040,7 @@ function heatmap(selector, data, options) {
         .orient(axis_location)
         .outerTickSize(0)
         .tickPadding(padding)
-        .tickFormat(function(d, i) { return leaves[i]; });
+        .tickFormat(function(d, i) { return leaves[i]; });// hack for repeated values
 
     // Create the actual axis
     var axisNodes = svg.append("g")
