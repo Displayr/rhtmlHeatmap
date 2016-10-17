@@ -262,7 +262,8 @@ function heatmap(selector, data, options) {
 
           if (text_hash[new_text]) {
             text_hash[new_text] += 1;
-            modified_text = new_text + "...-" + text_hash[new_text]; // make it unique
+            //modified_text = new_text + "...-" + text_hash[new_text]; // make it unique
+            modified_text = new_text + "...";
           } else {
             text_hash[new_text] = 1;
             modified_text = new_text + "...";
@@ -1032,14 +1033,14 @@ function heatmap(selector, data, options) {
 
     // set axis options
     var scale = d3.scale.ordinal()
-        .domain(leaves)
+        .domain(d3.range(0, leaves.length))
         .rangeBands([0, rotated ? width : height]);
     var axis = d3.svg.axis()
         .scale(scale)
         .orient(axis_location)
         .outerTickSize(0)
         .tickPadding(padding)
-        .tickValues(leaves);
+        .tickFormat(function(d, i) { return leaves[i]; });
 
     // Create the actual axis
     var axisNodes = svg.append("g")
@@ -1090,8 +1091,8 @@ function heatmap(selector, data, options) {
       var _w = rotated ? height * 1.414 * 1.2 : width;
       selection
           .attr("transform", function(d, i) {
-            var x = rotated ? (axis_location === "bottom" ? scale(d) + scale.rangeBand()/2 : scale(d)) : 0;
-            var y = rotated ? (axis_location === "bottom" ? padding + 6 : height - _h/1.414 - padding - 6): scale(d);
+            var x = rotated ? (axis_location === "bottom" ? scale(i) + scale.rangeBand()/2 : scale(i)) : 0;
+            var y = rotated ? (axis_location === "bottom" ? padding + 6 : height - _h/1.414 - padding - 6): scale(i);
             return "translate(" + x + "," + y + ")";
           })
         .selectAll("rect")
