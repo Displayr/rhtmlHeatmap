@@ -635,10 +635,10 @@ function heatmap(selector, data, options) {
         if (opts.yaxis_location === "right") {
           overflow_width = yaxisBounds.width;
         } else {
-          overflow_width = xaxisBounds.height/2;
+          overflow_width = xaxisBounds.height/1.1;
         }
       } else {
-        overflow_width = xaxisBounds.height/2;
+        overflow_width = xaxisBounds.height/1.1;
       }
       if (data.rows) {
         opts.yclust_width = options.yclust_width || opts.width * 0.12;
