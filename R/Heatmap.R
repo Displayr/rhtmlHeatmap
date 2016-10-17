@@ -495,7 +495,9 @@ Heatmap <- function(x,
     width = width,
     height = height,
     package = 'rhtmlHeatmap',
-    sizingPolicy = htmlwidgets::sizingPolicy(browser.fill = TRUE)
+    sizingPolicy = htmlwidgets::sizingPolicy(browser.padding = 5,
+                                             viewer.padding = 5,
+                                             browser.fill = TRUE)
   )
 }
 
