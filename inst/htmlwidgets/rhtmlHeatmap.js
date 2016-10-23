@@ -34,6 +34,7 @@ HTMLWidgets.widget({
     }
 
     el.innerHTML = "";
+    d3.select(document.body).select(".rhtmlHeatmap-tip").remove();
 
     this.loadImage(x.image, function(imgData, w, h) {
 

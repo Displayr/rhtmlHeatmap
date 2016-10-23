@@ -87,7 +87,6 @@ body.theme-dark {
 }
 
 .rhtmlHeatmap-tip {
-  color: white;
   background-color: #444;
   padding: 6px 12px;
   box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.22);
@@ -102,7 +101,6 @@ body.theme-dark {
 }
 .rhtmlHeatmap-tip-table th, .rhtmlHeatmap-tip-table td {
   padding: 0 1px;
-  color: white;
 }
 .xtitle {
   position: absolute;

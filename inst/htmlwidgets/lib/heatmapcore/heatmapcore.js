@@ -704,14 +704,14 @@ function heatmap(selector, data, options) {
             var tt_info = opts.extra_tooltip_info;
             var tt_names = Object.keys(opts.extra_tooltip_info);
             for (var j = 0; j < tt_names.length; j++) {
-              txt = txt + "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px'>" + tt_names[j] + "</th><td style='font-size:" + opts.tip_font_size +"px'>" + htmlEscape(tt_info[tt_names[j]][d.row*cols + d.col]) + "</td></tr>";
+              txt = txt + "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px;color:white'>" + tt_names[j] + "</th><td style='font-size:" + opts.tip_font_size +"px;color:black'>" + htmlEscape(tt_info[tt_names[j]][d.row*cols + d.col]) + "</td></tr>";
             }
           }
 
           return "<table class='rhtmlHeatmap-tip-table'>" +
-            "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px'>" + rowTitle + "</th><td style='font-size:" + opts.tip_font_size +"px'>" + htmlEscape(data.rows[d.row]) + "</td></tr>" +
-            "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px'>" + colTitle + "</th><td style='font-size:" + opts.tip_font_size +"px'>" + htmlEscape(data.cols[d.col]) + "</td></tr>" +
-            "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px'>Value</th><td style='font-size:" + opts.tip_font_size +"px'>" + htmlEscape(d.label) + "</td></tr>" + txt +
+            "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px;color:white'>" + rowTitle + "</th><td style='font-size:" + opts.tip_font_size +"px;color:white'>" + htmlEscape(data.rows[d.row]) + "</td></tr>" +
+            "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px;color:white'>" + colTitle + "</th><td style='font-size:" + opts.tip_font_size +"px;color:white'>" + htmlEscape(data.cols[d.col]) + "</td></tr>" +
+            "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px;color:white'>Value</th><td style='font-size:" + opts.tip_font_size +"px;color:white'>" + htmlEscape(d.label) + "</td></tr>" + txt +
             "</table>";
         })
         .direction("se")
