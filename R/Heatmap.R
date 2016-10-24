@@ -378,17 +378,28 @@ Heatmap <- function(x,
       for (j in 1:nc) {
         if (j > i) {
           x[i,j] = NA
+          cellnote[i,j] = NA
         }
       }
     }
   }
 
   cellnote[is.na(cellnote)] = "No data"
+  compute_notecolor = matrix(rep(1, nr*nc), nrow = nr)
+  for (i in 1:nr) {
+    for (j in 1:nc) {
+      if (is.na(x[i,j]) && cellnote[i,j] != "No data") {
+        # cellnote is provided but x is NA
+        compute_notecolor[i,j] = 0
+      }
+    }
+  }
 
   mtx <- list(data = as.character(t(cellnote)),
               dim = dim(x),
               rows = rownames(x),
-              cols = colnames(x)
+              cols = colnames(x),
+              compute_notecolor = as.character(t(compute_notecolor))
   )
 
 
