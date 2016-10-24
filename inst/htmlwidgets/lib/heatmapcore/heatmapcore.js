@@ -704,7 +704,7 @@ function heatmap(selector, data, options) {
             var tt_info = opts.extra_tooltip_info;
             var tt_names = Object.keys(opts.extra_tooltip_info);
             for (var j = 0; j < tt_names.length; j++) {
-              txt = txt + "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px;color:white'>" + tt_names[j] + "</th><td style='font-size:" + opts.tip_font_size +"px;color:black'>" + htmlEscape(tt_info[tt_names[j]][d.row*cols + d.col]) + "</td></tr>";
+              txt = txt + "<tr><th style='text-align:right;font-size:" + opts.tip_font_size + "px;color:white'>" + tt_names[j] + "</th><td style='font-size:" + opts.tip_font_size +"px;color:white'>" + htmlEscape(tt_info[tt_names[j]][d.row*cols + d.col]) + "</td></tr>";
             }
           }
 
