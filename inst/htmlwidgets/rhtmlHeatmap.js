@@ -51,17 +51,34 @@ HTMLWidgets.widget({
         // calculate color contrast
         // http://stackoverflow.com/questions/11867545/change-text-color-based-on-brightness-of-the-covered-background-area
         var o = Math.round(((r * 299) + (g * 587) + (b * 114)) / 1000);
-        var cellnote_color;
-        if (x.matrix.compute_notecolor[i] === "1") {
-          cellnote_color = x.matrix.data[i] === "No data" ? "transparent" : (o > 125) ? 'black': 'white';
+        var cellnote_color,
+            hide = 0,
+            color = "rgba(" + [r,g,b,a/255].join(",") + ")";
+        if (x.matrix.cells_to_hide[i] !== 0) {
+          hide = 1;
+          cellnote_color = "transparent";
         } else {
-          cellnote_color = "black";
+          if (x.options.shownote_in_cell) {
+            if (x.matrix.cellnote_in_cell[i] === "No data") {
+              cellnote_color = "transparent";
+            } else {
+              if (a === 0) {
+                cellnote_color = "black";
+              } else {
+                cellnote_color = (o > 125) ? 'black': 'white';
+              }
+            }
+          } else {
+            cellnote_color = "transparent";
+          }
         }
         merged.push({
           label: x.matrix.data[i],
-          color: "rgba(" + [r,g,b,a/255].join(",") + ")",
-          cellnote_color: cellnote_color
-        })
+          color: color,
+          cellnote_in_cell: x.matrix.cellnote_in_cell[i],
+          cellnote_color: cellnote_color,
+          hide: hide
+        });
       }
       x.matrix.merged = merged;
       //console.log(JSON.stringify({merged: x.matrix.merged}, null, "  "));

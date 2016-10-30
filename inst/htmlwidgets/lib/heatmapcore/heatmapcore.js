@@ -764,7 +764,7 @@ function heatmap(selector, data, options) {
         .property("rowIndex", function(d, i) { return Math.floor(i / cols); })
         .property("value", function(d, i) { return d.label; })
         .attr("fill", function(d) {
-          if (!d.color) {
+          if (d.hide) {
             return "transparent";
           }
           return d.color;
@@ -847,7 +847,7 @@ function heatmap(selector, data, options) {
       cellnote_incell = svg.selectAll("text").data(merged);
       cellnote_incell.enter().append("text")
         .text(function(d) {
-          return d.label;
+          return d.cellnote_in_cell;
         })
         .attr("text-anchor", "middle")
         .attr("alignment-baseline", "central")
@@ -909,10 +909,8 @@ function heatmap(selector, data, options) {
 
           var col = Math.floor(x.invert(offsetX));
           var row = Math.floor(y.invert(offsetY));
-          if (options.lower_triangle) {
-            if (row < col) {
-              return;
-            }
+          if (merged[row*cols + col].hide) {
+            return;
           }
           var label = merged[row*cols + col].label;
           var this_tip = tip.show({col: col, row: row, label: label}).style({
@@ -950,11 +948,9 @@ function heatmap(selector, data, options) {
 
           var col = Math.floor(x.invert(offsetX));
           var row = Math.floor(y.invert(offsetY));
-          if (options.lower_triangle) {
-            if (row < col) {
-              tip.hide();
-              return;
-            }
+          if (merged[row*cols + col].hide) {
+            tip.hide();
+            return;
           }
           var label = merged[row*cols + col].label;
           var this_tip = tip.show({col: col, row: row, label: label}).style({

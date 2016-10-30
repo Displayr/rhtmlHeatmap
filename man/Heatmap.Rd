@@ -14,14 +14,14 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   labRow = rownames(x), labCol = colnames(x), cexRow, cexCol,
   left_columns = NULL, left_columns_font_size = 11, right_columns = NULL,
   right_columns_font_size = 11, digits = 3L, cellnote,
-  cellnote_scale = FALSE, show_cellnote_in_cell = FALSE,
-  cell_font_size = 11, tip_font_size = 11, extra_tooltip_info = NULL,
-  color_range = NULL, lower_triangle = FALSE, theme = NULL,
-  colors = "RdYlBu", width = NULL, height = NULL, xaxis_hidden = FALSE,
-  xaxis_height = 80, xaxis_font_size = 12, xaxis_title = NULL,
-  xaxis_title_font_size = 14, xaxis_location = "bottom",
-  yaxis_hidden = FALSE, yaxis_width = 120, yaxis_font_size = 11,
-  yaxis_location = "right", yaxis_title = NULL,
+  cellnote_scale = FALSE, cellnote_in_cell = NULL,
+  show_cellnote_in_cell = FALSE, cell_font_size = 11, tip_font_size = 11,
+  extra_tooltip_info = NULL, color_range = NULL, lower_triangle = FALSE,
+  cells_to_hide = NULL, theme = NULL, colors = "RdYlBu", width = NULL,
+  height = NULL, xaxis_hidden = FALSE, xaxis_height = 80,
+  xaxis_font_size = 12, xaxis_title = NULL, xaxis_title_font_size = 14,
+  xaxis_location = "bottom", yaxis_hidden = FALSE, yaxis_width = 120,
+  yaxis_font_size = 11, yaxis_location = "right", yaxis_title = NULL,
   yaxis_title_font_size = 14, brush_color = "#0000FF", show_grid = TRUE,
   anim_duration = 500, ...)
 }
@@ -73,6 +73,8 @@ If missing, it will use \code{x}, after rounding it based on the \code{digits} p
 \item{cellnote_scale}{logical (default is FALSE). IF cellnote is missing and x is used,
 should cellnote be scaled if x is also scaled?}
 
+\item{cellnote_in_cell}{Overrides cellnote when the user wish to display texts inside the cells that are different from the tooltips.}
+
 \item{show_cellnote_in_cell}{If \code{TRUE}, print cellnotes in the cells. Defaults to FALSE.}
 
 \item{cell_font_size}{Sets the maximum font size of cellnotes. Defauls to 11.}
@@ -81,9 +83,11 @@ should cellnote be scaled if x is also scaled?}
 
 \item{extra_tooltip_info}{A list of matrices that contains extra information to show in the tooltips. Dim of each matrix must equal to \code{x}.}
 
-\item{color_range}{A vector of length 2 that specifies the range of values that colors get mapped to. The default is computed from \code{x}.}
+\item{color_range}{A vector of length 2 that specifies the range of values that colors get mapped to. The default is computed from \code{x}. If \code{x} is a factor, this argument is ignored.}
 
 \item{lower_triangle}{A logical value to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.}
+
+\item{cells_to_hide}{A boolean matrix with the same dimension as \code{x} that specifies which cell to hide. Hidden cells will not trigger tooltips and will be transparent in color.}
 
 \item{theme}{A custom CSS theme to use. Currently the only valid values are
 \code{""} and \code{"dark"}. \code{"dark"} is primarily intended for

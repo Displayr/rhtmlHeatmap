@@ -72,12 +72,14 @@ NULL
 #' If missing, it will use \code{x}, after rounding it based on the \code{digits} parameter.
 #' @param cellnote_scale logical (default is FALSE). IF cellnote is missing and x is used,
 #' should cellnote be scaled if x is also scaled?
+#' @param cellnote_in_cell Overrides cellnote when the user wish to display texts inside the cells that are different from the tooltips.
 #' @param show_cellnote_in_cell If \code{TRUE}, print cellnotes in the cells. Defaults to FALSE.
 #' @param cell_font_size Sets the maximum font size of cellnotes. Defauls to 11.
 #' @param tip_font_size Sets the font size of texts in the tooltip. Defaults to 11.
 #' @param extra_tooltip_info A list of matrices that contains extra information to show in the tooltips. Dim of each matrix must equal to \code{x}.
 #' @param lower_triangle A logical value to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.
 #' @param color_range A vector of length 2 that specifies the range of values that colors get mapped to. The default is computed from \code{x}. If \code{x} is a factor, this argument is ignored.
+#' @param cells_to_hide A boolean matrix with the same dimension as \code{x} that specifies which cell to hide. Hidden cells will not trigger tooltips and will be transparent in color.
 #'
 #' @param cexRow positive numbers. If not missing, it will override \code{xaxis_font_size}
 #' and will give it a value cexRow*14
@@ -138,12 +140,14 @@ Heatmap <- function(x,
   digits = 3L,
   cellnote,
   cellnote_scale = FALSE,
+  cellnote_in_cell = NULL,
   show_cellnote_in_cell = FALSE,
   cell_font_size = 11,
   tip_font_size = 11,
   extra_tooltip_info = NULL,
   color_range = NULL,
   lower_triangle = FALSE,
+  cells_to_hide = NULL,
 
   ##TODO: decide later which names/conventions to keep
   theme = NULL,
@@ -368,38 +372,60 @@ Heatmap <- function(x,
     stop("cellnote matrix must have same dimensions as x")
   }
 
+  # handling NAs
+  cellnote[is.na(cellnote)] = "No data"
+
+  # handling cellnote_in_cell
+  if (show_cellnote_in_cell) {
+    if (!is.null(cellnote_in_cell)) {
+      if (!identical(dim(x), dim(cellnote_in_cell)))
+        stop("cellnote_in_cell must be a matrix with the same dimension as x!")
+      cellnote_in_cell = cellnote_in_cell[rowInd, colInd]
+    } else {
+      cellnote_in_cell = cellnote
+    }
+  } else {
+    cellnote_in_cell = matrix(rep(NA, nr*nc), nrow = nr)
+  }
 
   ## Final touches before htmlwidgets
   ##=======================
+
+  # cells to hide completely
+  if (!is.null(cells_to_hide)) {
+    if (!identical(dim(x), dim(cells_to_hide)))
+      stop("cells_to_hide must be a matrix with the same dimension as x!")
+  } else {
+    cells_to_hide = matrix(rep(0, nr*nc), nrow = nr)
+  }
 
   if (lower_triangle) {
     if (nr != nc) stop("x must be a square matrix if lower_triangle = TRUE")
     for (i in 1:nr) {
       for (j in 1:nc) {
         if (j > i) {
-          x[i,j] = NA
-          cellnote[i,j] = NA
+          cells_to_hide[i,j] = 1
         }
       }
     }
   }
 
-  cellnote[is.na(cellnote)] = "No data"
-  compute_notecolor = matrix(rep(1, nr*nc), nrow = nr)
-  for (i in 1:nr) {
-    for (j in 1:nc) {
-      if (is.na(x[i,j]) && cellnote[i,j] != "No data") {
-        # cellnote is provided but x is NA
-        compute_notecolor[i,j] = 0
-      }
-    }
-  }
+  # compute_notecolor = matrix(rep(1, nr*nc), nrow = nr)
+  # for (i in 1:nr) {
+  #   for (j in 1:nc) {
+  #     if (is.na(x[i,j]) && cellnote[i,j] != "No data") {
+  #       # cellnote is provided but x is NA
+  #       compute_notecolor[i,j] = 0
+  #     }
+  #   }
+  # }
 
   mtx <- list(data = as.character(t(cellnote)),
               dim = dim(x),
               rows = rownames(x),
               cols = colnames(x),
-              compute_notecolor = as.character(t(compute_notecolor))
+              cells_to_hide = as.numeric(t(cells_to_hide)),
+              cellnote_in_cell = as.character(t(cellnote_in_cell))
   )
 
 
@@ -485,7 +511,6 @@ Heatmap <- function(x,
       right_columns = right_columns,
       right_columns_font_size = right_columns_font_size,
       extra_tooltip_info = extra_tooltip_info,
-      lower_triangle = lower_triangle,
       anim_duration = anim_duration
   ))
 
