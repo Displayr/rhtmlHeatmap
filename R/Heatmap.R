@@ -149,6 +149,12 @@ Heatmap <- function(x,
   lower_triangle = FALSE,
   cells_to_hide = NULL,
 
+
+  show_legend = TRUE,
+  legend_font_size = 11,
+  legend_width = 60,
+  legend_digits = 1,
+
   ##TODO: decide later which names/conventions to keep
   theme = NULL,
   colors = "RdYlBu",
@@ -157,6 +163,7 @@ Heatmap <- function(x,
   xaxis_hidden = FALSE,
   xaxis_height = 80,
   xaxis_font_size = 12,
+  xaxis_font_family = "sans-serif",
   xaxis_title = NULL,
   xaxis_title_font_size = 14,
   xaxis_location = "bottom",
@@ -164,6 +171,7 @@ Heatmap <- function(x,
   yaxis_hidden = FALSE,
   yaxis_width = 120,
   yaxis_font_size = 11,
+  yaxis_font_family = "sans-serif",
   yaxis_location = "right",
   yaxis_title = NULL,
   yaxis_title_font_size = 14,
@@ -428,9 +436,23 @@ Heatmap <- function(x,
               cellnote_in_cell = as.character(t(cellnote_in_cell))
   )
 
+  legend.colors = NULL
+  legend.range = NULL
+  x_is_factor = FALSE
 
+  if (show_legend) {
+    if (scale == "column" || scale == "row") {
+      stop("When scale = 'column' or 'row', a global legend does not make sense
+           as each column/row is scaled by their individual maximum")
+    }
+  }
   if (is.factor(x)) {
+    x_is_factor = TRUE
     colors <- scales::col_factor(colors, x, na.color = "transparent")
+    if (show_legend) {
+      legend.colors = colors(unique(x))
+      legend.range = as.character(unique(x))
+    }
   } else {
     if (!is.null(color_range)) {
       if (!is.vector(color_range) || length(color_range) != 2) {
@@ -441,6 +463,7 @@ Heatmap <- function(x,
              If this is not the case, make sure scale is set to 'none'")
       }
       colors <- scales::col_numeric(colors, color_range, na.color = "transparent")
+      rng <- c(min(color_range), max(color_range))
     } else {
       rng <- range(x, na.rm = TRUE)
       if (scale %in% c("row", "column")) {
@@ -450,8 +473,14 @@ Heatmap <- function(x,
       colors <- scales::col_numeric(colors, rng, na.color = "transparent")
     }
 
+    if (show_legend) {
+      legend.val = seq(max(rng), min(rng), by = ((min(rng) - max(rng))/49))
+      legend.colors = colors(legend.val)
+      legend.range = rng
+    }
   }
 
+  # colors is now a function that takes a number and returns an #RRGGBB value
   imgUri <- encodeAsPNG(t(x), colors)
 
   check.extra.columns <- function(input) {
@@ -504,6 +533,12 @@ Heatmap <- function(x,
       tip_font_size = tip_font_size,
       brush_color = brush_color,
       show_grid = show_grid,
+      legend_font_size = legend_font_size,
+      x_is_factor = x_is_factor,
+      legend_colors = legend.colors,
+      legend_range = legend.range,
+      legend_width = legend_width,
+      legend_digits = legend_digits,
       shownote_in_cell = show_cellnote_in_cell,
       cell_font_size = cell_font_size,
       left_columns = left_columns,

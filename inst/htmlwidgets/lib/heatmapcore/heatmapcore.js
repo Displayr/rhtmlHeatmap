@@ -177,7 +177,16 @@ function heatmap(selector, data, options) {
   opts.xlabs_mod = [];
   opts.ylabs_raw = [];
   opts.ylabs_mod = [];
-
+  opts.legend_text_len = [];
+  opts.x_is_factor = options.x_is_factor;
+  opts.legend_digits = options.legend_digits;
+  opts.legend_font_size = options.legend_font_size;
+  opts.legend_colors = options.legend_colors;
+  opts.legend_range = options.legend_range;
+  opts.legend_width = options.legend_width;
+  opts.legend_x_padding = 4;
+  opts.legend_bar_width = (options.legend_width - opts.legend_x_padding*2)/2;
+  opts.legend_format = opts.x_is_factor ? null : d3.max(opts.legend_range) > 1 ? d3.format("s") : d3.format(",." + opts.legend_digits + "f");
   // get the number of rows and columns for the GridSizer
 
   (function() {
@@ -284,6 +293,28 @@ function heatmap(selector, data, options) {
 
       dummySvg.remove();
       return output;
+    };
+
+    var compute_legend_text_length = function(input, text_widths) {
+      var dummySvg = inner.append("svg");
+      var dummy_g = dummySvg
+        .append("g")
+        .classed("dummy_g", true);
+
+      var dummy_cols = dummy_g
+        .selectAll(".text")
+        .data(input);
+
+      dummy_cols.enter()
+        .append("text")
+        .text(function(d){return opts.legend_format(d);})
+        .style("font-family", "sans-serif")
+        .style("font-size", opts.legend_font_size)
+        .each(function(d,i) {
+          text_widths[i] = this.getComputedTextLength();
+        });
+
+      dummySvg.remove();
     };
 
     var i = 0, j = 0, x_texts, y_texts;
@@ -418,6 +449,22 @@ function heatmap(selector, data, options) {
           opts.col_element_map["right_col" + i] = right_cols_widths[i];
         }
       }
+    }
+
+    if (opts.legend_colors) {
+      opts.col_element_names.push("legend");
+      for (i = 0;i < opts.legend_range.length; i++) {
+        opts.legend_text_len.push(0);
+      }
+      compute_legend_text_length(opts.legend_range, opts.legend_text_len)
+      opts.col_element_map["legend"] = opts.legend_bar_width + opts.legend_x_padding*2 + d3.max(opts.legend_text_len);
+
+/*      if (d3.max(opts.legend_text_len) > opts.legend_width - opts.legend_bar_width - opts.legend_x_padding*2) {
+        opts.col_element_map["legend"] = opts.legend_width;
+      } else {
+        opts.col_element_map["legend"] = d3.max(opts.legend_text_len) * 2;
+      }
+*/
     }
 
     if (!opts.yaxis_hidden) {
@@ -560,6 +607,8 @@ function heatmap(selector, data, options) {
   var xtitleBounds = !opts.xaxis_title || opts.xaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("xtitle"));
 
   var ytitleBounds = !opts.yaxis_title || opts.yaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("ytitle"), opts.row_element_names.indexOf("*"));
+
+  var legendBounds = !opts.legend_colors ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("legend"), opts.row_element_names.indexOf("*"));
 /*
   var topElBounds = gridSizer.getCellBounds(2, 1);
   var leftElBounds = gridSizer.getCellBounds(1, 2);
@@ -626,6 +675,7 @@ function heatmap(selector, data, options) {
     var colmap = inner.append("svg").classed("colormap", true).style(cssify(colormapBounds));
     var xaxis = opts.xaxis_hidden ? null : inner.append("svg").classed("axis xaxis", true).style(cssify(xaxisBounds));
     var yaxis = opts.yaxis_hidden ? null : inner.append("svg").classed("axis yaxis", true).style(cssify(yaxisBounds));
+    var legend = !opts.legend_colors ? null : inner.append("svg").classed("legend", true).style(cssify(legendBounds));
 
     // Hack the width of the x-axis to allow x-overflow of rotated labels; the
     // QtWebkit viewer won't allow svg elements to overflow:visible.
@@ -675,6 +725,7 @@ function heatmap(selector, data, options) {
   var yax = opts.yaxis_hidden ? null : axisLabels(el.select('svg.yaxis'), opts.ylabs_mod, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding, opts.yaxis_location);
   var xtitle = !opts.xaxis_title || opts.xaxis_hidden ? null : title(el.select('svg.xtitle'), opts.xaxis_title, false, xtitleBounds);
   var ytitle = !opts.yaxis_title || opts.yaxis_hidden ? null : title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds);
+  var legend = !opts.legend_colors ? null : legend(el.select('svg.legend'), opts.legend_colors, opts.legend_range, legendBounds);
 
   function colormap(svg, data, width, height) {
     // Check for no data
@@ -991,6 +1042,59 @@ function heatmap(selector, data, options) {
         return (this.rowIndex === hl.y) || (this.colIndex === hl.x);
       });
     });
+  }
+
+  function legend(svg, colors, range, bounds) {
+    var legendAxisG = svg.append("g");
+    svg = svg.append('g');
+
+    legendRects = svg.selectAll("rect")
+      .data(colors);
+
+    var boundsPaddingX = 4,
+        boundsPaddingY = 20,
+        rectWidth = opts.legend_bar_width,
+        rectHeight = (bounds.height - boundsPaddingY*2)/colors.length;
+
+    legendRects.enter()
+      .append("rect")
+      .attr("width", rectWidth)
+      .attr("height", rectHeight)
+      .attr("transform", function(d,i) {
+        return "translate(" + (boundsPaddingX) + "," + (rectHeight * i + boundsPaddingY) + ")";
+      })
+      .style("fill", function(d){ return d;})
+      .style("stroke", function(d){ return d;})
+      .style("stroke-width", "1px");
+
+    // append axis
+    legendAxisG.attr("transform", "translate(" + (boundsPaddingX + rectWidth) + "," + boundsPaddingY + ")");
+    var legendScale;
+    if (opts.x_is_factor) {
+      legendScale = d3.scale.ordinal().rangeBands([colors.length * rectHeight, 0]);
+    } else {
+      legendScale = d3.scale.linear().range([colors.length * rectHeight, 0]);
+    }
+
+    legendScale.domain(opts.legend_range);
+
+/*    var tickCount, tickVals, step;
+    if (!opts.x_is_factor) {
+      tickCount = 10;
+      step = (opts.legend_range[1]-opts.legend_range[0])/tickCount;
+      tickVals = d3.range(opts.legend_range[0], opts.legend_range[1]+step, step);
+    }
+*/
+    var legendAxis = d3.svg.axis()
+        .scale(legendScale)
+        .orient("right")
+        .tickSize(0)
+        .tickFormat(opts.legend_format);
+
+    legendAxisG.call(legendAxis);
+    legendAxisG.selectAll("text")
+      .style("font-size", opts.legend_font_size + "px")
+      .style("font-family", "sans-serif");
   }
 
 
