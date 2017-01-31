@@ -186,7 +186,7 @@ function heatmap(selector, data, options) {
   opts.legend_width = options.legend_width;
   opts.legend_x_padding = 4;
   opts.legend_bar_width = (options.legend_width - opts.legend_x_padding*2)/2;
-  opts.legend_format = opts.x_is_factor ? null : d3.max(opts.legend_range) > 1 ? d3.format("s") : d3.format(",." + opts.legend_digits + "f");
+  opts.legend_format = opts.x_is_factor ? null : d3.max(opts.legend_range) > 10 ? d3.format("s") : d3.format(",." + opts.legend_digits + "f");
   // get the number of rows and columns for the GridSizer
 
   (function() {

@@ -154,7 +154,6 @@ Heatmap <- function(x,
   lower_triangle = FALSE,
   cells_to_hide = NULL,
 
-
   show_legend = TRUE,
   legend_font_size = 11,
   legend_width = 60,
