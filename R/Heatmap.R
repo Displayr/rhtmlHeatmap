@@ -86,6 +86,11 @@ NULL
 #' @param cexCol positive numbers. If not missing, it will override \code{yaxis_font_size}
 #' and will give it a value cexCol*14
 #'
+#' @param show_legend logical. Defaults to TRUE. However, if \code{scale} is not "none", legend will not be shown.
+#' @param legend_font_size positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).
+#' @param legend_width positive integer. Sets the desired width of the legend bar. Defaults to 60 (pixcels).
+#' @param legend_digits positive integer. Sets the decimal places of the legend texts. Defaults to 1 if the max value of \code{x} is less than 1.0.
+#'
 #' @param labRow character vectors with row labels to use (from top to bottom); default to rownames(x).
 #' @param labCol character vectors with column labels to use (from left to right); default to colnames(x).
 #'
@@ -442,8 +447,7 @@ Heatmap <- function(x,
 
   if (show_legend) {
     if (scale == "column" || scale == "row") {
-      stop("When scale = 'column' or 'row', a global legend does not make sense
-           as each column/row is scaled by their individual maximum")
+      show_legend = FALSE
     }
   }
   if (is.factor(x)) {

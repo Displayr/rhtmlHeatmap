@@ -17,11 +17,14 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   cellnote_scale = FALSE, cellnote_in_cell = NULL,
   show_cellnote_in_cell = FALSE, cell_font_size = 11, tip_font_size = 11,
   extra_tooltip_info = NULL, color_range = NULL, lower_triangle = FALSE,
-  cells_to_hide = NULL, theme = NULL, colors = "RdYlBu", width = NULL,
-  height = NULL, xaxis_hidden = FALSE, xaxis_height = 80,
-  xaxis_font_size = 12, xaxis_title = NULL, xaxis_title_font_size = 14,
+  cells_to_hide = NULL, show_legend = TRUE, legend_font_size = 11,
+  legend_width = 60, legend_digits = 1, theme = NULL, colors = "RdYlBu",
+  width = NULL, height = NULL, xaxis_hidden = FALSE, xaxis_height = 80,
+  xaxis_font_size = 12, xaxis_font_family = "sans-serif",
+  xaxis_title = NULL, xaxis_title_font_size = 14,
   xaxis_location = "bottom", yaxis_hidden = FALSE, yaxis_width = 120,
-  yaxis_font_size = 11, yaxis_location = "right", yaxis_title = NULL,
+  yaxis_font_size = 11, yaxis_font_family = "sans-serif",
+  yaxis_location = "right", yaxis_title = NULL,
   yaxis_title_font_size = 14, brush_color = "#0000FF", show_grid = TRUE,
   anim_duration = 500, ...)
 }
@@ -88,6 +91,14 @@ should cellnote be scaled if x is also scaled?}
 \item{lower_triangle}{A logical value to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.}
 
 \item{cells_to_hide}{A boolean matrix with the same dimension as \code{x} that specifies which cell to hide. Hidden cells will not trigger tooltips and will be transparent in color.}
+
+\item{show_legend}{logical. Defaults to TRUE. However, if \code{scale} is not "none", legend will not be shown.}
+
+\item{legend_font_size}{positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).}
+
+\item{legend_width}{positive integer. Sets the desired width of the legend bar. Defaults to 60 (pixcels).}
+
+\item{legend_digits}{positive integer. Sets the decimal places of the legend texts. Defaults to 1 if the max value of \code{x} is less than 1.0.}
 
 \item{theme}{A custom CSS theme to use. Currently the only valid values are
 \code{""} and \code{"dark"}. \code{"dark"} is primarily intended for
