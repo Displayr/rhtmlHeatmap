@@ -354,6 +354,14 @@ function heatmap(selector, data, options) {
 
     }
 
+    if (opts.legend_colors) {
+      for (i = 0;i < opts.legend_range.length; i++) {
+        opts.legend_text_len.push(0);
+      }
+      compute_legend_text_length(opts.legend_range, opts.legend_text_len);
+      opts.legend_total_width = opts.legend_bar_width + opts.legend_x_padding*2 + d3.max(opts.legend_text_len);
+    }
+
     if (!opts.yaxis_hidden) {
       if (data.rows) {
         opts.yaxis_location = "right";
@@ -377,24 +385,89 @@ function heatmap(selector, data, options) {
       }
 
       opts.col_element_map["yaxis"] = compute_axis_label_dim(opts.ylabs_mod, false);
+
+      if (opts.yaxis_title) {
+        if (opts.yaxis_location === "right") {
+          opts.col_element_names.push("ytitle");
+        } else {
+          opts.col_element_names.unshift("ytitle");
+        }
+        opts.col_element_map["ytitle"] = opts.yaxis_title_font_size * 1.5 + 5;
+      }
+
       if (!opts.xaxis_hidden) {
+
         var x_texts_net = opts.row_element_map["xaxis"];
         var y_width_net = x_texts_net/1.1;
+
         if (opts.yaxis_location === "right") {
-          if (y_width_net > opts.col_element_map["yaxis"]) {
-            opts.col_element_map["yaxis"] = y_width_net;
+          if (opts.legend_colors) {
+            if (y_width_net > opts.col_element_map["yaxis"] + opts.legend_total_width) {
+              opts.col_element_map["yaxis"] = y_width_net - opts.legend_total_width;
+              opts.col_element_names.push("legend");
+              opts.col_element_map["legend"] = opts.legend_total_width;
+            } else {
+              opts.col_element_names.push("legend");
+              opts.col_element_map["legend"] = opts.legend_total_width;
+            }
+          } else {
+            if (y_width_net > opts.col_element_map["yaxis"]) {
+              opts.col_element_map["yaxis"] = y_width_net;
+            }
           }
         } else {
-          opts.col_element_names.push("yaxis_dummy");
-          opts.col_element_map["yaxis_dummy"] = y_width_net/1.1;
+          if (opts.legend_colors) {
+            if (opts.legend_total_width < y_width_net) {
+              opts.col_element_names.push("yaxis_dummy1");
+              opts.col_element_map["yaxis_dummy1"] = (y_width_net - opts.legend_total_width)/2;
+              opts.col_element_names.push("legend");
+              opts.col_element_map["legend"] = opts.legend_total_width;
+              opts.col_element_names.push("yaxis_dummy2");
+              opts.col_element_map["yaxis_dummy2"] = (y_width_net - opts.legend_total_width)/2;
+            } else {
+              opts.col_element_names.push("legend");
+              opts.col_element_map["legend"] = opts.legend_total_width;
+            }
+          } else {
+            opts.col_element_names.push("yaxis_dummy");
+            opts.col_element_map["yaxis_dummy"] = y_width_net;
+          }
+        }
+      } else {
+        if (opts.legend_colors) {
+          opts.col_element_names.push("legend");
+          opts.col_element_map["legend"] = opts.legend_total_width;
         }
       }
-    } else if (!opts.xaxis_hidden) {
-      // keep the space to mitigate the overflow of x axis label
-      var x_texts_net = opts.row_element_map["xaxis"];
-      var y_width_net = x_texts_net/1.1;
-      opts.col_element_names.push("yaxis");
-      opts.col_element_map["yaxis"] = y_width_net;
+    } else {
+
+      if (!opts.xaxis_hidden) {
+        // keep the space to mitigate the overflow of x axis label
+        var x_texts_net = opts.row_element_map["xaxis"];
+        var y_width_net = x_texts_net/1.1;
+
+        if (opts.legend_colors) {
+          if (opts.legend_total_width < y_width_net) {
+            opts.col_element_names.push("yaxis_dummy1");
+            opts.col_element_map["yaxis_dummy1"] = (y_width_net - opts.legend_total_width)/2;
+            opts.col_element_names.push("legend");
+            opts.col_element_map["legend"] = opts.legend_total_width;
+            opts.col_element_names.push("yaxis_dummy2");
+            opts.col_element_map["yaxis_dummy2"] = (y_width_net - opts.legend_total_width)/2;
+          } else {
+            opts.col_element_names.push("legend");
+            opts.col_element_map["legend"] = opts.legend_total_width;
+          }
+        } else {
+          opts.col_element_names.push("yaxis");
+          opts.col_element_map["yaxis"] = y_width_net;
+        }
+      } else {
+        if (opts.legend_colors) {
+          opts.col_element_names.push("legend");
+          opts.col_element_map["legend"] = opts.legend_total_width;
+        }
+      }
     }
 
     // row dendrogram, add one more column
@@ -451,23 +524,12 @@ function heatmap(selector, data, options) {
       }
     }
 
-    if (opts.legend_colors) {
-      opts.col_element_names.push("legend");
-      for (i = 0;i < opts.legend_range.length; i++) {
-        opts.legend_text_len.push(0);
-      }
-      compute_legend_text_length(opts.legend_range, opts.legend_text_len)
-      opts.col_element_map["legend"] = opts.legend_bar_width + opts.legend_x_padding*2 + d3.max(opts.legend_text_len);
+//    if (opts.legend_colors) {
+//      opts.col_element_names.push("legend");
+//      opts.col_element_map["legend"] =
+//    }
 
-/*      if (d3.max(opts.legend_text_len) > opts.legend_width - opts.legend_bar_width - opts.legend_x_padding*2) {
-        opts.col_element_map["legend"] = opts.legend_width;
-      } else {
-        opts.col_element_map["legend"] = d3.max(opts.legend_text_len) * 2;
-      }
-*/
-    }
-
-    if (!opts.yaxis_hidden) {
+/*    if (!opts.yaxis_hidden) {
       if (opts.yaxis_title) {
         if (opts.yaxis_location === "right") {
           opts.col_element_names.push("ytitle");
@@ -477,7 +539,7 @@ function heatmap(selector, data, options) {
         opts.col_element_map["ytitle"] = opts.yaxis_title_font_size * 1.5 + 5;
       }
     }
-
+*/
   })();
 
   /*opts.yclust_width = options.yclust_width || opts.width * 0.12;
@@ -609,6 +671,7 @@ function heatmap(selector, data, options) {
   var ytitleBounds = !opts.yaxis_title || opts.yaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("ytitle"), opts.row_element_names.indexOf("*"));
 
   var legendBounds = !opts.legend_colors ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("legend"), opts.row_element_names.indexOf("*"));
+
 /*
   var topElBounds = gridSizer.getCellBounds(2, 1);
   var leftElBounds = gridSizer.getCellBounds(1, 2);
@@ -965,8 +1028,8 @@ function heatmap(selector, data, options) {
           }
           var label = merged[row*cols + col].label;
           var this_tip = tip.show({col: col, row: row, label: label}).style({
-            top: d3.event.clientY + 15 + "px",
-            left: d3.event.clientX + 15 + "px",
+            top: d3.event.clientY + 10 + "px",
+            left: d3.event.clientX + 10 + "px",
             opacity: 0.9
           });
 
@@ -974,14 +1037,35 @@ function heatmap(selector, data, options) {
           var tipHeight = parseFloat(this_tip.style("height"));
           // width of the tip
           var tipWidth = parseFloat(this_tip.style("width"));
-          var top = d3.event.clientY, left = d3.event.clientX;
+          var mouseTop = d3.event.clientY, mouseLeft = d3.event.clientX;
 
-          if (parseFloat(this_tip.style("left")) + tipWidth > opts.width) {
-            this_tip.style("left", left - tipWidth - 15 + "px");
+          var tipLeft = parseFloat(this_tip.style("left"));
+          var tipTop = parseFloat(this_tip.style("top"));
+
+          if (tipLeft + tipWidth > opts.width) {
+            // right edge out of bound
+            if (mouseLeft - tipWidth - 10 < 0) {
+              // left edge out of bound if adjusted
+              if (Math.abs(mouseLeft - tipWidth - 10) > Math.abs(opts.width - tipLeft - tipWidth )) {
+                this_tip.style("left", tipLeft + "px");
+              } else {
+                this_tip.style("left", mouseLeft - tipWidth - 10 + "px");
+              }
+            } else {
+              this_tip.style("left", mouseLeft - tipWidth - 10 + "px");
+            }
           }
 
-          if (parseFloat(this_tip.style("top")) + tipHeight > opts.height) {
-            this_tip.style("top", top - tipHeight - 15 + "px");
+          if (tipTop + tipHeight > opts.height) {
+            if (mouseTop - tipHeight - 10 < 0) {
+              if (Math.abs(mouseTop - tipHeight - 10) > Math.abs(opts.height - tipTop - tipHeight )) {
+                this_tip.style("top", tipTop + "px");
+              } else {
+                this_tip.style("top", mouseTop - tipHeight - 10 + "px");
+              }
+            } else {
+              this_tip.style("top", mouseTop - tipHeight - 10 + "px");
+            }
           }
 
         })
@@ -1005,8 +1089,8 @@ function heatmap(selector, data, options) {
           }
           var label = merged[row*cols + col].label;
           var this_tip = tip.show({col: col, row: row, label: label}).style({
-            top: d3.event.clientY + 15 + "px",
-            left: d3.event.clientX + 15 + "px",
+            top: d3.event.clientY + 10 + "px",
+            left: d3.event.clientX + 10 + "px",
             opacity: 0.9
           });
 
@@ -1014,20 +1098,35 @@ function heatmap(selector, data, options) {
           var tipHeight = parseFloat(this_tip.style("height"));
           // width of the tip
           var tipWidth = parseFloat(this_tip.style("width"));
-          var top = d3.event.clientY, left = d3.event.clientX;
+          var mouseTop = d3.event.clientY, mouseLeft = d3.event.clientX;
 
-          if (parseFloat(this_tip.style("left")) + tipWidth > opts.width) {
-            this_tip.style("left", left - tipWidth - 15 + "px");
-          }
-          if (parseFloat(this_tip.style("left")) < 0) {
-            this_tip.style("left", left + "px");
+          var tipLeft = parseFloat(this_tip.style("left"));
+          var tipTop = parseFloat(this_tip.style("top"));
+
+          if (tipLeft + tipWidth > opts.width) {
+            // right edge out of bound
+            if (mouseLeft - tipWidth - 10 < 0) {
+              // left edge out of bound if adjusted
+              if (Math.abs(mouseLeft - tipWidth - 10) > Math.abs(opts.width - tipLeft - tipWidth )) {
+                this_tip.style("left", tipLeft + "px");
+              } else {
+                this_tip.style("left", mouseLeft - tipWidth - 10 + "px");
+              }
+            } else {
+              this_tip.style("left", mouseLeft - tipWidth - 10 + "px");
+            }
           }
 
-          if (parseFloat(this_tip.style("top")) + tipHeight > opts.height) {
-            this_tip.style("top", top - tipHeight - 15 + "px");
-          }
-          if (parseFloat(this_tip.style("top")) < 0) {
-            this_tip.style("top", top + "px");
+          if (tipTop + tipHeight > opts.height) {
+            if (mouseTop - tipHeight - 10 < 0) {
+              if (Math.abs(mouseTop - tipHeight - 10) > Math.abs(opts.height - tipTop - tipHeight )) {
+                this_tip.style("top", tipTop + "px");
+              } else {
+                this_tip.style("top", mouseTop - tipHeight - 10 + "px");
+              }
+            } else {
+              this_tip.style("top", mouseTop - tipHeight - 10 + "px");
+            }
           }
 
           controller.datapoint_hover({col:col, row:row, label:label});
