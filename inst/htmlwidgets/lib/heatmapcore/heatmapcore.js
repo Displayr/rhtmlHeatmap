@@ -184,6 +184,7 @@ function heatmap(selector, data, options) {
   opts.legend_colors = options.legend_colors;
   opts.legend_range = options.legend_range;
   opts.legend_width = options.legend_width;
+  opts.legend_left_space = 26;
   opts.legend_x_padding = 4;
   opts.legend_bar_width = (options.legend_width - opts.legend_x_padding*2)/2;
   opts.legend_format = !opts.legend_colors ? null : opts.x_is_factor ? null : d3.max(opts.legend_range) > 10 ? d3.format(",.0f") : d3.format(",." + opts.legend_digits + "f");
@@ -359,7 +360,7 @@ function heatmap(selector, data, options) {
         opts.legend_text_len.push(0);
       }
       compute_legend_text_length(opts.legend_range, opts.legend_text_len);
-      opts.legend_total_width = opts.legend_bar_width + opts.legend_x_padding*2 + d3.max(opts.legend_text_len);
+      opts.legend_total_width = opts.legend_left_space + opts.legend_bar_width + opts.legend_x_padding*2 + d3.max(opts.legend_text_len);
     }
 
     if (!opts.yaxis_hidden) {
@@ -1150,7 +1151,7 @@ function heatmap(selector, data, options) {
     legendRects = svg.selectAll("rect")
       .data(colors);
 
-    var boundsPaddingX = 4,
+    var boundsPaddingX = 4 + opts.legend_left_space,
         boundsPaddingY = 20,
         rectWidth = opts.legend_bar_width,
         rectHeight = (bounds.height - boundsPaddingY*2)/colors.length;
