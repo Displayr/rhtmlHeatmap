@@ -456,6 +456,10 @@ function heatmap(selector, data, options) {
       opts.row_element_map["xaxis"] = compute_axis_label_dim(opts.xlabs_mod, true);
     }
 
+    if (data.cols) {
+      opts.row_element_names.unshift("col_dendro");
+    }
+
     if (options.title) {
       opts.row_element_names.unshift("title");
       opts.row_element_map["title"] = compute_title_footer_height(options.title, true) + opts.title_margin * 2;
@@ -590,7 +594,6 @@ function heatmap(selector, data, options) {
 
     // column dendrogram, add one more row
     if (data.cols) {
-      opts.row_element_names.unshift("col_dendro");
       opts.row_element_map["col_dendro"] = options.xclust_height || opts.height * 0.12;
     }
 
