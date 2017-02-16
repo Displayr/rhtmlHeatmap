@@ -849,6 +849,33 @@ function heatmap(selector, data, options) {
   //var yaxisBounds = gridSizer.getCellBounds(2, 1);
   //var xaxisBounds = gridSizer.getCellBounds(1, 2);
 
+  var modifiedXbounds = opts.xaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("xaxis"));
+
+  if (!opts.xaxis_hidden) {
+      var overflow_width = 0;
+      if (!opts.yaxis_hidden) {
+        if (opts.yaxis_location === "right") {
+          overflow_width = yaxisBounds.width;
+        } else {
+          overflow_width = xaxisBounds.height/1.1;
+        }
+      } else {
+        overflow_width = xaxisBounds.height/1.1;
+      }
+      if (opts.legend_colors) {
+        overflow_width = overflow_width - legendBounds.width;
+      }
+      if (overflow_width < 0) {
+        overflow_width = 0;
+      }
+      if (data.rows) {
+        opts.yclust_width = options.yclust_width || opts.width * 0.12;
+      } else {
+        opts.yclust_width = 0;
+      }
+      modifiedXbounds.width = opts.width - opts.yclust_width - overflow_width;
+  }
+
   function cssify(styles) {
     return {
       position: "absolute",
@@ -868,43 +895,11 @@ function heatmap(selector, data, options) {
     var colDend = !data.cols ? null : inner.append("svg").classed("dendrogram colDend", true).style(cssify(colDendBounds));
     var rowDend = !data.rows ? null : inner.append("svg").classed("dendrogram rowDend", true).style(cssify(rowDendBounds));
     var colmap = inner.append("svg").classed("colormap", true).style(cssify(colormapBounds));
-    var xaxis = opts.xaxis_hidden ? null : inner.append("svg").classed("axis xaxis", true).style(cssify(xaxisBounds));
+    var xaxis = opts.xaxis_hidden ? null : inner.append("svg").classed("axis xaxis", true).style(cssify(modifiedXbounds));
     var yaxis = opts.yaxis_hidden ? null : inner.append("svg").classed("axis yaxis", true).style(cssify(yaxisBounds));
     var legend = !opts.legend_colors ? null : inner.append("svg").classed("legend", true).style(cssify(legendBounds));
     var title = !options.title ? null : inner.append("svg").classed("graph_title", true).style(cssify(titleBounds));
     var footer = !options.footer ? null : inner.append("svg").classed("graph_footer", true).style(cssify(footerBounds));
-
-    // Hack the width of the x-axis to allow x-overflow of rotated labels; the
-    // QtWebkit viewer won't allow svg elements to overflow:visible.
-    if (!opts.xaxis_hidden) {
-      var overflow_width = 0;
-      if (!opts.yaxis_hidden) {
-        if (opts.yaxis_location === "right") {
-          overflow_width = yaxisBounds.width;
-        } else {
-          overflow_width = xaxisBounds.height/1.1;
-        }
-      } else {
-        overflow_width = xaxisBounds.height/1.1;
-      }
-      if (data.rows) {
-        opts.yclust_width = options.yclust_width || opts.width * 0.12;
-      } else {
-        opts.yclust_width = 0;
-      }
-      xaxis.style("width", (opts.width - opts.yclust_width) + "px");
-      xaxis
-        .append("defs")
-          .append("clipPath").attr("id", "xaxis-clip")
-            .append("polygon")
-              .attr("points", "" + [
-                [0, 0],
-                [xaxisBounds.width, 0],
-                [xaxisBounds.width + overflow_width, xaxisBounds.height],
-                [0, xaxisBounds.height]
-              ]);
-      xaxis.node(0).setAttribute("clip-path", "url(#xaxis-clip)");
-    }
 
     inner.on("click", function() {
       controller.highlight(null, null);
