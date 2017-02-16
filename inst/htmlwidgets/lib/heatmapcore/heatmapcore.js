@@ -852,28 +852,12 @@ function heatmap(selector, data, options) {
   var modifiedXbounds = opts.xaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("xaxis"));
 
   if (!opts.xaxis_hidden) {
-      var overflow_width = 0;
-      if (!opts.yaxis_hidden) {
-        if (opts.yaxis_location === "right") {
-          overflow_width = yaxisBounds.width;
-        } else {
-          overflow_width = xaxisBounds.height/1.1;
-        }
-      } else {
-        overflow_width = xaxisBounds.height/1.1;
-      }
-      if (opts.legend_colors) {
-        overflow_width = overflow_width - legendBounds.width;
-      }
-      if (overflow_width < 0) {
-        overflow_width = 0;
-      }
       if (data.rows) {
         opts.yclust_width = options.yclust_width || opts.width * 0.12;
       } else {
         opts.yclust_width = 0;
       }
-      modifiedXbounds.width = opts.width - opts.yclust_width - overflow_width;
+      modifiedXbounds.width = opts.width - opts.yclust_width;
   }
 
   function cssify(styles) {
