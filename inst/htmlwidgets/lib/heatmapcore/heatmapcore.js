@@ -858,6 +858,7 @@ function heatmap(selector, data, options) {
         opts.yclust_width = 0;
       }
       modifiedXbounds.width = opts.width - opts.yclust_width;
+      modifiedXbounds.left = 0;
   }
 
   function cssify(styles) {
@@ -1381,9 +1382,9 @@ function heatmap(selector, data, options) {
         .attr("transform", function() {
           if (rotated) {
             if (axis_location === "bottom") {
-              return "translate(0," + padding + ")";
+              return "translate(" + xaxisBounds.left + "," + padding + ")";
             } else if (axis_location === "top") {
-              return "translate(0," + (xaxisBounds.height - padding) + ")";
+              return "translate(" + xaxisBounds.left + "," + (xaxisBounds.height - padding) + ")";
             }
           } else {
             if (axis_location === "right") {
@@ -1425,7 +1426,7 @@ function heatmap(selector, data, options) {
       var _w = rotated ? height * 1.414 * 1.2 : width;
       selection
           .attr("transform", function(d, i) {
-            var x = rotated ? (axis_location === "bottom" ? scale(i) + scale.rangeBand()/2 : scale(i)) : 0;
+            var x = rotated ? (axis_location === "bottom" ? scale(i) + scale.rangeBand()/2 + xaxisBounds.left : scale(i) + xaxisBounds.left) : 0;
             var y = rotated ? (axis_location === "bottom" ? padding + 6 : height - _h/1.414 - padding - 6): scale(i);
             return "translate(" + x + "," + y + ")";
           })
