@@ -787,11 +787,16 @@ function heatmap(selector, data, options) {
   var titleBounds = !options.title ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("title"));
 
   var footerBounds = !options.footer ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("footer"));
+  if (options.title) {
+    titleBounds.width = opts.width;
+    titleBounds.left = 0;
+  }
+  if (options.footer) {
+    footerBounds.width = opts.width;
+    footerBounds.left = 0;
+  }
 
-  titleBounds.width = opts.width;
-  titleBounds.left = 0;
-  footerBounds.width = opts.width;
-  footerBounds.left = 0;
+
 
 /*
   var topElBounds = gridSizer.getCellBounds(2, 1);
