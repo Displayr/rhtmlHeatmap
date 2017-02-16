@@ -94,6 +94,16 @@ NULL
 #' @param labRow character vectors with row labels to use (from top to bottom); default to rownames(x).
 #' @param labCol character vectors with column labels to use (from left to right); default to colnames(x).
 #'
+#' @param title character. Sets the title of the chart, defaults to NULL. The title is centred.
+#' @param title_font_size integer. Font size of the chart title, defaults to 16 pixcels.
+#' @param title_font_family character. Font family of the chart title, defaults to "sans-serif".
+#' @param title_font_color An RGB character to set the color of the chart title. Defaults to "#000000".
+#' @param title_width numeric. Sets the percentage of the widget width that can be used by the title. Must be within [0,100], and defaults to 100.
+#' @param footer character. Sets the footer of the chart, defaults to NULL. The footer is left-aligned.
+#' @param footer_font_size integer. Font size of the chart footer_font_size, defaults to 9 pixcels.
+#' @param footer_font_family character. Font family of the chart footer_font_family, defaults to "sans-serif".
+#' @param footer_font_color An RGB character to set the color of the chart footer_font_color. Defaults to "#000000".
+#' @param footer_width numeric. Sets the percentage of the widget width that can be used by the footer_width. Must be within [0,100], and defaults to 100.
 #' @param ... currently ignored
 #'
 #' @import htmlwidgets
@@ -163,6 +173,18 @@ Heatmap <- function(x,
   theme = NULL,
   colors = "RdYlBu",
   width = NULL, height = NULL,
+
+  title = NULL,
+  title_font_size = 16,
+  title_font_family = "sans-serif",
+  title_font_color = "#000000",
+  title_width = 100,
+
+  footer = NULL,
+  footer_font_size = 9,
+  footer_font_family = "sans-serif",
+  footer_font_color = "#000000",
+  footer_width = 100,
 
   xaxis_hidden = FALSE,
   xaxis_height = 80,
@@ -533,6 +555,16 @@ Heatmap <- function(x,
       yaxis_title_font_size = yaxis_title_font_size,
       xaxis_hidden = xaxis_hidden,
       yaxis_hidden = yaxis_hidden,
+      title = title,
+      title_font_size = title_font_size,
+      title_font_family = title_font_family,
+      title_font_color = title_font_color,
+      title_width = title_width,
+      footer = footer,
+      footer_font_size = footer_font_size,
+      footer_font_family = footer_font_family,
+      footer_font_color = footer_font_color,
+      footer_width = footer_width,
       tip_font_size = tip_font_size,
       brush_color = brush_color,
       show_grid = show_grid,

@@ -80,6 +80,82 @@ function heatmap(selector, data, options) {
     }
   }
 
+  function wrap_new(text, width) {
+    var separators = {"-": 1, " ": 1};
+    var lineNumbers = [];
+    text.each(function() {
+        var text = d3.select(this),
+            chars = text.text().split("").reverse(),
+            c,
+            nextchar,
+            sep,
+            newline = [];
+            lineTemp = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dy = parseFloat(text.attr("dy")),
+            tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+        while (c = chars.pop()) {
+            // remove leading space
+            if (lineTemp.length === 0 && c === " ") {
+              continue;
+            }
+            lineTemp.push(c);
+            tspan.text(lineTemp.join(""));
+            if (tspan.node().getComputedTextLength() > width) {
+
+            // if no separator detected before c, wait until there is one
+            // otherwise, wrap texts
+              if (sep === undefined) {
+                if (c in separators) {
+                  if (c === " ") {
+                    lineTemp.pop();
+                  }
+                  // make new line
+                  sep = undefined;
+                  tspan.text(lineTemp.join(""));
+                  tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text("");
+                  lineTemp = [];
+                  newline = [];
+                }
+              } else {
+                // pop out chars until reaching sep
+                if (c in separators) {
+                  newline.push(lineTemp.pop());
+                }
+                nextchar = lineTemp.pop();
+                while (nextchar !== sep && lineTemp.length > 0) {
+                  newline.push(nextchar);
+                  nextchar = lineTemp.pop();
+                }
+                newline.reverse();
+                while (nextchar = newline.pop()) {
+                  chars.push(nextchar);
+                }
+
+                if (sep !== " ") {
+                  lineTemp.push(sep);
+                }
+                // make new line
+                sep = undefined;
+                tspan.text(lineTemp.join(""));
+                tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text("");
+                lineTemp = [];
+                newline = [];
+              }
+            } else {
+                if (c in separators) {
+                  sep = c;
+                }
+            }
+        }
+        lineNumbers.push(lineNumber + 1);
+    });
+  }
+
+
   // ==== END HELPERS ===================================
 
 
@@ -188,6 +264,11 @@ function heatmap(selector, data, options) {
   opts.legend_x_padding = 4;
   opts.legend_bar_width = (options.legend_width - opts.legend_x_padding*2)/2;
   opts.legend_format = !opts.legend_colors ? null : opts.x_is_factor ? null : d3.max(opts.legend_range) > 10 ? d3.format(",.0f") : d3.format(",." + opts.legend_digits + "f");
+
+  opts.title_width = options.title_width / 100.0 * opts.width;
+  opts.title_margin = options.title_font_size / 2;
+  opts.footer_width = options.footer_width / 100.0 * opts.width;
+  opts.footer_margin = options.footer_font_size / 2;
   // get the number of rows and columns for the GridSizer
 
   (function() {
@@ -318,6 +399,27 @@ function heatmap(selector, data, options) {
       dummySvg.remove();
     };
 
+    var compute_title_footer_height = function(input, is_title) {
+      var dummySvg = inner.append("svg");
+      var dummy_g = dummySvg
+        .append("g")
+        .classed("dummy_g", true);
+
+      var text_el = dummy_g.append("text")
+        .text(input)
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("dy", 0)
+        .style("font-family", is_title ? options.title_font_family : options.footer_font_family)
+        .style("font-size", is_title ? options.title_font_size : options.footer_font_size)
+        .style("fill", is_title ? options.title_font_color : options.footer_font_color)
+        .call(wrap_new, is_title ? opts.title_width : opts.footer_width);
+
+      var output = text_el.node().getBBox().height;
+      dummySvg.remove();
+      return output;
+    };
+
     var i = 0, j = 0, x_texts, y_texts;
     // deal with x axis and its title
     if (!opts.xaxis_hidden) {
@@ -352,7 +454,16 @@ function heatmap(selector, data, options) {
       }
 
       opts.row_element_map["xaxis"] = compute_axis_label_dim(opts.xlabs_mod, true);
+    }
 
+    if (options.title) {
+      opts.row_element_names.unshift("title");
+      opts.row_element_map["title"] = compute_title_footer_height(options.title, true) + opts.title_margin * 2;
+    }
+
+    if (options.footer) {
+      opts.row_element_names.push("footer");
+      opts.row_element_map["footer"] = compute_title_footer_height(options.footer, false) + opts.footer_margin * 2;
     }
 
     if (opts.legend_colors) {
@@ -673,6 +784,15 @@ function heatmap(selector, data, options) {
 
   var legendBounds = !opts.legend_colors ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("legend"), opts.row_element_names.indexOf("*"));
 
+  var titleBounds = !options.title ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("title"));
+
+  var footerBounds = !options.footer ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("footer"));
+
+  titleBounds.width = opts.width;
+  titleBounds.left = 0;
+  footerBounds.width = opts.width;
+  footerBounds.left = 0;
+
 /*
   var topElBounds = gridSizer.getCellBounds(2, 1);
   var leftElBounds = gridSizer.getCellBounds(1, 2);
@@ -740,6 +860,8 @@ function heatmap(selector, data, options) {
     var xaxis = opts.xaxis_hidden ? null : inner.append("svg").classed("axis xaxis", true).style(cssify(xaxisBounds));
     var yaxis = opts.yaxis_hidden ? null : inner.append("svg").classed("axis yaxis", true).style(cssify(yaxisBounds));
     var legend = !opts.legend_colors ? null : inner.append("svg").classed("legend", true).style(cssify(legendBounds));
+    var title = !options.title ? null : inner.append("svg").classed("graph_title", true).style(cssify(titleBounds));
+    var footer = !options.footer ? null : inner.append("svg").classed("graph_footer", true).style(cssify(footerBounds));
 
     // Hack the width of the x-axis to allow x-overflow of rotated labels; the
     // QtWebkit viewer won't allow svg elements to overflow:visible.
@@ -787,9 +909,11 @@ function heatmap(selector, data, options) {
   var colormap = colormap(el.select('svg.colormap'), data.matrix, colormapBounds.width, colormapBounds.height);
   var xax = opts.xaxis_hidden ? null : axisLabels(el.select('svg.xaxis'), opts.xlabs_mod, true, xaxisBounds.width, xaxisBounds.height, opts.axis_padding, opts.xaxis_location);
   var yax = opts.yaxis_hidden ? null : axisLabels(el.select('svg.yaxis'), opts.ylabs_mod, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding, opts.yaxis_location);
-  var xtitle = !opts.xaxis_title || opts.xaxis_hidden ? null : title(el.select('svg.xtitle'), opts.xaxis_title, false, xtitleBounds);
-  var ytitle = !opts.yaxis_title || opts.yaxis_hidden ? null : title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds);
+  var xtitle = !opts.xaxis_title || opts.xaxis_hidden ? null : axis_title(el.select('svg.xtitle'), opts.xaxis_title, false, xtitleBounds);
+  var ytitle = !opts.yaxis_title || opts.yaxis_hidden ? null : axis_title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds);
   var legend = !opts.legend_colors ? null : legend(el.select('svg.legend'), opts.legend_colors, opts.legend_range, legendBounds);
+  var graph_title = !options.title ? null : title_footer(el.select('svg.graph_title'), options.title, titleBounds, true);
+  var graph_footer = !options.footer ? null : title_footer(el.select('svg.graph_footer'), options.footer, footerBounds, false);
 
   function colormap(svg, data, width, height) {
     // Check for no data
@@ -1197,8 +1321,28 @@ function heatmap(selector, data, options) {
       .style("font-family", "sans-serif");
   }
 
+  function title_footer(svg, data, bounds, is_title) {
+    svg = svg.append('g');
+    this_text = svg.append("text")
+      .text(data)
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("dy", 0)
+      .style("font-family", is_title ? options.title_font_family : options.footer_font_family)
+      .style("font-size", is_title ? options.title_font_size : options.footer_font_size)
+      .style("fill", is_title ? options.title_font_color : options.footer_font_color)
+      .call(wrap_new, is_title ? opts.title_width : opts.footer_width)
+      .style("text-anchor", is_title ? "middle" : "start")
+      .attr("font-weight", "normal");
 
-  function title(svg, data, rotated, bounds) {
+    var transX = is_title ? opts.width / 2 : 0;
+    var transY = is_title ? options.title_font_size*1.5 : options.footer_font_size*1.5;
+    this_text.attr("transform", "translate(" + transX + "," + transY + ")");
+
+  }
+
+
+  function axis_title(svg, data, rotated, bounds) {
 
     // rotated is y, unrotated is x
 

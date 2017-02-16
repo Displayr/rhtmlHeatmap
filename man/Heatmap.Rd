@@ -19,7 +19,11 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   extra_tooltip_info = NULL, color_range = NULL, lower_triangle = FALSE,
   cells_to_hide = NULL, show_legend = TRUE, legend_font_size = 11,
   legend_width = 60, legend_digits = 1, theme = NULL, colors = "RdYlBu",
-  width = NULL, height = NULL, xaxis_hidden = FALSE, xaxis_height = 80,
+  width = NULL, height = NULL, title = NULL, title_font_size = 16,
+  title_font_family = "sans-serif", title_font_color = "#333333",
+  title_width = 100, footer = NULL, footer_font_size = 9,
+  footer_font_family = "sans-serif", footer_font_color = "#333333",
+  footer_width = 100, xaxis_hidden = FALSE, xaxis_height = 80,
   xaxis_font_size = 12, xaxis_font_family = "sans-serif",
   xaxis_title = NULL, xaxis_title_font_size = 14,
   xaxis_location = "bottom", yaxis_hidden = FALSE, yaxis_width = 120,
@@ -112,6 +116,26 @@ standalone visualizations, not R Markdown or Shiny.}
 \item{width}{Width in pixels (optional, defaults to automatic sizing).}
 
 \item{height}{Height in pixels (optional, defaults to automatic sizing).}
+
+\item{title}{character. Sets the title of the chart, defaults to NULL. The title is centred.}
+
+\item{title_font_size}{integer. Font size of the chart title, defaults to 16 pixcels.}
+
+\item{title_font_family}{character. Font family of the chart title, defaults to "sans-serif".}
+
+\item{title_font_color}{An RGB character to set the color of the chart title. Defaults to "#333333".}
+
+\item{title_width}{numeric. Sets the percentage of the widget width that can be used by the title. Must be within [0,100], and defaults to 100.}
+
+\item{footer}{character. Sets the footer of the chart, defaults to NULL. The footer is left-aligned.}
+
+\item{footer_font_size}{integer. Font size of the chart footer_font_size, defaults to 9 pixcels.}
+
+\item{footer_font_family}{character. Font family of the chart footer_font_family, defaults to "sans-serif".}
+
+\item{footer_font_color}{An RGB character to set the color of the chart footer_font_color. Defaults to "#333333".}
+
+\item{footer_width}{numeric. Sets the percentage of the widget width that can be used by the footer_width. Must be within [0,100], and defaults to 100.}
 
 \item{xaxis_hidden}{Boolean variable to hide x axis. Defaults to FALSE.}
 
