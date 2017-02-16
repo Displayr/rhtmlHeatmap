@@ -265,10 +265,13 @@ function heatmap(selector, data, options) {
   opts.legend_bar_width = (options.legend_width - opts.legend_x_padding*2)/2;
   opts.legend_format = !opts.legend_colors ? null : opts.x_is_factor ? null : d3.max(opts.legend_range) > 10 ? d3.format(",.0f") : d3.format(",." + opts.legend_digits + "f");
 
-  opts.title_width = options.title_width / 100.0 * opts.width;
-  opts.title_margin = options.title_font_size / 2;
-  opts.footer_width = options.footer_width / 100.0 * opts.width;
-  opts.footer_margin = options.footer_font_size / 2;
+  opts.title_margin_X = 10;
+  opts.title_margin_Y = options.title_font_size / 2;
+  opts.title_width = opts.width - opts.title_margin_X * 2;
+
+  opts.footer_margin_X = 10;
+  opts.footer_margin_Y = options.footer_font_size / 2;
+  opts.footer_width = opts.width - opts.footer_margin_X * 2;
   // get the number of rows and columns for the GridSizer
 
   (function() {
@@ -462,12 +465,12 @@ function heatmap(selector, data, options) {
 
     if (options.title) {
       opts.row_element_names.unshift("title");
-      opts.row_element_map["title"] = compute_title_footer_height(options.title, true) + opts.title_margin * 2;
+      opts.row_element_map["title"] = compute_title_footer_height(options.title, true) + opts.title_margin_Y * 2;
     }
 
     if (options.footer) {
       opts.row_element_names.push("footer");
-      opts.row_element_map["footer"] = compute_title_footer_height(options.footer, false) + opts.footer_margin * 2;
+      opts.row_element_map["footer"] = compute_title_footer_height(options.footer, false) + opts.footer_margin_Y * 2;
     }
 
     if (opts.legend_colors) {
@@ -1343,7 +1346,7 @@ function heatmap(selector, data, options) {
       .style("text-anchor", is_title ? "middle" : "start")
       .attr("font-weight", "normal");
 
-    var transX = is_title ? opts.width / 2 : 0;
+    var transX = is_title ? opts.width / 2 : opts.footer_margin_X;
     var transY = is_title ? options.title_font_size*1.5 : options.footer_font_size*1.5;
     this_text.attr("transform", "translate(" + transX + "," + transY + ")");
 
