@@ -298,7 +298,7 @@ function heatmap(selector, data, options) {
       dummy_cols_each.enter()
         .append("text")
         .text(function(d){return d;})
-        .style("font-family", "sans-serif")
+        .style("font-family", options.yaxis_font_family)
         .style("font-size", left_or_right ? opts.left_columns_font_size : opts.right_columns_font_size)
         .each(function(d,i) {
           var parent_index = this.parentNode.attr("data-index");
@@ -321,7 +321,8 @@ function heatmap(selector, data, options) {
       texts.enter()
         .append("text")
         .text(function(d) { return d;})
-        .style("font-size", x_or_y ? opts.xaxis_font_size : opts.yaxis_font_size);
+        .style("font-size", x_or_y ? opts.xaxis_font_size : opts.yaxis_font_size)
+        .style("font-family", x_or_y ? options.xaxis_font_family : options.yaxis_font_family);
 
       var text_length = 0, text_lengths = [], text_hash = {};
 
@@ -1399,7 +1400,9 @@ function heatmap(selector, data, options) {
     var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size'] + "px";
     //var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size']
     //    || Math.min(18, Math.max(9, scale.rangeBand() - (rotated ? 11: 8))) + "px";
-    axisNodes.selectAll("text").style("font-size", fontSize);
+    axisNodes.selectAll("text")
+      .style("font-size", fontSize)
+      .style("font-family", rotated ? options.xaxis_font_family : options.yaxis_font_family);
 
     var mouseTargets = svg.append("g")
       .selectAll("g").data(leaves);
