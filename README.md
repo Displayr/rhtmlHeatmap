@@ -1,7 +1,7 @@
 An improved heatmap package based on d3heatmap.
 
-# Features
-
+Features
+-------
 This heatmap package contains a number of features that improves on d3heatmap.
 Some examples are shown in the examples folder.
 
