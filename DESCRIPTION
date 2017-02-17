@@ -1,12 +1,12 @@
 Package: rhtmlHeatmap
 Type: Package
-Title: What the Package Does (Title Case)
+Title: An improved heatmap package based on d3heatmap
 Version: 0.1
 Date: 2016-09-02
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Author: Xiaoting Wang (Michael)
+Maintainer: michael.wang@displayr.com
 Description: More about what it does (maybe more than one line)
-License: What license is it under?
+License: MIT
 LazyData: TRUE
 Imports:
     png
