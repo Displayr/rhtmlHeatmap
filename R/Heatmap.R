@@ -95,11 +95,15 @@ NULL
 #' @param labCol character vectors with column labels to use (from left to right); default to colnames(x).
 #'
 #' @param title character. Sets the title of the chart, defaults to NULL. The title is centred.
-#' @param title_font_size integer. Font size of the chart title, defaults to 16 pixcels.
+#' @param title_font_size integer. Font size of the chart title, defaults to 24 pixcels.
 #' @param title_font_family character. Font family of the chart title, defaults to "sans-serif".
 #' @param title_font_color An RGB character to set the color of the chart title. Defaults to "#000000".
+#' @param subtitle character. Sets the subtitle of the chart, defaults to NULL. The subtitle is centred.
+#' @param subtitle_font_size integer. Font size of the chart subtitle, defaults to 18 pixcels.
+#' @param subtitle_font_family character. Font family of the chart subtitle, defaults to "sans-serif".
+#' @param subtitle_font_color An RGB character to set the color of the chart subtitle. Defaults to "#000000".
 #' @param footer character. Sets the footer of the chart, defaults to NULL. The footer is left-aligned.
-#' @param footer_font_size integer. Font size of the chart footer_font_size, defaults to 9 pixcels.
+#' @param footer_font_size integer. Font size of the chart footer_font_size, defaults to 11 pixcels.
 #' @param footer_font_family character. Font family of the chart footer_font_family, defaults to "sans-serif".
 #' @param footer_font_color An RGB character to set the color of the chart footer_font_color. Defaults to "#000000".
 #' @param ... currently ignored

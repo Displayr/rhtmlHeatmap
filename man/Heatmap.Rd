@@ -21,6 +21,8 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   legend_width = 60, legend_digits = 1, theme = NULL, colors = "RdYlBu",
   width = NULL, height = NULL, title = NULL, title_font_size = 24,
   title_font_family = "sans-serif", title_font_color = "#000000",
+  subtitle = NULL, subtitle_font_size = 18,
+  subtitle_font_family = "sans-serif", subtitle_font_color = "#000000",
   footer = NULL, footer_font_size = 11, footer_font_family = "sans-serif",
   footer_font_color = "#000000", xaxis_hidden = FALSE, xaxis_height = 80,
   xaxis_font_size = 12, xaxis_font_family = "sans-serif",
@@ -118,15 +120,23 @@ standalone visualizations, not R Markdown or Shiny.}
 
 \item{title}{character. Sets the title of the chart, defaults to NULL. The title is centred.}
 
-\item{title_font_size}{integer. Font size of the chart title, defaults to 16 pixcels.}
+\item{title_font_size}{integer. Font size of the chart title, defaults to 24 pixcels.}
 
 \item{title_font_family}{character. Font family of the chart title, defaults to "sans-serif".}
 
 \item{title_font_color}{An RGB character to set the color of the chart title. Defaults to "#000000".}
 
+\item{subtitle}{character. Sets the subtitle of the chart, defaults to NULL. The subtitle is centred.}
+
+\item{subtitle_font_size}{integer. Font size of the chart subtitle, defaults to 18 pixcels.}
+
+\item{subtitle_font_family}{character. Font family of the chart subtitle, defaults to "sans-serif".}
+
+\item{subtitle_font_color}{An RGB character to set the color of the chart subtitle. Defaults to "#000000".}
+
 \item{footer}{character. Sets the footer of the chart, defaults to NULL. The footer is left-aligned.}
 
-\item{footer_font_size}{integer. Font size of the chart footer_font_size, defaults to 9 pixcels.}
+\item{footer_font_size}{integer. Font size of the chart footer_font_size, defaults to 11 pixcels.}
 
 \item{footer_font_family}{character. Font family of the chart footer_font_family, defaults to "sans-serif".}
 
