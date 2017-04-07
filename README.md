@@ -14,4 +14,4 @@ Some examples are shown in the examples folder.
 
 License
 -------
-MIT + file LICENSE © [Displayr](https://www.displayr.com)
+GPL-3
