@@ -266,11 +266,17 @@ function heatmap(selector, data, options) {
   opts.legend_format = !opts.legend_colors ? null : opts.x_is_factor ? null : d3.max(opts.legend_range) > 10 ? d3.format(",.0f") : d3.format(",." + opts.legend_digits + "f");
 
   opts.title_margin_X = 10;
-  opts.title_margin_Y = options.title_font_size / 2;
+  opts.title_margin_top = 5;
+  opts.title_margin_bottom = options.subtitle ? 5 : 10;
   opts.title_width = opts.width - opts.title_margin_X * 2;
 
+  opts.subtitle_margin_X = 10;
+  opts.subtitle_margin_top = options.title ? 0 : 5;
+  opts.subtitle_margin_bottom = 10;
+  opts.subtitle_width = opts.width - opts.subtitle_margin_X * 2;
+
   opts.footer_margin_X = 10;
-  opts.footer_margin_Y = options.footer_font_size / 2;
+  opts.footer_margin_Y = 5;
   opts.footer_width = opts.width - opts.footer_margin_X * 2;
   // get the number of rows and columns for the GridSizer
 
@@ -403,7 +409,7 @@ function heatmap(selector, data, options) {
       dummySvg.remove();
     };
 
-    var compute_title_footer_height = function(input, is_title) {
+    var compute_title_footer_height = function(input, fontFam, fontSize, fontCol, wrapWidth) {
       var dummySvg = inner.append("svg");
       var dummy_g = dummySvg
         .append("g")
@@ -414,10 +420,10 @@ function heatmap(selector, data, options) {
         .attr("x", 0)
         .attr("y", 0)
         .attr("dy", 0)
-        .style("font-family", is_title ? options.title_font_family : options.footer_font_family)
-        .style("font-size", is_title ? options.title_font_size : options.footer_font_size)
-        .style("fill", is_title ? options.title_font_color : options.footer_font_color)
-        .call(wrap_new, is_title ? opts.title_width : opts.footer_width);
+        .style("font-family", fontFam)
+        .style("font-size", fontSize)
+        .style("fill", fontCol)
+        .call(wrap_new, wrapWidth);
 
       var output = text_el.node().getBBox().height;
       dummySvg.remove();
@@ -464,14 +470,37 @@ function heatmap(selector, data, options) {
       opts.row_element_names.unshift("col_dendro");
     }
 
+    if (options.subtitle) {
+      opts.row_element_names.unshift("subtitle");
+      opts.row_element_map["subtitle"] =
+        compute_title_footer_height(
+          options.subtitle,
+          options.subtitle_font_family,
+          options.subtitle_font_size,
+          options.subtitle_font_color,
+          opts.subtitle_width) + opts.subtitle_margin_top + opts.subtitle_margin_bottom;
+    }
+
     if (options.title) {
       opts.row_element_names.unshift("title");
-      opts.row_element_map["title"] = compute_title_footer_height(options.title, true) + opts.title_margin_Y * 2;
+      opts.row_element_map["title"] =
+        compute_title_footer_height(
+          options.title,
+          options.title_font_family,
+          options.title_font_size,
+          options.title_font_color,
+          opts.title_width) + opts.title_margin_top + opts.title_margin_bottom;
     }
 
     if (options.footer) {
       opts.row_element_names.push("footer");
-      opts.row_element_map["footer"] = compute_title_footer_height(options.footer, false) + opts.footer_margin_Y * 2;
+      opts.row_element_map["footer"] =
+        compute_title_footer_height(
+          options.footer,
+          options.footer_font_family,
+          options.footer_font_size,
+          options.footer_font_color,
+          opts.footer_width) + opts.footer_margin_Y * 2;
     }
 
     if (opts.legend_colors) {
@@ -793,11 +822,20 @@ function heatmap(selector, data, options) {
 
   var titleBounds = !options.title ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("title"));
 
+  var subtitleBounds = !options.subtitle ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("subtitle"));
+
   var footerBounds = !options.footer ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("footer"));
+
   if (options.title) {
     titleBounds.width = opts.width;
     titleBounds.left = 0;
   }
+
+  if (options.subtitle) {
+    subtitleBounds.width = opts.width;
+    subtitleBounds.left = 0;
+  }
+
   if (options.footer) {
     footerBounds.width = opts.width;
     footerBounds.left = 0;
@@ -885,6 +923,7 @@ function heatmap(selector, data, options) {
     var yaxis = opts.yaxis_hidden ? null : inner.append("svg").classed("axis yaxis", true).style(cssify(yaxisBounds));
     var legend = !opts.legend_colors ? null : inner.append("svg").classed("legend", true).style(cssify(legendBounds));
     var title = !options.title ? null : inner.append("svg").classed("graph_title", true).style(cssify(titleBounds));
+    var subtitle = !options.subtitle ? null : inner.append("svg").classed("graph_subtitle", true).style(cssify(subtitleBounds));
     var footer = !options.footer ? null : inner.append("svg").classed("graph_footer", true).style(cssify(footerBounds));
 
     inner.on("click", function() {
@@ -904,8 +943,39 @@ function heatmap(selector, data, options) {
   var xtitle = !opts.xaxis_title || opts.xaxis_hidden ? null : axis_title(el.select('svg.xtitle'), opts.xaxis_title, false, xtitleBounds);
   var ytitle = !opts.yaxis_title || opts.yaxis_hidden ? null : axis_title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds);
   var legend = !opts.legend_colors ? null : legend(el.select('svg.legend'), opts.legend_colors, opts.legend_range, legendBounds);
-  var graph_title = !options.title ? null : title_footer(el.select('svg.graph_title'), options.title, titleBounds, true);
-  var graph_footer = !options.footer ? null : title_footer(el.select('svg.graph_footer'), options.footer, footerBounds, false);
+
+  var graph_title = !options.title ? null :
+    title_footer(
+      el.select('svg.graph_title'),
+      titleBounds,
+      options.title,
+      options.title_font_family,
+      options.title_font_size,
+      options.title_font_color,
+      opts.title_width,
+      "1");
+
+  var graph_subtitle = !options.subtitle ? null :
+    title_footer(
+      el.select('svg.graph_subtitle'),
+      subtitleBounds,
+      options.subtitle,
+      options.subtitle_font_family,
+      options.subtitle_font_size,
+      options.subtitle_font_color,
+      opts.subtitle_width,
+      "2");
+
+  var graph_footer = !options.footer ? null :
+    title_footer(
+      el.select('svg.graph_footer'),
+      footerBounds,
+      options.footer,
+      options.footer_font_family,
+      options.footer_font_size,
+      options.footer_font_color,
+      opts.footer_width,
+      "3");
 
   function colormap(svg, data, width, height) {
     // Check for no data
@@ -1313,22 +1383,22 @@ function heatmap(selector, data, options) {
       .style("font-family", "sans-serif");
   }
 
-  function title_footer(svg, data, bounds, is_title) {
+  function title_footer(svg, bounds, texts, fontFam, fontSize, fontColor, wrapwidth, t_st_f) {
     svg = svg.append('g');
     this_text = svg.append("text")
-      .text(data)
+      .text(texts)
       .attr("x", 0)
       .attr("y", 0)
       .attr("dy", 0)
-      .style("font-family", is_title ? options.title_font_family : options.footer_font_family)
-      .style("font-size", is_title ? options.title_font_size : options.footer_font_size)
-      .style("fill", is_title ? options.title_font_color : options.footer_font_color)
-      .call(wrap_new, is_title ? opts.title_width : opts.footer_width)
-      .style("text-anchor", is_title ? "middle" : "start")
+      .style("font-family", fontFam)
+      .style("font-size", fontSize)
+      .style("fill", fontColor)
+      .call(wrap_new, wrapwidth)
+      .style("text-anchor", t_st_f === "3" ? "start" : "middle")
       .attr("font-weight", "normal");
 
-    var transX = is_title ? opts.width / 2 : opts.footer_margin_X;
-    var transY = is_title ? options.title_font_size*1.5 : options.footer_font_size*1.5;
+    var transX = t_st_f === "3" ? opts.footer_margin_X : opts.width / 2;
+    var transY = (t_st_f === "3" ? opts.footer_margin_Y : t_st_f === "1" ? opts.title_margin_top : opts.subtitle_margin_top) + fontSize;
     this_text.attr("transform", "translate(" + transX + "," + transY + ")");
 
   }
