@@ -1,0 +1,6 @@
+{
+  "widgetClassFile": "theSrc/scripts/lib/heatmapcore/heatmapcore.js",
+  "widgetEntryPoint": "theSrc/scripts/rhtmlHeatmap.js",
+  "widgetName": "rhtmlHeatmap",
+  "rFunction": "rhtmlHeatmap::Heatmap"
+}

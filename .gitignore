@@ -1,3 +1,10 @@
-.Rproj.user
-.Rhistory
 .RData
+man/.Rapp.history
+.DS_Store
+.Rbuildignore
+.Rhistory
+.Rproj.user
+node_modules
+browser
+.idea
+.keys
