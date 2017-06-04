@@ -32,7 +32,7 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   yaxis_font_size = 11, yaxis_font_family = "sans-serif",
   yaxis_location = "right", yaxis_title = NULL,
   yaxis_title_font_size = 14, brush_color = "#0000FF", show_grid = TRUE,
-  anim_duration = 500, ...)
+  anim_duration = 500, table_style = FALSE, ...)
 }
 \arguments{
 \item{x}{A numeric matrix

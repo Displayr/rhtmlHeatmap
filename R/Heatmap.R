@@ -211,6 +211,7 @@ Heatmap <- function(x,
   brush_color = "#0000FF",
   show_grid = TRUE,
   anim_duration = 500,
+  table_style = FALSE,
 
   ...
 ) {
@@ -592,6 +593,7 @@ Heatmap <- function(x,
       right_columns = right_columns,
       right_columns_font_size = right_columns_font_size,
       extra_tooltip_info = extra_tooltip_info,
+      table_style = table_style,
       anim_duration = anim_duration
   ))
 
