@@ -309,7 +309,8 @@ function heatmap(selector, data, options) {
         .style("font-size", left_or_right ? opts.left_columns_font_size : opts.right_columns_font_size)
         .each(function(d,i) {
           var parent_index = d3.select(this.parentNode).attr("data-index");
-          text_widths[parent_index] += this.getComputedTextLength();
+          var textLength = this.getComputedTextLength();
+          text_widths[parent_index] = text_widths[parent_index] > textLength ? text_widths[parent_index] : textLength;
         });
 
       dummySvg.remove();
@@ -634,22 +635,21 @@ function heatmap(selector, data, options) {
     // columns to the left of the main plot data
     if (opts.left_columns) {
 
-      // var left_cols_widths = [];
-      // for (i = 0;i < opts.left_columns.length; i++) {
-      //   left_cols_widths.push(0);
-      //   opts.col_element_names.unshift("left_col" + i);
-      // }
+      var left_cols_widths = [];
+      for (i = 0;i < opts.left_columns.length; i++) {
+        left_cols_widths.push(0);
+        opts.col_element_names.unshift("left_col" + i);
+      }
 
-      // compute mean column width
-      // compute_col_text_widths(opts.left_columns, left_cols_widths, true);
+      //compute mean column width
+      compute_col_text_widths(opts.left_columns, left_cols_widths, true);
 
-      // for (i = 0;i < opts.left_columns.length; i++) {
-      //   left_cols_widths[i] = left_cols_widths[i] / opts.left_columns[0].length;
-      //   if (left_cols_widths[i] > opts.width * 0.25) {
-      //     left_cols_widths[i] = opts.width * 0.25;
-      //     opts.col_element_map["left_col" + i] = left_cols_widths[i];
-      //   }
-      // }
+      for (i = 0;i < opts.left_columns.length; i++) {
+        if (left_cols_widths[i] > opts.width * 0.2) {
+          left_cols_widths[i] = opts.width * 0.2;
+        }
+        opts.col_element_map["left_col" + i] = left_cols_widths[i];
+      }
     }
 
     // columns to the right of the main plot data
