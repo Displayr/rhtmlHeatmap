@@ -1,4 +1,5 @@
 function heatmap(selector, data, options) {
+  'use strict'
 
   // ==== BEGIN HELPERS =================================
 
@@ -279,6 +280,7 @@ function heatmap(selector, data, options) {
   opts.footer_margin_X = 10;
   opts.footer_margin_Y = 5;
   opts.footer_width = opts.width - opts.footer_margin_X * 2;
+  var i = 0, j = 0;
   // get the number of rows and columns for the GridSizer
 
   (function() {
@@ -648,7 +650,7 @@ function heatmap(selector, data, options) {
         if (left_cols_widths[i] > opts.width * 0.2) {
           left_cols_widths[i] = opts.width * 0.2;
         }
-        opts.col_element_map["left_col" + i] = left_cols_widths[i];
+        opts.col_element_map["left_col" + i] = left_cols_widths[i] + opts.axis_padding*2;
       }
     }
 
@@ -827,6 +829,14 @@ function heatmap(selector, data, options) {
 
   var footerBounds = !options.footer ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("footer"));
 
+  var leftColsBounds = !opts.left_columns ? null : [];
+  if (opts.left_columns) {
+    for (var i = 0;i < opts.left_columns.length; i++) {
+      leftColsBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf("*")));
+    }
+  }
+
+  
   if (options.title) {
     titleBounds.width = opts.width;
     titleBounds.left = 0;
@@ -926,6 +936,12 @@ function heatmap(selector, data, options) {
     var title = !options.title ? null : inner.append("svg").classed("graph_title", true).style(cssify(titleBounds));
     var subtitle = !options.subtitle ? null : inner.append("svg").classed("graph_subtitle", true).style(cssify(subtitleBounds));
     var footer = !options.footer ? null : inner.append("svg").classed("graph_footer", true).style(cssify(footerBounds));
+    var leftCols = !opts.left_columns ? null : [];
+    if (opts.left_columns) {
+      for (i = 0; i < opts.left_columns.length; i++) {
+        leftCols.push(!opts.left_columns ? null : inner.append("svg").classed("graph_leftCols" + i, true).style(cssify(leftColsBounds[i])));
+      }
+    }
 
     inner.on("click", function() {
       controller.highlight(null, null);
@@ -977,6 +993,116 @@ function heatmap(selector, data, options) {
       options.footer_font_color,
       opts.footer_width,
       "3");
+
+  if (opts.left_columns && !options.left_columns_align) {
+    options.left_columns_align = [];
+    for (i = 0; i < opts.left_columns.length; i++) {
+      options.left_columns_align.push("left");
+    }
+  }
+
+  var graph_left_cols = [];
+  if (opts.left_columns) {
+    for (i = 0; i < opts.left_columns.length; i++) {
+      graph_left_cols.push(
+        !opts.left_columns ? null : insert_columns(
+          el.select('svg.graph_leftCols' + i),
+          leftColsBounds[i],
+          options.left_columns[i],
+          options.left_columns_font_family,
+          options.left_columns_font_size,
+          options.left_columns_align[i],
+          true));
+    }
+  }
+
+  function insert_columns(svg, bounds, data, fontFamily, fontSize, align, left_or_right) {
+    // bounds is an array of columns, data is an array of data columns
+    var svg = svg.append('g');
+    var thisColData = data;
+    var thisBounds = bounds;
+    // set axis options
+    var scale = d3.scale.ordinal()
+        .domain(d3.range(0, thisColData.length))
+        .rangeBands([0, thisBounds.height]);
+
+    var axis = d3.svg.axis()
+        .scale(scale)
+        .orient(align == "left" ? "left" : "right")
+        .outerTickSize(0)
+        .tickPadding(0)
+        .tickFormat(function(d, i) { return thisColData[i]; });// hack for repeated values
+
+    if (options.table_style) {
+      axis.innerTickSize(0);
+    }
+    // Create the actual axis
+    var axisNodes = svg.append('g')
+        .attr("transform", function() {
+          if (options.table_style) {
+            return "translate(0,0)";
+          } else {
+            return "translate(" + (thisBounds.width - opts.axis_padding) + ",0)";
+          }
+        })
+        .call(axis);
+
+    var fontSize = left_or_right ? options.left_columns_font_size : options.right_columns_font_size;
+    axisNodes.selectAll("text")
+      .style("font-size", fontSize)
+      .style("font-family", left_or_right ? options.left_columns_font_family : options.right_columns_font_family);
+
+    var mouseTargets = svg.append("g")
+      .selectAll("g").data(thisColData);
+
+    mouseTargets
+      .enter()
+        .append("g").append("rect")
+          .attr("transform", "")
+          .attr("fill", "transparent")
+          .on("click", function(d, i) {
+            var dim = 'y';
+            var hl = controller.highlight() || {x:null, y:null};
+            if (hl[dim] == i) {
+              // If clicked already-highlighted row/col, then unhighlight
+              hl[dim] = null;
+              controller.highlight(hl);
+            } else {
+              hl[dim] = i;
+              controller.highlight(hl);
+            }
+            d3.event.stopPropagation();
+          });
+    function layoutMouseTargets(selection) {
+      var _h = scale.rangeBand();
+      var _w = thisBounds.width;
+      selection
+          .attr("transform", function(d, i) {
+            var x = 0;
+            var y = scale(i);
+            return "translate(" + x + "," + y + ")";
+          })
+        .selectAll("rect")
+          .attr("height", _h)
+          .attr("width", _w);
+    }
+    layoutMouseTargets(mouseTargets);
+
+    axisNodes.selectAll("text")
+      .style("text-anchor", "start")
+      .style("font-family", "sans-serif");
+
+    if (align == "middle") {
+      axisNodes.selectAll("text")
+        .attr("x", thisBounds.width/2)
+        .style("text-anchor", "middle");
+    } else if (align == "right") {
+      axisNodes.selectAll("text")
+        .attr("x", thisBounds.width - opts.axis_padding*2)
+        .style("text-anchor", "end");
+    }
+
+  }
 
   function colormap(svg, data, width, height) {
     // Check for no data
@@ -1100,7 +1226,7 @@ function heatmap(selector, data, options) {
 
     var new_ft_size;
     function draw_text(selection, old_x, old_y) {
-
+      var x_scale, y_scale;
       if (arguments.length == 3) {
         x_scale = old_x;
         y_scale = old_y;
@@ -1146,7 +1272,7 @@ function heatmap(selector, data, options) {
 
     if (opts.shownote_in_cell) {
 
-      cellnote_incell = svg.selectAll("text").data(merged);
+      var cellnote_incell = svg.selectAll("text").data(merged);
       cellnote_incell.enter().append("text")
         .text(function(d) {
           return d.cellnote_in_cell;
@@ -1163,8 +1289,8 @@ function heatmap(selector, data, options) {
 
     controller.on('transform.colormap', function(_) {
 
-      old_box_w = x(1) - x(0) - spacing;
-      old_box_h = y(1) - y(0) - spacing;
+      var old_box_w = x(1) - x(0) - spacing;
+      var old_box_h = y(1) - y(0) - spacing;
 
       x.range([_.translate[0], width * _.scale[0] + _.translate[0]]);
       y.range([_.translate[1], height * _.scale[1] + _.translate[1]]);
@@ -1335,7 +1461,7 @@ function heatmap(selector, data, options) {
     var legendAxisG = svg.append("g");
     svg = svg.append('g');
 
-    legendRects = svg.selectAll("rect")
+    var legendRects = svg.selectAll("rect")
       .data(colors);
 
     var boundsPaddingX = 4 + opts.legend_left_space,
@@ -1386,7 +1512,7 @@ function heatmap(selector, data, options) {
 
   function title_footer(svg, bounds, texts, fontFam, fontSize, fontColor, wrapwidth, t_st_f) {
     svg = svg.append('g');
-    this_text = svg.append("text")
+    var this_text = svg.append("text")
       .text(texts)
       .attr("x", 0)
       .attr("y", 0)
