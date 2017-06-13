@@ -542,25 +542,32 @@ Heatmap <- function(x,
     name = deparse(substitute(input))
     output = input
 
-    if (is.list(output)){
-      output = unlist(output)
+    if (is.list(output)) {
+      if (is.data.frame(output)){
+        left_nr = nrow(output)
+        if (nr != left_nr)
+          stop(paste0("Number of rows of ", name," not equal to input data."))
+      } else {
+        output = as.data.frame(output)
+      }
+    }
+    else if (is.vector(output)){
       if (length(output) != nr)
         stop(paste0("Number of rows of ", name," not equal to input data."))
 
-    } else if (is.vector(output)){
-      if (length(output) != nr)
-        stop(paste0("Number of rows of ", name," not equal to input data."))
-
-    } else if (is.matrix(output) || is.data.frame(output)){
+    } else if (is.matrix(output)){
       if (nrow(output) != nr)
         stop(paste0("Number of rows of ", name," not equal to input data."))
 
     } else {
-      stop(paste0(name, "is not a list, vector, matrix or data frame."))
+      stop(paste0(name, "is not a vector, matrix or data frame."))
     }
 
     output[is.na(output)] = "No Data"
     output = as.matrix(output)
+    output = output[rowInd,]
+    colnames(output) = NULL
+    rownames(output) = NULL
     return(t(output))
   }
   left_columns = check.extra.columns(left_columns)

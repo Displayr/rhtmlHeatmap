@@ -636,7 +636,7 @@ function heatmap(selector, data, options) {
 
     // columns to the left of the main plot data
     if (opts.left_columns) {
-
+      opts.left_columns.reverse();
       var left_cols_widths = [];
       for (i = 0;i < opts.left_columns.length; i++) {
         left_cols_widths.push(0);
