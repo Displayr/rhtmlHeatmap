@@ -11,28 +11,54 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   hclustfun = hclust, dendrogram = c("both", "row", "column", "none"),
   reorderfun = function(d, w) reorder(d, w), k_row, k_col, symm = FALSE,
   revC, scale = c("none", "row", "column"), na.rm = TRUE,
-  labRow = rownames(x), labCol = colnames(x), cexRow, cexCol,
-  left_columns = NULL, left_columns_font_size = 11, right_columns = NULL,
-  right_columns_font_size = 11, digits = 3L, cellnote,
-  cellnote_scale = FALSE, cellnote_in_cell = NULL,
-  show_cellnote_in_cell = FALSE, cell_font_size = 11, tip_font_size = 11,
-  tip_font_family = "sans-serif", extra_tooltip_info = NULL,
+  labRow = rownames(x), labCol = colnames(x), cexRow, cexCol, digits = 3L,
+  cellnote, cellnote_scale = FALSE, cellnote_in_cell = NULL,
+  show_cellnote_in_cell = FALSE, extra_tooltip_info = NULL,
   color_range = NULL, lower_triangle = FALSE, cells_to_hide = NULL,
-  show_legend = TRUE, legend_font_size = 11, legend_width = 60,
-  legend_digits = 1, theme = NULL, colors = "RdYlBu", width = NULL,
-  height = NULL, title = NULL, title_font_size = 24,
-  title_font_family = "sans-serif", title_font_color = "#000000",
-  subtitle = NULL, subtitle_font_size = 18,
+  cell_font_size = 11, cell_font_family = "sans-serif",
+  tip_font_size = 11, tip_font_family = "sans-serif", show_legend = TRUE,
+  legend_font_size = 11, legend_font_family = "sans-serif",
+  legend_font_color = "#000000", legend_width = 60, legend_digits = 1,
+  theme = NULL, colors = "RdYlBu", width = NULL, height = NULL,
+  title = NULL, title_font_size = 24, title_font_family = "sans-serif",
+  title_font_color = "#000000", subtitle = NULL, subtitle_font_size = 18,
   subtitle_font_family = "sans-serif", subtitle_font_color = "#000000",
   footer = NULL, footer_font_size = 11, footer_font_family = "sans-serif",
   footer_font_color = "#000000", xaxis_hidden = FALSE, xaxis_height = 80,
   xaxis_font_size = 12, xaxis_font_family = "sans-serif",
+  xaxis_font_color = "#000000", xaxis_location = "bottom",
   xaxis_title = NULL, xaxis_title_font_size = 14,
-  xaxis_location = "bottom", yaxis_hidden = FALSE, yaxis_width = 120,
-  yaxis_font_size = 11, yaxis_font_family = "sans-serif",
+  xaxis_title_font_family = "sans-serif",
+  xaxis_title_font_color = "#000000", yaxis_hidden = FALSE,
+  yaxis_width = 120, yaxis_font_size = 11,
+  yaxis_font_family = "sans-serif", yaxis_font_color = "#000000",
   yaxis_location = "right", yaxis_title = NULL,
-  yaxis_title_font_size = 14, brush_color = "#0000FF", show_grid = TRUE,
-  anim_duration = 500, table_style = FALSE, ...)
+  yaxis_title_font_size = 14, yaxis_title_font_family = "sans-serif",
+  yaxis_title_font_color = "#000000", left_columns = NULL,
+  left_columns_align = NULL, left_columns_font_size = 11,
+  left_columns_font_family = "sans-serif",
+  left_columns_font_color = "#000000", left_columns_subtitles = NULL,
+  left_columns_subtitles_align = NULL, left_columns_subtitles_bold = NULL,
+  left_columns_subtitles_font_size = 12,
+  left_columns_subtitles_font_family = "sans-serif",
+  left_columns_subtitles_font_color = "#000000", left_columns_title = NULL,
+  left_columns_title_align = NULL, left_columns_title_bold = NULL,
+  left_columns_title_font_size = 14,
+  left_columns_title_font_family = "sans-serif",
+  left_columns_title_font_color = "#000000", right_columns = NULL,
+  right_columns_align = NULL, right_columns_font_size = 11,
+  right_columns_font_family = "sans-serif",
+  right_columns_font_color = "#000000", right_columns_title = NULL,
+  right_columns_title_align = NULL, right_columns_title_bold = NULL,
+  right_columns_title_font_size = 14,
+  right_columns_title_font_family = "sans-serif",
+  right_columns_title_font_color = "#000000",
+  right_columns_subtitles = NULL, right_columns_subtitles_align = NULL,
+  right_columns_subtitles_bold = NULL,
+  right_columns_subtitles_font_size = 12,
+  right_columns_subtitles_font_family = "sans-serif",
+  right_columns_subtitles_font_color = "#000000", brush_color = "#0000FF",
+  show_grid = TRUE, anim_duration = 500, table_style = FALSE, ...)
 }
 \arguments{
 \item{x}{A numeric matrix
@@ -86,10 +112,6 @@ should cellnote be scaled if x is also scaled?}
 
 \item{show_cellnote_in_cell}{If \code{TRUE}, print cellnotes in the cells. Defaults to FALSE.}
 
-\item{cell_font_size}{Sets the maximum font size of cellnotes. Defauls to 11.}
-
-\item{tip_font_size}{Sets the font size of texts in the tooltip. Defaults to 11.}
-
 \item{extra_tooltip_info}{A list of matrices that contains extra information to show in the tooltips. Dim of each matrix must equal to \code{x}.}
 
 \item{color_range}{A vector of length 2 that specifies the range of values that colors get mapped to. The default is computed from \code{x}. If \code{x} is a factor, this argument is ignored.}
@@ -97,6 +119,10 @@ should cellnote be scaled if x is also scaled?}
 \item{lower_triangle}{A logical value to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.}
 
 \item{cells_to_hide}{A boolean matrix with the same dimension as \code{x} that specifies which cell to hide. Hidden cells will not trigger tooltips and will be transparent in color.}
+
+\item{cell_font_size}{Sets the maximum font size of cellnotes. Defauls to 11.}
+
+\item{tip_font_size}{Sets the font size of texts in the tooltip. Defaults to 11.}
 
 \item{show_legend}{logical. Defaults to TRUE. However, if \code{scale} is not "none", legend will not be shown.}
 
@@ -149,11 +175,11 @@ standalone visualizations, not R Markdown or Shiny.}
 
 \item{xaxis_font_size}{Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 12.}
 
+\item{xaxis_location}{Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".}
+
 \item{xaxis_title}{Title text of the x axis.}
 
 \item{xaxis_title_font_size}{Size of axis title text. Defaults to 14.}
-
-\item{xaxis_location}{Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".}
 
 \item{yaxis_hidden}{Boolean variable to hide y axis. Defaults to FALSE.}
 
