@@ -216,7 +216,6 @@ Heatmap <- function(x,
   yaxis_title_font_family = "sans-serif",
   yaxis_title_font_color = "#000000",
 
-
   left_columns = NULL,
   left_columns_align = NULL,
   left_columns_font_size = 11,
@@ -237,26 +236,6 @@ Heatmap <- function(x,
   left_columns_title_font_family = "sans-serif",
   left_columns_title_font_color = "#000000",
 
-  right_columns = NULL,
-  right_columns_align = NULL,
-  right_columns_font_size = 11,
-  right_columns_font_family = "sans-serif",
-  right_columns_font_color = "#000000",
-
-  right_columns_title = NULL,
-  right_columns_title_align = NULL,
-  right_columns_title_bold = NULL,
-  right_columns_title_font_size = 14,
-  right_columns_title_font_family = "sans-serif",
-  right_columns_title_font_color = "#000000",
-
-  right_columns_subtitles = NULL,
-  right_columns_subtitles_align = NULL,
-  right_columns_subtitles_bold = NULL,
-  right_columns_subtitles_font_size = 12,
-  right_columns_subtitles_font_family = "sans-serif",
-  right_columns_subtitles_font_color = "#000000",
-
   brush_color = "#0000FF",
   show_grid = TRUE,
   anim_duration = 500,
@@ -272,13 +251,8 @@ Heatmap <- function(x,
   }
   if(!is.matrix(x)) stop("x must be a matrix")
 
-  if (table_style && !yaxis_hidden) {
-    stop("When table_style is TRUE, yaxis_hidden must also be set to TRUE")
-  }
-  if (!table_style) {
-    left_columns_subtitles = NULL
-    left_columns_title = NULL
-    left_columns = NULL
+  if (!is.null(left_columns) && !yaxis_hidden) {
+    stop("When left_columns is supplied, yaxis_hidden must be set to TRUE to override existing y axis")
   }
 
   nr <- dim(x)[1]
@@ -573,7 +547,7 @@ Heatmap <- function(x,
   # colors is now a function that takes a number and returns an #RRGGBB value
   imgUri <- encodeAsPNG(t(x), colors)
 
-  check.extra.columns <- function(input, alignVec, subVec, subAlignVec, subBoldVec) {
+  check.extra.columns <- function(input, alignVec, subVec, subAlignVec, subBoldVec, isLeft) {
     if (is.null(input)) {
       return(NULL)
     }
@@ -604,44 +578,36 @@ Heatmap <- function(x,
     output[is.na(output)] = "No Data"
     output = as.matrix(output)
     output = output[rowInd,]
-    output = output[,ncol(output):1]
+    if (isLeft) {
+      output = output[,ncol(output):1]
+      if (!is.null(alignVec)) {
+        alignVec = rev(alignVec)
+      }
+      if (!is.null(subVec)) {
+        subVec = rev(subVec)
+      }
+      if (!is.null(subAlignVec)) {
+        subAlignVec = rev(subAlignVec)
+      }
+      if (!is.null(subBoldVec)) {
+        subBoldVec = rev(subBoldVec)
+      }
+    }
     colnames(output) = NULL
     rownames(output) = NULL
-    if (!is.null(alignVec)) {
-      alignVec = rev(alignVec)
-    }
-    if (!is.null(subVec)) {
-      subVec = rev(subVec)
-    }
-    if (!is.null(subAlignVec)) {
-      subAlignVec = rev(subAlignVec)
-    }
-    if (!is.null(subBoldVec)) {
-      subBoldVec = rev(subBoldVec)
-    }
     return(list(t(output), alignVec, subVec, subAlignVec, subBoldVec))
   }
   cout = check.extra.columns(left_columns,
-                                     left_columns_align,
-                                     left_columns_subtitles,
-                                     left_columns_subtitles_align,
-                                     left_columns_subtitles_bold)
+                              left_columns_align,
+                              left_columns_subtitles,
+                              left_columns_subtitles_align,
+                              left_columns_subtitles_bold,
+                              TRUE)
   left_columns = cout[[1]]
   left_columns_align = cout[[2]]
   left_columns_subtitles = cout[[3]]
   left_columns_subtitles_align = cout[[4]]
   left_columns_subtitles_bold = cout[[5]]
-
-  cout = check.extra.columns(right_columns,
-                                      right_columns_align,
-                                      right_columns_subtitles,
-                                      right_columns_subtitles_align,
-                                      right_columns_subtitles_bold)
-  right_columns = cout[[1]]
-  right_columns_align = cout[[2]]
-  right_columns_subtitles = cout[[3]]
-  right_columns_subtitles_align = cout[[4]]
-  right_columns_subtitles_bold = cout[[5]]
 
   options <- NULL
 
@@ -715,19 +681,6 @@ Heatmap <- function(x,
       left_columns_subtitles_font_family = left_columns_subtitles_font_family,
       left_columns_subtitles_font_color = left_columns_subtitles_font_color,
 
-      right_columns = right_columns,
-      right_columns_align = right_columns_align,
-      right_columns_font_size = right_columns_font_size,
-      right_columns_font_family = right_columns_font_family,
-      right_columns_font_color = right_columns_font_color,
-
-      right_columns_title = right_columns_title,
-      right_columns_title_align = right_columns_title_align,
-      right_columns_title_bold = right_columns_title_bold,
-      right_columns_title_font_size = right_columns_title_font_size,
-      right_columns_title_font_family = right_columns_title_font_family,
-      right_columns_title_font_color = right_columns_title_font_color,
-
       brush_color = brush_color,
       show_grid = show_grid,
       x_is_factor = x_is_factor,
@@ -737,7 +690,6 @@ Heatmap <- function(x,
       legend_digits = legend_digits,
       shownote_in_cell = show_cellnote_in_cell,
       extra_tooltip_info = extra_tooltip_info,
-      table_style = table_style,
       anim_duration = anim_duration
   ))
 

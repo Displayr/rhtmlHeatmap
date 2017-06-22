@@ -239,10 +239,9 @@ function heatmap(selector, data, options) {
 
   opts.left_columns = options.left_columns;
   opts.left_columns_font_size = options.left_columns_font_size;
-  opts.right_columns = options.right_columns;
-  opts.right_columns_font_size = options.right_columns_font_size;
   opts.xaxis_hidden = options.xaxis_hidden;
   opts.yaxis_hidden = options.yaxis_hidden;
+  options.table_style = options.left_columns ? true : false;
 
   opts.row_element_names = ["*"];
   opts.col_element_names = ["*"];
@@ -281,6 +280,9 @@ function heatmap(selector, data, options) {
   opts.footer_margin_Y = 5;
   opts.footer_width = opts.width - opts.footer_margin_X * 2;
   var i = 0, j = 0;
+
+  var row_element_col_subtitle_var_name = undefined;
+  var row_element_col_title_var_name = undefined;
   // get the number of rows and columns for the GridSizer
 
   (function() {
@@ -308,7 +310,7 @@ function heatmap(selector, data, options) {
         .append("text")
         .text(function(d){return d;})
         .style("font-family", options.yaxis_font_family)
-        .style("font-size", left_or_right ? opts.left_columns_font_size : opts.right_columns_font_size)
+        .style("font-size", opts.left_columns_font_size)
         .each(function(d,i) {
           var parent_index = d3.select(this.parentNode).attr("data-index");
           var textLength = this.getComputedTextLength();
@@ -493,6 +495,101 @@ function heatmap(selector, data, options) {
       opts.legend_total_width = opts.legend_left_space + opts.legend_bar_width + opts.legend_x_padding*2 + d3.max(opts.legend_text_len);
     }
 
+    // columns to the left of the main plot data
+    options.larger_columns_subtitles_font_size = options.left_columns_subtitles_font_size;
+    options.larger_columns_title_font_size = options.left_columns_title_font_size;
+
+    if (opts.left_columns) {
+      var left_cols_widths = [];
+      opts.left_columns_width = [];
+      for (i = 0;i < opts.left_columns.length; i++) {
+        left_cols_widths.push(0);
+        opts.col_element_names.unshift("left_col" + i);
+      }
+
+      //compute mean column width
+      compute_col_text_widths(opts.left_columns, left_cols_widths, true);
+
+      for (i = 0;i < opts.left_columns.length; i++) {
+        if (left_cols_widths[i] > opts.width * 0.2) {
+          left_cols_widths[i] = opts.width * 0.2;
+        }
+        opts.col_element_map["left_col" + i] = left_cols_widths[i] + opts.axis_padding*2;
+        opts.left_columns_width.push(left_cols_widths[i] + opts.axis_padding*2);
+      }
+
+      if (options.left_columns_subtitles) {
+        if (options.left_columns_title) {
+
+          if (options.xaxis_hidden) {
+            row_element_col_subtitle_var_name = "columns_subtitle";
+            row_element_col_title_var_name = "columns_title";
+            opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+            opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+            opts.row_element_names.unshift(row_element_col_title_var_name);
+            opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+          } else {
+            if (options.xaxis_location == "top") {
+              if (options.xaxis_title) {
+                row_element_col_subtitle_var_name = "xaxis";
+                row_element_col_title_var_name = "xtitle";
+                // subtitle aligned to x axis
+                // title aligned to x axis title
+              } else {
+                row_element_col_subtitle_var_name = "xaxis";
+                row_element_col_title_var_name = "columns_title";
+                opts.row_element_names.unshift(row_element_col_title_var_name);
+                opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+              }
+            } else {
+              row_element_col_subtitle_var_name = "columns_subtitle";
+              row_element_col_title_var_name = "columns_title";
+              opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+              opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+              opts.row_element_names.unshift(row_element_col_title_var_name);
+              opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+            }
+          }
+
+        } else {
+          // no title
+          if (options.xaxis_hidden) {
+            row_element_col_subtitle_var_name = "columns_subtitle";
+            opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+            opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+          } else {
+            if (options.xaxis_location == "top") {
+              row_element_col_subtitle_var_name = "xaxis";
+            } else {
+              // insert subtitle
+              row_element_col_subtitle_var_name = "columns_subtitle";
+              opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+              opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+            }
+          }
+        }
+
+      } else {
+
+        if (options.left_columns_title) {
+          if (options.xaxis_hidden) {
+            row_element_col_title_var_name = "columns_title";
+            opts.row_element_names.unshift(row_element_col_title_var_name);
+            opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+          } else {
+            if (options.xaxis_location == "top") {
+              // do nothing
+              row_element_col_title_var_name = "xaxis";
+            } else {
+              row_element_col_title_var_name = "columns_title";
+              opts.row_element_names.unshift(row_element_col_title_var_name);
+              opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+            }
+          }
+        }
+      }
+    }
+
     if (!opts.yaxis_hidden) {
       if (data.rows) {
         opts.yaxis_location = "right";
@@ -610,106 +707,6 @@ function heatmap(selector, data, options) {
     // column dendrogram, add one more row
     if (data.cols) {
       opts.row_element_map["col_dendro"] = options.xclust_height || opts.height * 0.12;
-    }
-
-    // columns to the left of the main plot data
-    if (opts.left_columns) {
-      var left_cols_widths = [];
-      for (i = 0;i < opts.left_columns.length; i++) {
-        left_cols_widths.push(0);
-        opts.col_element_names.unshift("left_col" + i);
-      }
-
-      //compute mean column width
-      compute_col_text_widths(opts.left_columns, left_cols_widths, true);
-
-      for (i = 0;i < opts.left_columns.length; i++) {
-        if (left_cols_widths[i] > opts.width * 0.2) {
-          left_cols_widths[i] = opts.width * 0.2;
-        }
-        opts.col_element_map["left_col" + i] = left_cols_widths[i] + opts.axis_padding*2;
-      }
-
-      if (options.left_columns_subtitles) {
-        if (options.left_columns_title) {
-
-          if (options.xaxis_hidden) {
-            opts.row_element_names.unshift("columns_subtitle");
-            opts.row_element_map["columns_subtitle"] = options.left_columns_subtitles_font_size*1.5;
-            opts.row_element_names.unshift("columns_title");
-            opts.row_element_map["columns_title"] = options.left_columns_title_font_size*1.5;
-          } else {
-            if (options.xaxis_location == "top") {
-              if (options.xaxis_title) {
-                // do nothing
-              } else {
-                opts.row_element_names.unshift("columns_title");
-                opts.row_element_map["columns_title"] = options.left_columns_title_font_size*1.5;
-              }
-            } else {
-              opts.row_element_names.unshift("columns_subtitle");
-              opts.row_element_map["columns_subtitle"] = options.left_columns_subtitles_font_size*1.5;
-              opts.row_element_names.unshift("columns_title");
-              opts.row_element_map["columns_title"] = options.left_columns_title_font_size*1.5;
-            }
-          }
-
-        } else {
-          // no title
-          if (options.xaxis_hidden) {
-            opts.row_element_names.unshift("columns_subtitle");
-            opts.row_element_map["columns_subtitle"] = options.left_columns_subtitles_font_size*1.5;
-          } else {
-            if (options.xaxis_location == "top") {
-              if (options.xaxis_title) {
-                // subtitle aligned to x axis
-              } else {
-                // subtitle aligned to x axis
-              }
-            } else {
-              // insert subtitle
-              opts.row_element_names.unshift("columns_subtitle");
-              opts.row_element_map["columns_subtitle"] = options.left_columns_subtitles_font_size*1.5;
-            }
-          }
-        }
-
-      } else {
-        if (options.left_columns_title) {
-          if (options.xaxis_hidden) {
-            opts.row_element_names.unshift("columns_title");
-            opts.row_element_map["columns_title"] = options.left_columns_title_font_size*1.5;
-          } else {
-            if (options.xaxis_location == "top") {
-              // do nothing
-            } else {
-              opts.row_element_names.unshift("columns_title");
-              opts.row_element_map["columns_title"] = options.left_columns_title_font_size*1.5;
-            }
-          }
-        }
-      }
-    }
-
-    // columns to the right of the main plot data
-    if (opts.right_columns) {
-
-      // var right_cols_widths = [];
-      // for (i = 0;i < opts.right_columns.length; i++) {
-      //   right_cols_widths.push(0);
-      //   opts.col_element_names.push("right_col" + i);
-      // }
-
-      // // compute mean column width
-      // compute_col_text_widths(opts.right_columns, right_cols_widths, false);
-
-      // for (i = 0;i < opts.right_columns.length; i++) {
-      //   right_cols_widths[i] = right_cols_widths[i] / opts.right_columns[0].length;
-      //   if (right_cols_widths[i] > opts.width * 0.25) {
-      //     right_cols_widths[i] = opts.width * 0.25;
-      //     opts.col_element_map["right_col" + i] = right_cols_widths[i];
-      //   }
-      // }
     }
 
     if (options.subtitle) {
@@ -902,77 +899,19 @@ function heatmap(selector, data, options) {
     }
 
     if (options.left_columns_subtitles) {
-
-      if (options.left_columns_title) {
-
-        if (options.xaxis_hidden) {
-
-          for (var i = 0;i < opts.left_columns.length; i++) {
-            leftSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf("columns_subtitle")));
-          }
-          leftTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("columns_title"));
-
-        } else {
-
-          if (options.xaxis_location == "top") {
-
-            if (options.xaxis_title) {
-              for (var i = 0;i < opts.left_columns.length; i++) {
-                leftSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf("xaxis")));
-              }
-              leftTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("xtitle"));
-            } else {
-              for (var i = 0;i < opts.left_columns.length; i++) {
-                leftSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf("xaxis")));
-              }
-              leftTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("columns_title"));
-            }
-
-          } else {
-
-            for (var i = 0;i < opts.left_columns.length; i++) {
-              leftSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf("columns_subtitle")));
-            }
-            leftTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("columns_title"));
-
-          }
-        }
-
-      } else {
-
-        if (options.xaxis_hidden) {
-          for (var i = 0;i < opts.left_columns.length; i++) {
-            leftSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf("columns_subtitle")));
-          }
-        } else {
-          if (options.xaxis_location == "top") {
-            for (var i = 0;i < opts.left_columns.length; i++) {
-              leftSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf("xaxis")));
-            }
-          } else {
-            for (var i = 0;i < opts.left_columns.length; i++) {
-              leftSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf("columns_subtitle")));
-            }
-          }
-        }
-      }
-    } else {
-      if (options.left_columns_title) {
-        if (options.xaxis_hidden) {
-          leftTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("columns_title"));
-        } else {
-          if (options.xaxis_location == "top") {
-            leftTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("xaxis"));
-          } else {
-            leftTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("columns_title"));
-          }
-        }
+      for (var i = 0;i < opts.left_columns.length; i++) {
+        leftSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf(row_element_col_subtitle_var_name)));
       }
     }
+      
+    if (options.left_columns_title) {
+      leftTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf(row_element_col_title_var_name));
+    }
+
     leftTitleBounds.left = 0;
     leftTitleBounds.width = leftColumnsWidth;
   }
-  
+
   if (options.title) {
     titleBounds.width = opts.width;
     titleBounds.left = 0;
@@ -1167,6 +1106,10 @@ function heatmap(selector, data, options) {
   var graph_left_cols = [];
   var graph_left_cols_sub = [];
   var graph_left_cols_title;
+
+  opts.left_columns_axis = [];
+  opts.left_columns_scales = [];
+  opts.left_columns_mouseTargets = [];
   if (opts.left_columns) {
     for (i = 0; i < opts.left_columns.length; i++) {
       graph_left_cols.push(
@@ -1177,7 +1120,8 @@ function heatmap(selector, data, options) {
           options.left_columns_font_family,
           options.left_columns_font_size,
           options.left_columns_align[i],
-          true));
+          true,
+          i));
     }
 
     if (options.left_columns_subtitles) {
@@ -1211,7 +1155,7 @@ function heatmap(selector, data, options) {
     }
   }
 
-  function insert_columns(svg, bounds, data, fontFamily, fontSize, align, left_or_right) {
+  function insert_columns(svg, bounds, data, fontFamily, fontSize, align, left_or_right, index) {
     // bounds is an array of columns, data is an array of data columns
     var svg = svg.append('g');
     var thisColData = data;
@@ -1225,27 +1169,40 @@ function heatmap(selector, data, options) {
         .scale(scale)
         .orient(align == "l" ? "left" : "right")
         .outerTickSize(0)
+        .innerTickSize(0)
         .tickPadding(0)
         .tickFormat(function(d, i) { return thisColData[i]; });// hack for repeated values
 
-    if (options.table_style) {
-      axis.innerTickSize(0);
-    }
+    opts.left_columns_axis.push(axis);
+    opts.left_columns_scales.push(scale);
     // Create the actual axis
     var axisNodes = svg.append('g')
+        .attr("class", "axisNodes" + index)
         .attr("transform", function() {
-          if (options.table_style) {
+          if (align =="l") {
             return "translate(0,0)";
-          } else {
-            return "translate(" + (thisBounds.width - opts.axis_padding) + ",0)";
+          } else if (align == "c") {
+            return "translate(" + thisBounds.width/2 + ",0)";
+          } else if (align == "r") {
+            return "translate(" + (thisBounds.width - opts.axis_padding*2) + ",0)";
           }
+          // if (options.table_style) {
+          //   return "translate(0,0)";
+          // } else {
+          //   return "translate(" + (thisBounds.width - opts.axis_padding) + ",0)";
+          // }
         })
         .call(axis);
 
-    var fontSize = left_or_right ? options.left_columns_font_size : options.right_columns_font_size;
+    var fontSize = left_or_right ? options.left_columns_font_size : options.left_columns_font_size;
     axisNodes.selectAll("text")
+      .attr("class", "coltick" + index)
+      .attr("id", function (d,i) {
+        return "c" + i;
+      }) 
+      .style("opacity", 1)
       .style("font-size", fontSize)
-      .style("font-family", left_or_right ? options.left_columns_font_family : options.right_columns_font_family);
+      .style("font-family", left_or_right ? options.left_columns_font_family : options.left_columns_font_family);
 
     var mouseTargets = svg.append("g")
       .selectAll("g").data(thisColData);
@@ -1253,6 +1210,7 @@ function heatmap(selector, data, options) {
     mouseTargets
       .enter()
         .append("g").append("rect")
+          .style("cursor", "pointer")
           .attr("transform", "")
           .attr("fill", "transparent")
           .on("click", function(d, i) {
@@ -1268,9 +1226,12 @@ function heatmap(selector, data, options) {
             }
             d3.event.stopPropagation();
           });
+
+    opts.left_columns_mouseTargets.push(mouseTargets);
+
     function layoutMouseTargets(selection) {
       var _h = scale.rangeBand();
-      var _w = thisBounds.width;
+      var _w = bounds.width;
       selection
           .attr("transform", function(d, i) {
             var x = 0;
@@ -1289,14 +1250,102 @@ function heatmap(selector, data, options) {
 
     if (align == "c") {
       axisNodes.selectAll("text")
-        .attr("x", thisBounds.width/2)
         .style("text-anchor", "middle");
     } else if (align == "r") {
       axisNodes.selectAll("text")
-        .attr("x", thisBounds.width - opts.axis_padding*2)
         .style("text-anchor", "end");
     }
 
+    controller.on('highlight.axis-y', function(hl) {
+      var selected = hl['y'];
+      for (var j = 0; j < opts.left_columns.length; j++) {
+        d3.selectAll(".coltick" + j)
+          .style("opacity", function(dd,ii) {
+            if (typeof(selected) !== 'number') {
+              return 1;
+            }
+            var opa = parseFloat(d3.select(this).style("opacity"));
+            var el_id = d3.select(this).attr("id");
+            el_id = parseInt(el_id.substr(1));
+            if (selected == el_id) {
+              return 1;
+            } else {
+              return 0.4;
+            }
+          });
+      }
+    });
+
+    controller.on('transform.axis-y', function(_) {
+      var dim = 1;
+      //scale.domain(leaves.slice(_.extent[0][dim], _.extent[1][dim]));
+
+      for (var j = 0; j < opts.left_columns.length; j++) {
+      var rb = [_.translate[dim], bounds.height * _.scale[dim] + _.translate[dim]];
+      opts.left_columns_scales[j].rangeBands(rb);
+        var tAxisNodes = d3.selectAll(".axisNodes" + j).transition().duration(opts.anim_duration).ease('linear');
+        tAxisNodes.call(opts.left_columns_axis[j]);
+
+      tAxisNodes.selectAll("g")
+          .style("opacity", function(d, i) {
+            if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+      // if (options.table_style) {
+      //   tAxisNodes.selectAll("text")
+      //     .style("text-anchor", "start");
+
+      // } else {
+      tAxisNodes.selectAll("text")
+          .style("text-anchor", function() {
+            if (align == "l") {
+              return "start";
+            } else if (align == "c") {
+              return "middle";
+            } else if (align == "r") {
+              return "end";
+            }
+          });
+      // }
+
+      function layoutMouseTargetsLocal(selection) {
+        var _h = opts.left_columns_scales[j].rangeBand();
+        var _w = opts.left_columns_width[j];
+        selection
+            .attr("transform", function(d, i) {
+              var x = 0;
+              var y = opts.left_columns_scales[j](i);
+              return "translate(" + x + "," + y + ")";
+            })
+          .selectAll("rect")
+            .attr("height", _h)
+            .attr("width", _w);
+      }
+
+      opts.left_columns_mouseTargets[j].transition().duration(opts.anim_duration).ease('linear')
+          .call(layoutMouseTargetsLocal)
+          .style("opacity", function(d, i) {
+            if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+      }
+
+      // Set text-anchor on the non-transitioned node to prevent jumpiness
+      // in RStudio Viewer pane
+      // if (options.table_style) {
+      //   axisNodes.selectAll("text").style("text-anchor", "start");
+      // } else {
+      //  axisNodes.selectAll("text").style("text-anchor", rotated ? "start" : axis_location === "right" ? "start" : "end");
+      // }
+      
+
+    });
 
   }
 
@@ -1306,7 +1355,13 @@ function heatmap(selector, data, options) {
     var sub;
     if (subtitle) {
       sub = svg.append("g")
-        .attr("transform", "translate(0," + thisBounds.height/2 + ")")
+        .attr("transform", function() {
+          if (left_or_right) {
+            return "translate(0," + thisBounds.height/2 + ")";
+          } else {
+            return "translate(" + opts.axis_padding + "," + thisBounds.height/2 + ")";
+          }
+        })
         .append("text")
         .attr("x", function() {
           if (subtitleAlign == "l") {
@@ -1824,12 +1879,12 @@ function heatmap(selector, data, options) {
             if (axis_location === "right") {
               return "translate(" + padding + ",0)";
             } else if (axis_location === "left") {
-              if (options.table_style) {
-                return "translate(" + padding + ",0)";
-              } else {
-                return "translate(" + (yaxisBounds.width - padding) + ",0)";
-              }
-              
+              return "translate(" + (yaxisBounds.width - padding) + ",0)";
+              // if (options.table_style) {
+              //   return "translate(" + padding + ",0)";
+              // } else {
+              //   return "translate(" + (yaxisBounds.width - padding) + ",0)";
+              // }
             }
           }
         })
@@ -1888,13 +1943,12 @@ function heatmap(selector, data, options) {
           }
         })
         .style("text-anchor", "start");
-    } else {
-      if (options.table_style) {
-        axisNodes.selectAll("text").style("text-anchor", "start");
-      }
-      
-
     }
+    //  else {
+    //   if (options.table_style) {
+    //     axisNodes.selectAll("text").style("text-anchor", "start");
+    //   }
+    // }
 
     controller.on('highlight.axis-' + (rotated ? 'x' : 'y'), function(hl) {
       var ticks = axisNodes.selectAll('.tick');
@@ -1917,11 +1971,11 @@ function heatmap(selector, data, options) {
       tAxisNodes.call(axis);
       // Set text-anchor on the non-transitioned node to prevent jumpiness
       // in RStudio Viewer pane
-      if (options.table_style) {
-        axisNodes.selectAll("text").style("text-anchor", "start");
-      } else {
+      // if (options.table_style) {
+      //   axisNodes.selectAll("text").style("text-anchor", "start");
+      // } else {
         axisNodes.selectAll("text").style("text-anchor", rotated ? "start" : axis_location === "right" ? "start" : "end");
-      }
+      // }
       
       tAxisNodes.selectAll("g")
           .style("opacity", function(d, i) {
@@ -1931,15 +1985,14 @@ function heatmap(selector, data, options) {
               return 0;
             }
           });
-      if (options.table_style) {
-        tAxisNodes.selectAll("text")
-          .style("text-anchor", "start");
+      // if (options.table_style) {
+      //   tAxisNodes.selectAll("text")
+      //     .style("text-anchor", "start");
 
-      } else {
+      // } else {
         tAxisNodes.selectAll("text")
           .style("text-anchor", rotated ? "start" : axis_location === "right" ? "start" : "end");
-
-      }
+      // }
 
 
       mouseTargets.transition().duration(opts.anim_duration).ease('linear')
