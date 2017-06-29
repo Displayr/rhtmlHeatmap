@@ -1279,61 +1279,59 @@ function heatmap(selector, data, options) {
     controller.on('transform.axis-y', function(_) {
       var dim = 1;
       //scale.domain(leaves.slice(_.extent[0][dim], _.extent[1][dim]));
-
       for (var j = 0; j < opts.left_columns.length; j++) {
-      var rb = [_.translate[dim], bounds.height * _.scale[dim] + _.translate[dim]];
-      opts.left_columns_scales[j].rangeBands(rb);
-        var tAxisNodes = d3.selectAll(".axisNodes" + j).transition().duration(opts.anim_duration).ease('linear');
+        var rb = [_.translate[dim], bounds.height * _.scale[dim] + _.translate[dim]];
+        opts.left_columns_scales[j].rangeBands(rb);
+
+        var tAxisNodes = d3.selectAll(".axisNodes" + j)
+          .transition()
+          .duration(opts.anim_duration)
+          .ease('linear');
+
         tAxisNodes.call(opts.left_columns_axis[j]);
+        tAxisNodes.selectAll("g")
+            .style("opacity", function(d, i) {
+              if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+                return 1;
+              } else {
+                return 0;
+              }
+            });
 
-      tAxisNodes.selectAll("g")
-          .style("opacity", function(d, i) {
-            if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
-              return 1;
-            } else {
-              return 0;
-            }
-          });
-      // if (options.table_style) {
-      //   tAxisNodes.selectAll("text")
-      //     .style("text-anchor", "start");
+        tAxisNodes.selectAll("text")
+            .style("text-anchor", function() {
+              if (options.left_columns_align[j] == "l") {
+                return "start";
+              } else if (options.left_columns_align[j] == "c") {
+                return "middle";
+              } else if (options.left_columns_align[j] == "r") {
+                return "end";
+              }
+            });
 
-      // } else {
-      tAxisNodes.selectAll("text")
-          .style("text-anchor", function() {
-            if (align == "l") {
-              return "start";
-            } else if (align == "c") {
-              return "middle";
-            } else if (align == "r") {
-              return "end";
-            }
-          });
-      // }
+        function layoutMouseTargetsLocal(selection) {
+          var _h = opts.left_columns_scales[j].rangeBand();
+          var _w = opts.left_columns_width[j];
+          selection
+              .attr("transform", function(d, i) {
+                var x = 0;
+                var y = opts.left_columns_scales[j](i);
+                return "translate(" + x + "," + y + ")";
+              })
+            .selectAll("rect")
+              .attr("height", _h)
+              .attr("width", _w);
+        }
 
-      function layoutMouseTargetsLocal(selection) {
-        var _h = opts.left_columns_scales[j].rangeBand();
-        var _w = opts.left_columns_width[j];
-        selection
-            .attr("transform", function(d, i) {
-              var x = 0;
-              var y = opts.left_columns_scales[j](i);
-              return "translate(" + x + "," + y + ")";
-            })
-          .selectAll("rect")
-            .attr("height", _h)
-            .attr("width", _w);
-      }
-
-      opts.left_columns_mouseTargets[j].transition().duration(opts.anim_duration).ease('linear')
-          .call(layoutMouseTargetsLocal)
-          .style("opacity", function(d, i) {
-            if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
-              return 1;
-            } else {
-              return 0;
-            }
-          });
+        opts.left_columns_mouseTargets[j].transition().duration(opts.anim_duration).ease('linear')
+            .call(layoutMouseTargetsLocal)
+            .style("opacity", function(d, i) {
+              if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+                return 1;
+              } else {
+                return 0;
+              }
+            });
       }
 
       // Set text-anchor on the non-transitioned node to prevent jumpiness
