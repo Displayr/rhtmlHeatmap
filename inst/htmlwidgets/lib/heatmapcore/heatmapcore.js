@@ -1167,7 +1167,7 @@ function heatmap(selector, data, options) {
 
     var axis = d3.svg.axis()
         .scale(scale)
-        .orient(align == "l" ? "left" : "right")
+        .orient("left")
         .outerTickSize(0)
         .innerTickSize(0)
         .tickPadding(0)
@@ -1283,12 +1283,24 @@ function heatmap(selector, data, options) {
         var rb = [_.translate[dim], bounds.height * _.scale[dim] + _.translate[dim]];
         opts.left_columns_scales[j].rangeBands(rb);
 
-        var tAxisNodes = d3.selectAll(".axisNodes" + j)
+        var tAxisNodes = d3.select(".axisNodes" + j)
           .transition()
           .duration(opts.anim_duration)
           .ease('linear');
 
         tAxisNodes.call(opts.left_columns_axis[j]);
+
+        d3.select(".axisNodes" + j).selectAll("text")
+            .style("text-anchor", function() {
+              if (options.left_columns_align[j] == "l") {
+                return "start";
+              } else if (options.left_columns_align[j] == "c") {
+                return "middle";
+              } else if (options.left_columns_align[j] == "r") {
+                return "end";
+              }
+            });
+            
         tAxisNodes.selectAll("g")
             .style("opacity", function(d, i) {
               if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
