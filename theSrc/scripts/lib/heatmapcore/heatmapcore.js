@@ -321,7 +321,7 @@ function heatmap(selector, data, options) {
       dummySvg.remove();
     };
 
-    var compute_axis_label_dim = function(input, x_or_y) {
+    var compute_axis_label_dim = function(input, x_or_y, fontsize, fontfamily) {
       var dummySvg = inner.append("svg");
       var dummy_g = dummySvg
         .append("g")
@@ -334,8 +334,8 @@ function heatmap(selector, data, options) {
       texts.enter()
         .append("text")
         .text(function(d) { return d;})
-        .style("font-size", x_or_y ? opts.xaxis_font_size : opts.yaxis_font_size)
-        .style("font-family", x_or_y ? options.xaxis_font_family : options.yaxis_font_family);
+        .style("font-size", fontsize)
+        .style("font-family", fontfamily);
 
       var text_length = 0, text_lengths = [], text_hash = {};
 
@@ -470,7 +470,10 @@ function heatmap(selector, data, options) {
         opts.xlabs_mod.push(x_texts[i]);
       }
 
-      opts.row_element_map["xaxis"] = compute_axis_label_dim(opts.xlabs_mod, true);
+      opts.row_element_map["xaxis"] = compute_axis_label_dim(opts.xlabs_mod, 
+                                        true, 
+                                        options.xaxis_font_size, 
+                                        options.xaxis_font_family);
     }
 
     if (data.cols) {
@@ -520,13 +523,17 @@ function heatmap(selector, data, options) {
       }
 
       if (options.left_columns_subtitles) {
+        opts.left_sub_len = compute_axis_label_dim(options.left_columns_subtitles,
+                                        true,
+                                        options.left_columns_subtitles_font_size, 
+                                        options.left_columns_subtitles_font_family);
         if (options.left_columns_title) {
 
           if (options.xaxis_hidden) {
             row_element_col_subtitle_var_name = "columns_subtitle";
             row_element_col_title_var_name = "columns_title";
             opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-            opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+            opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
             opts.row_element_names.unshift(row_element_col_title_var_name);
             opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
           } else {
@@ -546,7 +553,7 @@ function heatmap(selector, data, options) {
               row_element_col_subtitle_var_name = "columns_subtitle";
               row_element_col_title_var_name = "columns_title";
               opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-              opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+              opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
               opts.row_element_names.unshift(row_element_col_title_var_name);
               opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
             }
@@ -557,7 +564,7 @@ function heatmap(selector, data, options) {
           if (options.xaxis_hidden) {
             row_element_col_subtitle_var_name = "columns_subtitle";
             opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-            opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+            opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
           } else {
             if (options.xaxis_location == "top") {
               row_element_col_subtitle_var_name = "xaxis";
@@ -565,7 +572,7 @@ function heatmap(selector, data, options) {
               // insert subtitle
               row_element_col_subtitle_var_name = "columns_subtitle";
               opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-              opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+              opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
             }
           }
         }
@@ -610,13 +617,17 @@ function heatmap(selector, data, options) {
       }
 
       if (options.right_columns_subtitles) {
+        opts.right_sub_len = compute_axis_label_dim(options.right_columns_subtitles,
+                                        true,
+                                        options.right_columns_subtitles_font_size, 
+                                        options.right_columns_subtitles_font_family);
         if (options.right_columns_title) {
 
           if (options.xaxis_hidden) {
             if (!row_element_col_subtitle_var_name) {
               row_element_col_subtitle_var_name = "columns_subtitle";
               opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-              opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+              opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
             }
             if (!row_element_col_title_var_name) {
               row_element_col_title_var_name = "columns_title";
@@ -642,7 +653,7 @@ function heatmap(selector, data, options) {
               if (!row_element_col_subtitle_var_name) {
                 row_element_col_subtitle_var_name = "columns_subtitle";
                 opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-                opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+                opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
               }
               if (!row_element_col_title_var_name) {
                 row_element_col_title_var_name = "columns_title";
@@ -657,7 +668,7 @@ function heatmap(selector, data, options) {
             if (!row_element_col_subtitle_var_name) {
               row_element_col_subtitle_var_name = "columns_subtitle";
               opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-              opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+              opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
             }
           } else {
 
@@ -670,7 +681,7 @@ function heatmap(selector, data, options) {
               if (!row_element_col_subtitle_var_name) {
                 row_element_col_subtitle_var_name = "columns_subtitle";
                 opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-                opts.row_element_map[row_element_col_subtitle_var_name] = options.larger_columns_subtitles_font_size*1.5;
+                opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
               }
             }
           }
@@ -724,7 +735,10 @@ function heatmap(selector, data, options) {
         opts.ylabs_mod.push(y_texts[i]);
       }
 
-      opts.col_element_map["yaxis"] = compute_axis_label_dim(opts.ylabs_mod, false);
+      opts.col_element_map["yaxis"] = compute_axis_label_dim(opts.ylabs_mod,
+                                        false,
+                                        options.yaxis_font_size, 
+                                        options.yaxis_font_family);
 
       if (opts.yaxis_title) {
         if (opts.yaxis_location === "right") {
@@ -800,9 +814,9 @@ function heatmap(selector, data, options) {
           }
         } else {
           if (opts.right_columns) {
-            if (y_width_net > d3.sum(opts.right_columns_width)) {
+            if (opts.right_sub_len/1.1 > opts.right_columns_width[opts.right_columns_width.length-1]) {
               opts.col_element_names.push("yaxis");
-              opts.col_element_map["yaxis"] = y_width_net;
+              opts.col_element_map["yaxis"] = opts.right_sub_len/1.1;
             }
           } else {
             opts.col_element_names.push("yaxis");
@@ -1322,7 +1336,8 @@ function heatmap(selector, data, options) {
           options.left_columns_subtitles_bold[i],
           options.left_columns_subtitles_font_family,
           options.left_columns_subtitles_font_size,
-          options.left_columns_subtitles_font_color
+          options.left_columns_subtitles_font_color,
+          opts.left_columns_width[i]
           ));
       }
     }
@@ -1331,7 +1346,7 @@ function heatmap(selector, data, options) {
       graph_left_cols_title = insert_column_title_el(
           el.select('svg.graph_leftColsTitle'),
           leftTitleBounds,
-          true,
+          false,
           options.left_columns_title,
           options.left_columns_title_align,
           options.left_columns_title_bold,
@@ -1374,7 +1389,8 @@ function heatmap(selector, data, options) {
           options.right_columns_subtitles_bold[i],
           options.right_columns_subtitles_font_family,
           options.right_columns_subtitles_font_size,
-          options.right_columns_subtitles_font_color
+          options.right_columns_subtitles_font_color,
+          opts.right_columns_width[i]
           ));
       }
     }
@@ -1383,7 +1399,7 @@ function heatmap(selector, data, options) {
       graph_right_cols_title = insert_column_title_el(
           el.select('svg.graph_rightColsTitle'),
           rightTitleBounds,
-          true,
+          false,
           options.right_columns_title,
           options.right_columns_title_align,
           options.right_columns_title_bold,
@@ -1598,34 +1614,51 @@ function heatmap(selector, data, options) {
 
   }
 
-  function insert_column_title_el (svg, bounds, left_or_right, subtitle, subtitleAlign, subtitleBold, fontFam, fontSize, fontCol) {
+  function insert_column_title_el (svg, bounds, rotated, subtitle, subtitleAlign, subtitleBold, fontFam, fontSize, fontCol, colWidth) {
     var svg = svg.append('g');
     var thisBounds = bounds;
     var sub;
     if (subtitle) {
       sub = svg.append("g")
         .attr("transform", function() {
-          if (left_or_right) {
-            return "translate(0," + thisBounds.height/2 + ")";
+          if (rotated) {
+            return "translate(" + colWidth/2 + "," + (thisBounds.height - opts.axis_padding) + ")";
           } else {
-            return "translate(" + opts.axis_padding + "," + thisBounds.height/2 + ")";
+            return "translate(0," + thisBounds.height/2 + ")";
           }
         })
         .append("text")
+        .attr("transform", function() {
+          if (rotated) {
+            return "rotate(-45),translate(" + opts.axis_padding + "," + 0 + ")";
+          } else {
+            return "translate(0,0)";
+          }
+        })
         .attr("x", function() {
-          if (subtitleAlign == "l") {
+          if (rotated) {
             return 0;
-          } else if (subtitleAlign == "c") {
-            return thisBounds.width/2;
-          } else if (subtitleAlign == "r") {
-            return thisBounds.width - opts.axis_padding;
+          } else {
+            if (subtitleAlign == "l") {
+              return 0;
+            } else if (subtitleAlign == "c") {
+              return thisBounds.width/2;
+            } else if (subtitleAlign == "r") {
+              return thisBounds.width - opts.axis_padding;
+            }
           }
         })
         .attr("y", function() {
+          if (rotated) {
+            return -opts.axis_padding;
+          }
           return 0;
         })
         .text(subtitle)
         .style("text-anchor", function() {
+          if (rotated) {
+            return "start";
+          }
           if (subtitleAlign == "l") {
             return "start";
           } else if (subtitleAlign == "c") {

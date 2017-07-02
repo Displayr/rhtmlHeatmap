@@ -632,7 +632,7 @@ Heatmap <- function(x,
                              right_columns_subtitles,
                              right_columns_subtitles_align,
                              right_columns_subtitles_bold,
-                             TRUE)
+                             FALSE)
   right_columns = cout[[1]]
   right_columns_align = cout[[2]]
   right_columns_subtitles = cout[[3]]
