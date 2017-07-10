@@ -48,17 +48,16 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   left_columns_title_font_color = "#000000", right_columns = NULL,
   right_columns_align = NULL, right_columns_font_size = 11,
   right_columns_font_family = "sans-serif",
-  right_columns_font_color = "#000000", right_columns_title = NULL,
-  right_columns_title_align = NULL, right_columns_title_bold = NULL,
-  right_columns_title_font_size = 14,
-  right_columns_title_font_family = "sans-serif",
-  right_columns_title_font_color = "#000000",
-  right_columns_subtitles = NULL, right_columns_subtitles_align = NULL,
-  right_columns_subtitles_bold = NULL,
+  right_columns_font_color = "#000000", right_columns_subtitles = NULL,
+  right_columns_subtitles_align = NULL, right_columns_subtitles_bold = NULL,
   right_columns_subtitles_font_size = 12,
   right_columns_subtitles_font_family = "sans-serif",
-  right_columns_subtitles_font_color = "#000000", brush_color = "#0000FF",
-  show_grid = TRUE, anim_duration = 500, table_style = FALSE, ...)
+  right_columns_subtitles_font_color = "#000000",
+  right_columns_title = NULL, right_columns_title_align = NULL,
+  right_columns_title_bold = NULL, right_columns_title_font_size = 14,
+  right_columns_title_font_family = "sans-serif",
+  right_columns_title_font_color = "#000000", brush_color = "#0000FF",
+  show_grid = TRUE, anim_duration = 500, ...)
 }
 \arguments{
 \item{x}{A numeric matrix

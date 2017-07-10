@@ -239,6 +239,18 @@ function heatmap(selector, data, options) {
 
   opts.left_columns = options.left_columns;
   opts.left_columns_font_size = options.left_columns_font_size;
+  if (options.left_columns_subtitles) {
+    opts.left_columns_subtitles = [];
+    for (var j = 0; j < options.left_columns_subtitles.length; j++) {
+      opts.left_columns_subtitles.push(options.left_columns_subtitles[j]);
+    }
+  }
+  if (options.right_columns_subtitles) {
+    opts.right_columns_subtitles = [];
+    for (var j = 0; j < options.right_columns_subtitles.length; j++) {
+      opts.right_columns_subtitles.push(options.right_columns_subtitles[j]);
+    }
+  }
   opts.right_columns = options.right_columns;
   opts.xaxis_hidden = options.xaxis_hidden;
   opts.yaxis_hidden = options.yaxis_hidden;
@@ -321,7 +333,7 @@ function heatmap(selector, data, options) {
       dummySvg.remove();
     };
 
-    var compute_axis_label_dim = function(input, x_or_y, fontsize, fontfamily) {
+    var compute_axis_label_dim = function(input, x_or_y, fontsize, fontfamily, additional) {
       var dummySvg = inner.append("svg");
       var dummy_g = dummySvg
         .append("g")
@@ -470,10 +482,11 @@ function heatmap(selector, data, options) {
         opts.xlabs_mod.push(x_texts[i]);
       }
 
-      opts.row_element_map["xaxis"] = compute_axis_label_dim(opts.xlabs_mod, 
+      opts.xaxis_len = compute_axis_label_dim(opts.xlabs_mod, 
                                         true, 
                                         options.xaxis_font_size, 
                                         options.xaxis_font_family);
+      opts.row_element_map["xaxis"] = opts.xaxis_len;
     }
 
     if (data.cols) {
@@ -502,8 +515,9 @@ function heatmap(selector, data, options) {
     // columns to the left of the main plot data
     options.larger_columns_subtitles_font_size = options.left_columns_subtitles_font_size > options.right_columns_subtitles_font_size ? options.left_columns_subtitles_font_size : options.right_columns_subtitles_font_size;
     options.larger_columns_title_font_size = options.left_columns_title_font_size > options.right_columns_title_font_size ? options.left_columns_title_font_size : options.right_columns_title_font_size;
-
+    
     if (opts.left_columns) {
+
       var left_cols_widths = [];
       opts.left_columns_width = [];
       for (i = 0;i < opts.left_columns.length; i++) {
@@ -520,84 +534,30 @@ function heatmap(selector, data, options) {
         }
         opts.col_element_map["left_col" + i] = left_cols_widths[i] + opts.axis_padding*2;
         opts.left_columns_width.push(left_cols_widths[i] + opts.axis_padding*2);
+        opts.left_columns_total_width = d3.sum(opts.left_columns_width);
       }
 
-      if (options.left_columns_subtitles) {
-        opts.left_sub_len = compute_axis_label_dim(options.left_columns_subtitles,
-                                        true,
-                                        options.left_columns_subtitles_font_size, 
-                                        options.left_columns_subtitles_font_family);
-        if (options.left_columns_title) {
+        // if (options.xaxis_hidden || options.xaxis_location == "bottom") {
 
-          if (options.xaxis_hidden) {
-            row_element_col_subtitle_var_name = "columns_subtitle";
-            row_element_col_title_var_name = "columns_title";
-            opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-            opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
-            opts.row_element_names.unshift(row_element_col_title_var_name);
-            opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
-          } else {
-            if (options.xaxis_location == "top") {
-              if (options.xaxis_title) {
-                row_element_col_subtitle_var_name = "xaxis";
-                row_element_col_title_var_name = "xtitle";
-                // subtitle aligned to x axis
-                // title aligned to x axis title
-              } else {
-                row_element_col_subtitle_var_name = "xaxis";
-                row_element_col_title_var_name = "columns_title";
-                opts.row_element_names.unshift(row_element_col_title_var_name);
-                opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
-              }
-            } else {
-              row_element_col_subtitle_var_name = "columns_subtitle";
-              row_element_col_title_var_name = "columns_title";
-              opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-              opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
-              opts.row_element_names.unshift(row_element_col_title_var_name);
-              opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
-            }
-          }
+        //   if (options.left_columns_subtitles) {
+        //     if (options.left_columns_title) {
 
-        } else {
-          // no title
-          if (options.xaxis_hidden) {
-            row_element_col_subtitle_var_name = "columns_subtitle";
-            opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-            opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
-          } else {
-            if (options.xaxis_location == "top") {
-              row_element_col_subtitle_var_name = "xaxis";
-            } else {
-              // insert subtitle
-              row_element_col_subtitle_var_name = "columns_subtitle";
-              opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-              opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
-            }
-          }
-        }
-      } else {
+        //     } else {
 
-        if (options.left_columns_title) {
-          if (options.xaxis_hidden) {
-            row_element_col_title_var_name = "columns_title";
-            opts.row_element_names.unshift(row_element_col_title_var_name);
-            opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
-          } else {
-            if (options.xaxis_location == "top") {
-              // do nothing
-              row_element_col_title_var_name = "xaxis";
-            } else {
-              row_element_col_title_var_name = "columns_title";
-              opts.row_element_names.unshift(row_element_col_title_var_name);
-              opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
-            }
-          }
-        }
-      }
+        //     }
+        //   } else {
+        //     if (options.left_columns_title) {
+              
+        //     }
+        //   }
+
+        // } else {
+
+        // }
     }
 
     if (opts.right_columns) {
+
       var right_cols_widths = [];
       opts.right_columns_width = [];
       for (i = 0;i < opts.right_columns.length; i++) {
@@ -615,103 +575,270 @@ function heatmap(selector, data, options) {
         opts.col_element_map["right_col" + i] = right_cols_widths[i] + opts.axis_padding*2;
         opts.right_columns_width.push(right_cols_widths[i] + opts.axis_padding*2);
       }
+      opts.right_columns_total_width = d3.sum(opts.right_columns_width);
+    }
 
-      if (options.right_columns_subtitles) {
-        opts.right_sub_len = compute_axis_label_dim(options.right_columns_subtitles,
-                                        true,
-                                        options.right_columns_subtitles_font_size, 
-                                        options.right_columns_subtitles_font_family);
-        if (options.right_columns_title) {
 
-          if (options.xaxis_hidden) {
-            if (!row_element_col_subtitle_var_name) {
-              row_element_col_subtitle_var_name = "columns_subtitle";
-              opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-              opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
-            }
-            if (!row_element_col_title_var_name) {
-              row_element_col_title_var_name = "columns_title";
-              opts.row_element_names.unshift(row_element_col_title_var_name);
-              opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
-            }
-          } else {
+    opts.left_columns_subtitles = opts.left_columns ? opts.left_columns_subtitles : undefined;
+    options.left_columns_title = opts.left_columns ? options.left_columns_title : undefined;
+    opts.right_columns_subtitles = opts.right_columns ? opts.right_columns_subtitles : undefined;
+    options.right_columns_title = opts.right_columns ? options.right_columns_title : undefined;
+    opts.left_sub_len = 0;
+    opts.right_sub_len = 0;
 
-            if (options.xaxis_location == "top") {
 
-              if (options.xaxis_title) {
-                row_element_col_subtitle_var_name = "xaxis";
-                row_element_col_title_var_name = "xtitle";
-              } else {
-                if (!row_element_col_title_var_name) {
-                  row_element_col_title_var_name = "columns_title";
-                  opts.row_element_names.unshift(row_element_col_title_var_name);
-                  opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
-                }
-                row_element_col_subtitle_var_name = "xaxis";
-              }
-            } else {
-              if (!row_element_col_subtitle_var_name) {
-                row_element_col_subtitle_var_name = "columns_subtitle";
-                opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-                opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
-              }
-              if (!row_element_col_title_var_name) {
-                row_element_col_title_var_name = "columns_title";
-                opts.row_element_names.unshift(row_element_col_title_var_name);
-                opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
-              }
-            }
-          }
-        } else {
-          // no right title
-          if (options.xaxis_hidden) {
-            if (!row_element_col_subtitle_var_name) {
-              row_element_col_subtitle_var_name = "columns_subtitle";
-              opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-              opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
-            }
-          } else {
+    if (opts.left_columns_subtitles) {
+      // compute text width of left column subtitles
+      opts.left_sub_len = compute_axis_label_dim(opts.left_columns_subtitles,
+                                      true,
+                                      options.left_columns_subtitles_font_size, 
+                                      options.left_columns_subtitles_font_family);
+    }
 
-            if (options.xaxis_location == "top") {
-              if (!row_element_col_subtitle_var_name) {
-                row_element_col_subtitle_var_name = "xaxis";
-              }
-            } else {
-              // insert subtitle
-              if (!row_element_col_subtitle_var_name) {
-                row_element_col_subtitle_var_name = "columns_subtitle";
-                opts.row_element_names.unshift(row_element_col_subtitle_var_name);
-                opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
-              }
-            }
-          }
-        }
+    if (opts.right_columns_subtitles) {
+      // compute text width of right column subtitles
+      opts.right_sub_len = compute_axis_label_dim(opts.right_columns_subtitles,
+                                      true,
+                                      options.right_columns_subtitles_font_size, 
+                                      options.right_columns_subtitles_font_family);
+    }
 
-      } else {
-        if (options.right_columns_title) {
-          if (options.xaxis_hidden) {
-            if (!row_element_col_title_var_name) {
-              row_element_col_title_var_name = "columns_title";
-              opts.row_element_names.unshift(row_element_col_title_var_name);
-              opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
-            }
-          } else {
-            if (options.xaxis_location == "top") {
-              // do nothing
-              if (!row_element_col_title_var_name) {
-                row_element_col_title_var_name = "xaxis";
-              }
-            } else {
-              if (!row_element_col_title_var_name) {
-                row_element_col_title_var_name = "columns_title";
-                opts.row_element_names.unshift(row_element_col_title_var_name);
-                opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
-              }
-            }
-          }
-        }
+    // compare text width of left column subtitles, right column subtitles and x axis
+    if (opts.xaxis_hidden) {
+      options.xaxis_location = undefined;
+    }
+
+    if (!opts.xaxis_hidden && options.xaxis_location == "top") {
+      opts.topaxis_len = Math.max(opts.xaxis_len, opts.left_sub_len, opts.right_sub_len);
+      opts.row_element_map["xaxis"] = opts.topaxis_len;
+    } else {
+      opts.topaxis_len = Math.max(opts.left_sub_len, opts.right_sub_len);
+      if (opts.topaxis_len > 0) {
+        opts.row_element_names.unshift("top_axis_el");
+        opts.row_element_map["top_axis_el"] = opts.topaxis_len;
       }
     }
+
+    if (options.left_columns_title) {
+      // compute height and wrap of left column title
+    }
+
+    if (options.right_columns_title) {
+
+    }
+
+    // compare text width of left column title, right column title and x axis
+
+
+    // if (opts.left_columns) {
+    //   var left_cols_widths = [];
+    //   opts.left_columns_width = [];
+    //   for (i = 0;i < opts.left_columns.length; i++) {
+    //     left_cols_widths.push(0);
+    //     opts.col_element_names.unshift("left_col" + i);
+    //   }
+
+    //   //compute mean column width
+    //   compute_col_text_widths(opts.left_columns, left_cols_widths, true);
+
+    //   for (i = 0;i < opts.left_columns.length; i++) {
+    //     if (left_cols_widths[i] > opts.width * 0.2) {
+    //       left_cols_widths[i] = opts.width * 0.2;
+    //     }
+    //     opts.col_element_map["left_col" + i] = left_cols_widths[i] + opts.axis_padding*2;
+    //     opts.left_columns_width.push(left_cols_widths[i] + opts.axis_padding*2);
+    //   }
+
+    //   if (opts.left_columns_subtitles) {
+    //     opts.left_sub_len = compute_axis_label_dim(opts.left_columns_subtitles,
+    //                                     true,
+    //                                     options.left_columns_subtitles_font_size, 
+    //                                     options.left_columns_subtitles_font_family);
+    //     if (options.left_columns_title) {
+
+    //       if (options.xaxis_hidden) {
+    //         row_element_col_subtitle_var_name = "columns_subtitle";
+    //         row_element_col_title_var_name = "columns_title";
+    //         opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+    //         opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
+    //         opts.row_element_names.unshift(row_element_col_title_var_name);
+    //         opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+    //       } else {
+    //         if (options.xaxis_location == "top") {
+    //           if (options.xaxis_title) {
+    //             row_element_col_subtitle_var_name = "xaxis";
+    //             row_element_col_title_var_name = "xtitle";
+    //             // subtitle aligned to x axis
+    //             // title aligned to x axis title
+    //           } else {
+    //             row_element_col_subtitle_var_name = "xaxis";
+    //             row_element_col_title_var_name = "columns_title";
+    //             opts.row_element_names.unshift(row_element_col_title_var_name);
+    //             opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+    //           }
+    //         } else {
+    //           row_element_col_subtitle_var_name = "columns_subtitle";
+    //           row_element_col_title_var_name = "columns_title";
+    //           opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+    //           opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
+    //           opts.row_element_names.unshift(row_element_col_title_var_name);
+    //           opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+    //         }
+    //       }
+
+    //     } else {
+    //       // no title
+    //       if (options.xaxis_hidden) {
+    //         row_element_col_subtitle_var_name = "columns_subtitle";
+    //         opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+    //         opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
+    //       } else {
+    //         if (options.xaxis_location == "top") {
+    //           row_element_col_subtitle_var_name = "xaxis";
+    //         } else {
+    //           // insert subtitle
+    //           row_element_col_subtitle_var_name = "columns_subtitle";
+    //           opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+    //           opts.row_element_map[row_element_col_subtitle_var_name] = opts.left_sub_len;
+    //         }
+    //       }
+    //     }
+    //   } else {
+
+    //     if (options.left_columns_title) {
+    //       if (options.xaxis_hidden) {
+    //         row_element_col_title_var_name = "columns_title";
+    //         opts.row_element_names.unshift(row_element_col_title_var_name);
+    //         opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+    //       } else {
+    //         if (options.xaxis_location == "top") {
+    //           // do nothing
+    //           row_element_col_title_var_name = "xaxis";
+    //         } else {
+    //           row_element_col_title_var_name = "columns_title";
+    //           opts.row_element_names.unshift(row_element_col_title_var_name);
+    //           opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+
+    // if (opts.right_columns) {
+    //   var right_cols_widths = [];
+    //   opts.right_columns_width = [];
+    //   for (i = 0;i < opts.right_columns.length; i++) {
+    //     right_cols_widths.push(0);
+    //     opts.col_element_names.push("right_col" + i);
+    //   }
+
+    //   //compute mean column width
+    //   compute_col_text_widths(opts.right_columns, right_cols_widths, true);
+
+    //   for (i = 0;i < opts.right_columns.length; i++) {
+    //     if (right_cols_widths[i] > opts.width * 0.2) {
+    //       right_cols_widths[i] = opts.width * 0.2;
+    //     }
+    //     opts.col_element_map["right_col" + i] = right_cols_widths[i] + opts.axis_padding*2;
+    //     opts.right_columns_width.push(right_cols_widths[i] + opts.axis_padding*2);
+    //   }
+
+    //   if (opts.right_columns_subtitles) {
+    //     opts.right_sub_len = compute_axis_label_dim(opts.right_columns_subtitles,
+    //                                     true,
+    //                                     options.right_columns_subtitles_font_size, 
+    //                                     options.right_columns_subtitles_font_family);
+    //     if (options.right_columns_title) {
+
+    //       if (options.xaxis_hidden) {
+    //         if (!row_element_col_subtitle_var_name) {
+    //           row_element_col_subtitle_var_name = "columns_subtitle";
+    //           opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+    //           opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
+    //         }
+    //         if (!row_element_col_title_var_name) {
+    //           row_element_col_title_var_name = "columns_title";
+    //           opts.row_element_names.unshift(row_element_col_title_var_name);
+    //           opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+    //         }
+    //       } else {
+
+    //         if (options.xaxis_location == "top") {
+
+    //           if (options.xaxis_title) {
+    //             row_element_col_subtitle_var_name = "xaxis";
+    //             row_element_col_title_var_name = "xtitle";
+    //           } else {
+    //             if (!row_element_col_title_var_name) {
+    //               row_element_col_title_var_name = "columns_title";
+    //               opts.row_element_names.unshift(row_element_col_title_var_name);
+    //               opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+    //             }
+    //             row_element_col_subtitle_var_name = "xaxis";
+    //           }
+    //         } else {
+    //           if (!row_element_col_subtitle_var_name) {
+    //             row_element_col_subtitle_var_name = "columns_subtitle";
+    //             opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+    //             opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
+    //           }
+    //           if (!row_element_col_title_var_name) {
+    //             row_element_col_title_var_name = "columns_title";
+    //             opts.row_element_names.unshift(row_element_col_title_var_name);
+    //             opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+    //           }
+    //         }
+    //       }
+    //     } else {
+    //       // no right title
+    //       if (options.xaxis_hidden) {
+    //         if (!row_element_col_subtitle_var_name) {
+    //           row_element_col_subtitle_var_name = "columns_subtitle";
+    //           opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+    //           opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
+    //         }
+    //       } else {
+
+    //         if (options.xaxis_location == "top") {
+    //           if (!row_element_col_subtitle_var_name) {
+    //             row_element_col_subtitle_var_name = "xaxis";
+    //           }
+    //         } else {
+    //           // insert subtitle
+    //           if (!row_element_col_subtitle_var_name) {
+    //             row_element_col_subtitle_var_name = "columns_subtitle";
+    //             opts.row_element_names.unshift(row_element_col_subtitle_var_name);
+    //             opts.row_element_map[row_element_col_subtitle_var_name] = opts.right_sub_len;
+    //           }
+    //         }
+    //       }
+    //     }
+
+    //   } else {
+    //     if (options.right_columns_title) {
+    //       if (options.xaxis_hidden) {
+    //         if (!row_element_col_title_var_name) {
+    //           row_element_col_title_var_name = "columns_title";
+    //           opts.row_element_names.unshift(row_element_col_title_var_name);
+    //           opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+    //         }
+    //       } else {
+    //         if (options.xaxis_location == "top") {
+    //           // do nothing
+    //           if (!row_element_col_title_var_name) {
+    //             row_element_col_title_var_name = "xaxis";
+    //           }
+    //         } else {
+    //           if (!row_element_col_title_var_name) {
+    //             row_element_col_title_var_name = "columns_title";
+    //             opts.row_element_names.unshift(row_element_col_title_var_name);
+    //             opts.row_element_map[row_element_col_title_var_name] = options.larger_columns_title_font_size*1.5;
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     if (!opts.yaxis_hidden) {
       if (data.rows) {
@@ -1003,6 +1130,9 @@ function heatmap(selector, data, options) {
   var rowDendBounds = !data.rows ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("row_dendro"), opts.row_element_names.indexOf("*"));
 
   var xaxisBounds = opts.xaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("xaxis"));
+  if (xaxisBounds) {
+    xaxisBounds.width0 = xaxisBounds.width;
+  }
 
   var yaxisBounds = opts.yaxis_hidden ? null : gridSizer.getCellBounds(opts.col_element_names.indexOf("yaxis"), opts.row_element_names.indexOf("*"));
 
@@ -1022,8 +1152,9 @@ function heatmap(selector, data, options) {
   var leftTitleBounds = {};
   leftTitleBounds.left = 0;
   leftTitleBounds.width = 0;
-  var leftSubtitleBounds = !options.left_columns_subtitles || !opts.left_columns ? null : [];
+  var leftSubtitleBounds = !opts.left_columns_subtitles || !opts.left_columns ? null : [];
   var leftColumnsWidth = 0;
+  var topAxisElBounds = undefined;
 
   if (opts.left_columns) {
 
@@ -1032,24 +1163,35 @@ function heatmap(selector, data, options) {
       leftColumnsWidth += leftColsBounds[i].width;
     }
 
-    if (options.left_columns_subtitles) {
-      for (var i = 0;i < opts.left_columns.length; i++) {
-        leftSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf(row_element_col_subtitle_var_name)));
+    if (!opts.xaxis_hidden && options.xaxis_location == "top") {
+      xaxisBounds.left = 0;
+      xaxisBounds.width = xaxisBounds.width + opts.left_columns_total_width;
+    } else {
+      if (opts.topaxis_len > 0) {
+        topAxisElBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("top_axis_el"));
+        topAxisElBounds.left = 0;
+        topAxisElBounds.width = opts.width;
       }
     }
-      
-    if (options.left_columns_title) {
-      leftTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf(row_element_col_title_var_name));
-    }
 
-    leftTitleBounds.left = 0;
-    leftTitleBounds.width = leftColumnsWidth;
+    // if (opts.left_columns_subtitles) {
+    //   for (var i = 0;i < opts.left_columns.length; i++) {
+    //     leftSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("left_col" + i), opts.row_element_names.indexOf(row_element_col_subtitle_var_name)));
+    //   }
+    // }
+      
+    // if (options.left_columns_title) {
+    //   leftTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf(row_element_col_title_var_name));
+    // }
+
+    // leftTitleBounds.left = 0;
+    // leftTitleBounds.width = leftColumnsWidth;
   }
 
   var rightColsBounds = !opts.right_columns ? null : [];
   var rightTitleBounds = {};
   rightTitleBounds.width = 0;
-  var rightSubtitleBounds = !options.right_columns_subtitles || !opts.right_columns ? null : [];
+  var rightSubtitleBounds = !opts.right_columns_subtitles || !opts.right_columns ? null : [];
   var rightColumnsWidth = 0;
 
   if (opts.right_columns) {
@@ -1059,18 +1201,28 @@ function heatmap(selector, data, options) {
       rightColumnsWidth += rightColsBounds[i].width;
     }
 
-    if (options.right_columns_subtitles) {
-      for (var i = 0;i < opts.right_columns.length; i++) {
-        rightSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("right_col" + i), opts.row_element_names.indexOf(row_element_col_subtitle_var_name)));
+    if (!opts.xaxis_hidden && options.xaxis_location == "top") {
+      xaxisBounds.width = xaxisBounds.width + opts.right_columns_total_width;
+    } else {
+      if (opts.topaxis_len > 0 && !opts.left_columns_subtitles) {
+        topAxisElBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf("top_axis_el"));
+        topAxisElBounds.left = 0;
+        topAxisElBounds.width = opts.width;
       }
     }
-      
-    if (options.right_columns_title) {
-      rightTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf(row_element_col_title_var_name));
-    }
 
-    rightTitleBounds.left = rightColsBounds[0].left;
-    rightTitleBounds.width = rightColumnsWidth;
+    // if (opts.right_columns_subtitles) {
+    //   for (var i = 0;i < opts.right_columns.length; i++) {
+    //     rightSubtitleBounds.push(gridSizer.getCellBounds(opts.col_element_names.indexOf("right_col" + i), opts.row_element_names.indexOf(row_element_col_subtitle_var_name)));
+    //   }
+    // }
+      
+    // if (options.right_columns_title) {
+    //   rightTitleBounds = gridSizer.getCellBounds(opts.col_element_names.indexOf("*"), opts.row_element_names.indexOf(row_element_col_title_var_name));
+    // }
+
+    // rightTitleBounds.left = rightColsBounds[0].left;
+    // rightTitleBounds.width = rightColumnsWidth;
   }
 
   if (options.title) {
@@ -1173,30 +1325,34 @@ function heatmap(selector, data, options) {
     var subtitle = !options.subtitle ? null : inner.append("svg").classed("graph_subtitle", true).style(cssify(subtitleBounds));
     var footer = !options.footer ? null : inner.append("svg").classed("graph_footer", true).style(cssify(footerBounds));
     var leftCols = !opts.left_columns ? null : [];
-    var leftColsSub = !opts.left_columns || !options.left_columns_subtitles ? null : [];
-    var leftColTitle = !opts.left_columns || !options.left_columns_title ? null : inner.append("svg").classed("graph_leftColsTitle", true).style(cssify(leftTitleBounds));
+    // var leftColsSub = !opts.left_columns || !opts.left_columns_subtitles ? null : [];
+    // var leftColTitle = !opts.left_columns || !options.left_columns_title ? null : inner.append("svg").classed("graph_leftColsTitle", true).style(cssify(leftTitleBounds));
     if (opts.left_columns) {
       for (i = 0; i < opts.left_columns.length; i++) {
         leftCols.push(!opts.left_columns ? null : inner.append("svg").classed("graph_leftCols" + i, true).style(cssify(leftColsBounds[i])));
       }
-      if (options.left_columns_subtitles) {
-        for (i = 0; i < opts.left_columns.length; i++) {
-          leftColsSub.push(inner.append("svg").classed("graph_leftColsSub" + i, true).style(cssify(leftSubtitleBounds[i])));
-        }
+      if (opts.left_columns_subtitles) {
+        var leftColsSub = !options.xaxis_hidden && options.xaxis_location == "top" ? null : inner.append("svg").classed("graph_topaxis_el", true).style(cssify(topAxisElBounds));
+      //   for (i = 0; i < opts.left_columns.length; i++) {
+      //     leftColsSub.push(inner.append("svg").classed("graph_leftColsSub" + i, true).style(cssify(leftSubtitleBounds[i])));
+      //   }
       }
     }
     var rightCols = !opts.right_columns ? null : [];
-    var rightColsSub = !opts.right_columns || !options.right_columns_subtitles ? null : [];
-    var rightColTitle = !opts.right_columns || !options.right_columns_title ? null : inner.append("svg").classed("graph_rightColsTitle", true).style(cssify(rightTitleBounds));
+    // var rightColsSub = !opts.right_columns || !opts.right_columns_subtitles ? null : [];
+    // var rightColTitle = !opts.right_columns || !options.right_columns_title ? null : inner.append("svg").classed("graph_rightColsTitle", true).style(cssify(rightTitleBounds));
     if (opts.right_columns) {
       for (i = 0; i < opts.right_columns.length; i++) {
         rightCols.push(!opts.right_columns ? null : inner.append("svg").classed("graph_rightCols" + i, true).style(cssify(rightColsBounds[i])));
       }
-      if (options.right_columns_subtitles) {
-        for (i = 0; i < opts.right_columns.length; i++) {
-          rightColsSub.push(inner.append("svg").classed("graph_rightColsSub" + i, true).style(cssify(rightSubtitleBounds[i])));
-        }
+      if (opts.right_columns_subtitles && !opts.left_columns_subtitles) {
+        var rightColsSub = !options.xaxis_hidden && options.xaxis_location == "top" ? null : inner.append("svg").classed("graph_topaxis_el", true).style(cssify(topAxisElBounds));
       }
+      // if (opts.right_columns_subtitles) {
+      //   for (i = 0; i < opts.right_columns.length; i++) {
+      //     rightColsSub.push(inner.append("svg").classed("graph_rightColsSub" + i, true).style(cssify(rightSubtitleBounds[i])));
+      //   }
+      // }
     }
 
     inner.on("click", function() {
@@ -1211,7 +1367,7 @@ function heatmap(selector, data, options) {
   var row = !data.rows ? null : dendrogram(el.select('svg.rowDend'), data.rows, false, rowDendBounds.width, rowDendBounds.height, opts.axis_padding);
   var col = !data.cols ? null : dendrogram(el.select('svg.colDend'), data.cols, true, colDendBounds.width, colDendBounds.height, opts.axis_padding);
   var colormap = colormap(el.select('svg.colormap'), data.matrix, colormapBounds.width, colormapBounds.height);
-  var xax = opts.xaxis_hidden ? null : axisLabels(el.select('svg.xaxis'), opts.xlabs_mod, true, xaxisBounds.width, xaxisBounds.height, opts.axis_padding, opts.xaxis_location);
+  var xax = opts.xaxis_hidden ? null : axisLabels(el.select('svg.xaxis'), opts.xlabs_mod, true, xaxisBounds.width0, xaxisBounds.height, opts.axis_padding, opts.xaxis_location);
   var yax = opts.yaxis_hidden ? null : axisLabels(el.select('svg.yaxis'), opts.ylabs_mod, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding, opts.yaxis_location);
   var xtitle = !opts.xaxis_title || opts.xaxis_hidden ? null : axis_title(el.select('svg.xtitle'), opts.xaxis_title, false, xtitleBounds);
   var ytitle = !opts.yaxis_title || opts.yaxis_hidden ? null : axis_title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds);
@@ -1257,24 +1413,24 @@ function heatmap(selector, data, options) {
         options.left_columns_align.push("l");
       }
     }
-    if (!options.left_columns_subtitles_align) {
-      options.left_columns_subtitles_align = [];
-      for (i = 0; i < opts.left_columns.length; i++) {
-        options.left_columns_subtitles_align.push("l");
-      }
-    }
-    if (!options.left_columns_subtitles_bold) {
-      options.left_columns_subtitles_bold = [];
-      for (i = 0; i < opts.left_columns.length; i++) {
-        options.left_columns_subtitles_bold.push(false);
-      }
-    }
-    if (!options.left_columns_title_align) {
-      options.left_columns_title_align = "c";
-    }
-    if (!options.left_columns_title_bold) {
-      options.left_columns_title_bold = "bold";
-    }
+    // if (!options.left_columns_subtitles_align) {
+    //   options.left_columns_subtitles_align = [];
+    //   for (i = 0; i < opts.left_columns.length; i++) {
+    //     options.left_columns_subtitles_align.push("l");
+    //   }
+    // }
+    // if (!options.left_columns_subtitles_bold) {
+    //   options.left_columns_subtitles_bold = [];
+    //   for (i = 0; i < opts.left_columns.length; i++) {
+    //     options.left_columns_subtitles_bold.push(false);
+    //   }
+    // }
+    // if (!options.left_columns_title_align) {
+    //   options.left_columns_title_align = "c";
+    // }
+    // if (!options.left_columns_title_bold) {
+    //   options.left_columns_title_bold = "bold";
+    // }
   }
 
   if (opts.right_columns) {
@@ -1284,28 +1440,28 @@ function heatmap(selector, data, options) {
         options.right_columns_align.push("l");
       }
     }
-    if (!options.right_columns_subtitles_align) {
-      options.right_columns_subtitles_align = [];
-      for (i = 0; i < opts.right_columns.length; i++) {
-        options.right_columns_subtitles_align.push("l");
-      }
-    }
-    if (!options.right_columns_subtitles_bold) {
-      options.right_columns_subtitles_bold = [];
-      for (i = 0; i < opts.right_columns.length; i++) {
-        options.right_columns_subtitles_bold.push(false);
-      }
-    }
-    if (!options.right_columns_title_align) {
-      options.right_columns_title_align = "c";
-    }
-    if (!options.right_columns_title_bold) {
-      options.right_columns_title_bold = "bold";
-    }
+    // if (!options.right_columns_subtitles_align) {
+    //   options.right_columns_subtitles_align = [];
+    //   for (i = 0; i < opts.right_columns.length; i++) {
+    //     options.right_columns_subtitles_align.push("l");
+    //   }
+    // }
+    // if (!options.right_columns_subtitles_bold) {
+    //   options.right_columns_subtitles_bold = [];
+    //   for (i = 0; i < opts.right_columns.length; i++) {
+    //     options.right_columns_subtitles_bold.push(false);
+    //   }
+    // }
+    // if (!options.right_columns_title_align) {
+    //   options.right_columns_title_align = "c";
+    // }
+    // if (!options.right_columns_title_bold) {
+    //   options.right_columns_title_bold = "bold";
+    // }
   }
 
   var graph_left_cols = [];
-  var graph_left_cols_sub = [];
+  var graph_left_cols_sub;
   var graph_left_cols_title;
 
   opts.left_columns_axis = [];
@@ -1325,36 +1481,63 @@ function heatmap(selector, data, options) {
           i));
     }
 
-    if (options.left_columns_subtitles) {
-      for (i = 0; i < opts.left_columns.length; i++) {
-        graph_left_cols_sub.push(insert_column_title_el(
-          el.select('svg.graph_leftColsSub' + i),
-          leftSubtitleBounds[i],
-          true,
-          options.left_columns_subtitles[i],
-          options.left_columns_subtitles_align[i],
-          options.left_columns_subtitles_bold[i],
+    if (opts.left_columns_subtitles) {
+      if (!options.xaxis_hidden && options.xaxis_location == "top") {
+        var this_el = el.select('svg.xaxis');
+        var this_bounds = xaxisBounds;
+        insert_column_subtitle (this_el, 
+          this_bounds, 
+          opts.left_columns_subtitles, 
           options.left_columns_subtitles_font_family,
           options.left_columns_subtitles_font_size,
-          options.left_columns_subtitles_font_color,
-          opts.left_columns_width[i]
-          ));
+          options.left_columns_subtitles_font_color, 
+          opts.left_columns_width, 
+          true);
+      } else {
+        var this_el = el.select('svg.graph_topaxis_el');
+        var this_bounds = topAxisElBounds;
+        insert_column_subtitle (this_el, 
+          this_bounds, 
+          opts.left_columns_subtitles, 
+          options.left_columns_subtitles_font_family,
+          options.left_columns_subtitles_font_size,
+          options.left_columns_subtitles_font_color, 
+          opts.left_columns_width, 
+          true);
       }
+      
     }
 
-    if (options.left_columns_title) {
-      graph_left_cols_title = insert_column_title_el(
-          el.select('svg.graph_leftColsTitle'),
-          leftTitleBounds,
-          false,
-          options.left_columns_title,
-          options.left_columns_title_align,
-          options.left_columns_title_bold,
-          options.left_columns_title_font_family,
-          options.left_columns_title_font_size,
-          options.left_columns_title_font_color
-          )
-    }
+    // if (opts.left_columns_subtitles) {
+    //   for (i = 0; i < opts.left_columns.length; i++) {
+    //     graph_left_cols_sub.push(insert_column_title_el(
+    //       el.select('svg.graph_leftColsSub' + i),
+    //       leftSubtitleBounds[i],
+    //       true,
+    //       opts.left_columns_subtitles[i],
+    //       options.left_columns_subtitles_align[i],
+    //       options.left_columns_subtitles_bold[i],
+    //       options.left_columns_subtitles_font_family,
+    //       options.left_columns_subtitles_font_size,
+    //       options.left_columns_subtitles_font_color,
+    //       opts.left_columns_width[i]
+    //       ));
+    //   }
+    //}
+
+    // if (options.left_columns_title) {
+    //   graph_left_cols_title = insert_column_title_el(
+    //       el.select('svg.graph_leftColsTitle'),
+    //       leftTitleBounds,
+    //       false,
+    //       options.left_columns_title,
+    //       options.left_columns_title_align,
+    //       options.left_columns_title_bold,
+    //       options.left_columns_title_font_family,
+    //       options.left_columns_title_font_size,
+    //       options.left_columns_title_font_color
+    //       )
+    // }
   }
 
   var graph_right_cols = [];
@@ -1367,7 +1550,7 @@ function heatmap(selector, data, options) {
   if (opts.right_columns) {
     for (i = 0; i < opts.right_columns.length; i++) {
       graph_right_cols.push(
-        !opts.right_columns ? null : insert_right_columns(
+        !opts.right_columns ? null : insert_columns(
           el.select('svg.graph_rightCols' + i),
           rightColsBounds[i],
           options.right_columns[i],
@@ -1378,36 +1561,245 @@ function heatmap(selector, data, options) {
           i));
     }
 
-    if (options.right_columns_subtitles) {
-      for (i = 0; i < opts.right_columns.length; i++) {
-        graph_right_cols_sub.push(insert_column_title_el(
-          el.select('svg.graph_rightColsSub' + i),
-          rightSubtitleBounds[i],
-          true,
-          options.right_columns_subtitles[i],
-          options.right_columns_subtitles_align[i],
-          options.right_columns_subtitles_bold[i],
+    if (opts.right_columns_subtitles) {
+      if (!options.xaxis_hidden && options.xaxis_location == "top") {
+        var this_el = el.select('svg.xaxis');
+        var this_bounds = xaxisBounds;
+        insert_column_subtitle (this_el, 
+          this_bounds, 
+          opts.right_columns_subtitles, 
           options.right_columns_subtitles_font_family,
           options.right_columns_subtitles_font_size,
-          options.right_columns_subtitles_font_color,
-          opts.right_columns_width[i]
-          ));
+          options.right_columns_subtitles_font_color, 
+          opts.right_columns_width, 
+          false);
+      } else {
+        var this_el = el.select('svg.graph_topaxis_el');
+        var this_bounds = topAxisElBounds;
+        insert_column_subtitle (this_el, 
+          this_bounds, 
+          opts.right_columns_subtitles, 
+          options.right_columns_subtitles_font_family,
+          options.right_columns_subtitles_font_size,
+          options.right_columns_subtitles_font_color, 
+          opts.right_columns_width, 
+          false);
       }
+      
     }
+    // if (opts.right_columns_subtitles) {
+    //   for (i = 0; i < opts.right_columns.length; i++) {
+    //     graph_right_cols_sub.push(insert_column_title_el(
+    //       el.select('svg.graph_rightColsSub' + i),
+    //       rightSubtitleBounds[i],
+    //       true,
+    //       opts.right_columns_subtitles[i],
+    //       options.right_columns_subtitles_align[i],
+    //       options.right_columns_subtitles_bold[i],
+    //       options.right_columns_subtitles_font_family,
+    //       options.right_columns_subtitles_font_size,
+    //       options.right_columns_subtitles_font_color,
+    //       opts.right_columns_width[i]
+    //       ));
+    //   }
+    //}
 
-    if (options.right_columns_title) {
-      graph_right_cols_title = insert_column_title_el(
-          el.select('svg.graph_rightColsTitle'),
-          rightTitleBounds,
-          false,
-          options.right_columns_title,
-          options.right_columns_title_align,
-          options.right_columns_title_bold,
-          options.right_columns_title_font_family,
-          options.right_columns_title_font_size,
-          options.right_columns_title_font_color
-          )
-    }
+    // if (options.right_columns_title) {
+    //   graph_right_cols_title = insert_column_title_el(
+    //       el.select('svg.graph_rightColsTitle'),
+    //       rightTitleBounds,
+    //       false,
+    //       options.right_columns_title,
+    //       options.right_columns_title_align,
+    //       options.right_columns_title_bold,
+    //       options.right_columns_title_font_family,
+    //       options.right_columns_title_font_size,
+    //       options.right_columns_title_font_color
+    //       )
+    // }
+  }
+
+  if (opts.left_columns || opts.right_columns) {
+    controller.on('highlight.axis-y', function(hl) {
+      var selected = hl['y'];
+      if (opts.left_columns) {
+        for (var j = 0; j < opts.left_columns.length; j++) {
+          d3.selectAll(".coltickLeft" + j)
+          .style("opacity", function(dd,ii) {
+            if (typeof(selected) !== 'number') {
+              return 1;
+            }
+            var opa = parseFloat(d3.select(this).style("opacity"));
+            var el_id = d3.select(this).attr("id");
+            el_id = parseInt(el_id.substr(1));
+            if (selected == el_id) {
+              return 1;
+            } else {
+              return 0.4;
+            }
+          });
+        }
+      }
+      if (opts.right_columns) {
+        for (var j = 0; j < opts.right_columns.length; j++) {
+          d3.selectAll(".coltickRight" + j)
+          .style("opacity", function(dd,ii) {
+            if (typeof(selected) !== 'number') {
+              return 1;
+            }
+            var opa = parseFloat(d3.select(this).style("opacity"));
+            var el_id = d3.select(this).attr("id");
+            el_id = parseInt(el_id.substr(1));
+            if (selected == el_id) {
+              return 1;
+            } else {
+              return 0.4;
+            }
+          });
+        }
+      }
+    });
+
+    controller.on('transform.axis-y', function(_) {
+      var dim = 1;
+      if (opts.left_columns) {
+        for (var j = 0; j < opts.left_columns.length; j++) {
+          var rb = [_.translate[dim], leftColsBounds[j].height * _.scale[dim] + _.translate[dim]];
+          opts.left_columns_scales[j].rangeBands(rb);
+
+          var tAxisNodes = d3.select(".axisNodesLeft" + j)
+            .transition('1')
+            .duration(opts.anim_duration)
+            .ease('linear');
+
+          tAxisNodes.call(opts.left_columns_axis[j]);
+
+          d3.select(".axisNodesLeft" + j).selectAll("text")
+              .style("text-anchor", function() {
+                if (options.left_columns_align[j] == "l") {
+                  return "start";
+                } else if (options.left_columns_align[j] == "c") {
+                  return "middle";
+                } else if (options.left_columns_align[j] == "r") {
+                  return "end";
+                }
+              });
+
+          tAxisNodes.selectAll("g")
+              .style("opacity", function(d, i) {
+                if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              });
+
+          tAxisNodes.selectAll("text")
+              .style("text-anchor", function() {
+                if (options.left_columns_align[j] == "l") {
+                  return "start";
+                } else if (options.left_columns_align[j] == "c") {
+                  return "middle";
+                } else if (options.left_columns_align[j] == "r") {
+                  return "end";
+                }
+              });
+
+          function layoutMouseTargetsLocal(selection) {
+            var _h = opts.left_columns_scales[j].rangeBand();
+            var _w = opts.left_columns_width[j];
+            selection
+                .attr("transform", function(d, i) {
+                  var x = 0;
+                  var y = opts.left_columns_scales[j](i);
+                  return "translate(" + x + "," + y + ")";
+                })
+              .selectAll("rect")
+                .attr("height", _h)
+                .attr("width", _w);
+          }
+
+          opts.left_columns_mouseTargets[j].transition().duration(opts.anim_duration).ease('linear')
+              .call(layoutMouseTargetsLocal)
+              .style("opacity", function(d, i) {
+                if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              });
+        }
+      }
+
+      if (opts.right_columns) {
+        for (var j = 0; j < opts.right_columns.length; j++) {
+          var rb = [_.translate[dim], rightColsBounds[j].height * _.scale[dim] + _.translate[dim]];
+          opts.right_columns_scales[j].rangeBands(rb);
+
+          var tAxisNodes = d3.select(".axisNodesRight" + j)
+            .transition()
+            .duration(opts.anim_duration)
+            .ease('linear');
+
+          tAxisNodes.call(opts.right_columns_axis[j]);
+
+          d3.select(".axisNodesRight" + j).selectAll("text")
+              .style("text-anchor", function() {
+                if (options.right_columns_align[j] == "l") {
+                  return "start";
+                } else if (options.right_columns_align[j] == "c") {
+                  return "middle";
+                } else if (options.right_columns_align[j] == "r") {
+                  return "end";
+                }
+              });
+
+          tAxisNodes.selectAll("g")
+              .style("opacity", function(d, i) {
+                if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              });
+
+          tAxisNodes.selectAll("text")
+              .style("text-anchor", function() {
+                if (options.right_columns_align[j] == "l") {
+                  return "start";
+                } else if (options.right_columns_align[j] == "c") {
+                  return "middle";
+                } else if (options.right_columns_align[j] == "r") {
+                  return "end";
+                }
+              });
+
+          function layoutMouseTargetsLocal(selection) {
+            var _h = opts.right_columns_scales[j].rangeBand();
+            var _w = opts.right_columns_width[j];
+            selection
+                .attr("transform", function(d, i) {
+                  var x = 0;
+                  var y = opts.right_columns_scales[j](i);
+                  return "translate(" + x + "," + y + ")";
+                })
+              .selectAll("rect")
+                .attr("height", _h)
+                .attr("width", _w);
+          }
+
+          opts.right_columns_mouseTargets[j].transition().duration(opts.anim_duration).ease('linear')
+              .call(layoutMouseTargetsLocal)
+              .style("opacity", function(d, i) {
+                if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+                  return 1;
+                } else {
+                  return 0;
+                }
+              });
+        }
+      }
+    });
   }
 
   function insert_columns(svg, bounds, data, fontFamily, fontSize, align, left_or_right, index) {
@@ -1428,11 +1820,19 @@ function heatmap(selector, data, options) {
         .tickPadding(0)
         .tickFormat(function(d, i) { return thisColData[i]; });// hack for repeated values
 
-    opts.left_columns_axis.push(axis);
-    opts.left_columns_scales.push(scale);
+    var lr = "Left";
+    if (left_or_right) {
+      opts.left_columns_axis.push(axis);
+      opts.left_columns_scales.push(scale);
+    } else {
+      opts.right_columns_axis.push(axis);
+      opts.right_columns_scales.push(scale);
+      lr = "Right";
+    }
+
     // Create the actual axis
     var axisNodes = svg.append('g')
-        .attr("class", "axisNodes" + index)
+        .attr("class", "axisNodes" + lr + index)
         .attr("transform", function() {
           if (align =="l") {
             return "translate(0,0)";
@@ -1451,7 +1851,7 @@ function heatmap(selector, data, options) {
 
     var fontSize = left_or_right ? options.left_columns_font_size : options.left_columns_font_size;
     axisNodes.selectAll("text")
-      .attr("class", "coltick" + index)
+      .attr("class", "coltick" + lr + index)
       .attr("id", function (d,i) {
         return "c" + i;
       }) 
@@ -1482,8 +1882,12 @@ function heatmap(selector, data, options) {
             d3.event.stopPropagation();
           });
 
-    opts.left_columns_mouseTargets.push(mouseTargets);
-
+    if (left_or_right) {
+      opts.left_columns_mouseTargets.push(mouseTargets);
+    } else {
+      opts.right_columns_mouseTargets.push(mouseTargets);
+    }
+    
     function layoutMouseTargets(selection) {
       var _h = scale.rangeBand();
       var _w = bounds.width;
@@ -1511,95 +1915,166 @@ function heatmap(selector, data, options) {
         .style("text-anchor", "end");
     }
 
-    controller.on('highlight.axis-y', function(hl) {
-      var selected = hl['y'];
-      for (var j = 0; j < opts.left_columns.length; j++) {
-        d3.selectAll(".coltick" + j)
-          .style("opacity", function(dd,ii) {
-            if (typeof(selected) !== 'number') {
-              return 1;
-            }
-            var opa = parseFloat(d3.select(this).style("opacity"));
-            var el_id = d3.select(this).attr("id");
-            el_id = parseInt(el_id.substr(1));
-            if (selected == el_id) {
-              return 1;
-            } else {
-              return 0.4;
-            }
-          });
-      }
-    });
+    // controller.on('highlight.axis-y', function(hl) {
+    //   var selected = hl['y'];
+    //   for (var j = 0; j < opts.left_columns.length; j++) {
+    //     d3.selectAll(".coltick" + j)
+    //       .style("opacity", function(dd,ii) {
+    //         if (typeof(selected) !== 'number') {
+    //           return 1;
+    //         }
+    //         var opa = parseFloat(d3.select(this).style("opacity"));
+    //         var el_id = d3.select(this).attr("id");
+    //         el_id = parseInt(el_id.substr(1));
+    //         if (selected == el_id) {
+    //           return 1;
+    //         } else {
+    //           return 0.4;
+    //         }
+    //       });
+    //   }
+    // });
 
-    controller.on('transform.axis-y', function(_) {
-      var dim = 1;
-      //scale.domain(leaves.slice(_.extent[0][dim], _.extent[1][dim]));
-      for (var j = 0; j < opts.left_columns.length; j++) {
-        var rb = [_.translate[dim], bounds.height * _.scale[dim] + _.translate[dim]];
-        opts.left_columns_scales[j].rangeBands(rb);
+    // controller.on('transform.axis-y', function(_) {
+    //   var dim = 1;
+    //   //scale.domain(leaves.slice(_.extent[0][dim], _.extent[1][dim]));
+    //   if (opts.left_columns) {
+    //     for (var j = 0; j < opts.left_columns.length; j++) {
+    //       var rb = [_.translate[dim], bounds.height * _.scale[dim] + _.translate[dim]];
+    //       opts.left_columns_scales[j].rangeBands(rb);
 
-        var tAxisNodes = d3.select(".axisNodes" + j)
-          .transition()
-          .duration(opts.anim_duration)
-          .ease('linear');
+    //       var tAxisNodes = d3.select(".axisNodes" + j)
+    //         .transition('1')
+    //         .duration(opts.anim_duration)
+    //         .ease('linear');
 
-        tAxisNodes.call(opts.left_columns_axis[j]);
+    //       tAxisNodes.call(opts.left_columns_axis[j]);
 
-        d3.select(".axisNodes" + j).selectAll("text")
-            .style("text-anchor", function() {
-              if (options.left_columns_align[j] == "l") {
-                return "start";
-              } else if (options.left_columns_align[j] == "c") {
-                return "middle";
-              } else if (options.left_columns_align[j] == "r") {
-                return "end";
-              }
-            });
+    //       d3.select(".axisNodes" + j).selectAll("text")
+    //           .style("text-anchor", function() {
+    //             if (options.left_columns_align[j] == "l") {
+    //               return "start";
+    //             } else if (options.left_columns_align[j] == "c") {
+    //               return "middle";
+    //             } else if (options.left_columns_align[j] == "r") {
+    //               return "end";
+    //             }
+    //           });
 
-        tAxisNodes.selectAll("g")
-            .style("opacity", function(d, i) {
-              if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
-                return 1;
-              } else {
-                return 0;
-              }
-            });
+    //       tAxisNodes.selectAll("g")
+    //           .style("opacity", function(d, i) {
+    //             if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+    //               return 1;
+    //             } else {
+    //               return 0;
+    //             }
+    //           });
 
-        tAxisNodes.selectAll("text")
-            .style("text-anchor", function() {
-              if (options.left_columns_align[j] == "l") {
-                return "start";
-              } else if (options.left_columns_align[j] == "c") {
-                return "middle";
-              } else if (options.left_columns_align[j] == "r") {
-                return "end";
-              }
-            });
+    //       tAxisNodes.selectAll("text")
+    //           .style("text-anchor", function() {
+    //             if (options.left_columns_align[j] == "l") {
+    //               return "start";
+    //             } else if (options.left_columns_align[j] == "c") {
+    //               return "middle";
+    //             } else if (options.left_columns_align[j] == "r") {
+    //               return "end";
+    //             }
+    //           });
 
-        function layoutMouseTargetsLocal(selection) {
-          var _h = opts.left_columns_scales[j].rangeBand();
-          var _w = opts.left_columns_width[j];
-          selection
-              .attr("transform", function(d, i) {
-                var x = 0;
-                var y = opts.left_columns_scales[j](i);
-                return "translate(" + x + "," + y + ")";
-              })
-            .selectAll("rect")
-              .attr("height", _h)
-              .attr("width", _w);
-        }
+    //       function layoutMouseTargetsLocal(selection) {
+    //         var _h = opts.left_columns_scales[j].rangeBand();
+    //         var _w = opts.left_columns_width[j];
+    //         selection
+    //             .attr("transform", function(d, i) {
+    //               var x = 0;
+    //               var y = opts.left_columns_scales[j](i);
+    //               return "translate(" + x + "," + y + ")";
+    //             })
+    //           .selectAll("rect")
+    //             .attr("height", _h)
+    //             .attr("width", _w);
+    //       }
 
-        opts.left_columns_mouseTargets[j].transition().duration(opts.anim_duration).ease('linear')
-            .call(layoutMouseTargetsLocal)
-            .style("opacity", function(d, i) {
-              if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
-                return 1;
-              } else {
-                return 0;
-              }
-            });
-      }
+    //       opts.left_columns_mouseTargets[j].transition().duration(opts.anim_duration).ease('linear')
+    //           .call(layoutMouseTargetsLocal)
+    //           .style("opacity", function(d, i) {
+    //             if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+    //               return 1;
+    //             } else {
+    //               return 0;
+    //             }
+    //           });
+    //     }
+    //   }
+
+    //   if (opts.right_columns) {
+    //   for (var j = 0; j < opts.right_columns.length; j++) {
+    //     var rb = [_.translate[dim], bounds.height * _.scale[dim] + _.translate[dim]];
+    //     opts.right_columns_scales[j].rangeBands(rb);
+
+    //     var tAxisNodes = d3.select(".axisNodes" + j)
+    //       .transition('2')
+    //       .duration(opts.anim_duration)
+    //       .ease('linear');
+
+    //     tAxisNodes.call(opts.right_columns_axis[j]);
+
+    //     d3.select(".axisNodes" + j).selectAll("text")
+    //         .style("text-anchor", function() {
+    //           if (options.right_columns_align[j] == "l") {
+    //             return "start";
+    //           } else if (options.right_columns_align[j] == "c") {
+    //             return "middle";
+    //           } else if (options.right_columns_align[j] == "r") {
+    //             return "end";
+    //           }
+    //         });
+
+    //     tAxisNodes.selectAll("g")
+    //         .style("opacity", function(d, i) {
+    //           if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+    //             return 1;
+    //           } else {
+    //             return 0;
+    //           }
+    //         });
+
+    //     tAxisNodes.selectAll("text")
+    //         .style("text-anchor", function() {
+    //           if (options.right_columns_align[j] == "l") {
+    //             return "start";
+    //           } else if (options.right_columns_align[j] == "c") {
+    //             return "middle";
+    //           } else if (options.right_columns_align[j] == "r") {
+    //             return "end";
+    //           }
+    //         });
+
+    //     function layoutMouseTargetsLocal(selection) {
+    //       var _h = opts.right_columns_scales[j].rangeBand();
+    //       var _w = opts.right_columns_width[j];
+    //       selection
+    //           .attr("transform", function(d, i) {
+    //             var x = 0;
+    //             var y = opts.right_columns_scales[j](i);
+    //             return "translate(" + x + "," + y + ")";
+    //           })
+    //         .selectAll("rect")
+    //           .attr("height", _h)
+    //           .attr("width", _w);
+    //     }
+
+    //     opts.right_columns_mouseTargets[j].transition().duration(opts.anim_duration).ease('linear')
+    //         .call(layoutMouseTargetsLocal)
+    //         .style("opacity", function(d, i) {
+    //           if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+    //             return 1;
+    //           } else {
+    //             return 0;
+    //           }
+    //         });
+    //   }
+    //   }
 
       // Set text-anchor on the non-transitioned node to prevent jumpiness
       // in RStudio Viewer pane
@@ -1610,261 +2085,320 @@ function heatmap(selector, data, options) {
       // }
       
 
-    });
+    //});
 
   }
 
-  function insert_column_title_el (svg, bounds, rotated, subtitle, subtitleAlign, subtitleBold, fontFam, fontSize, fontCol, colWidth) {
-    var svg = svg.append('g');
+  function insert_column_subtitle (svg, bounds, subtitle, fontFam, fontSize, fontCol, colWidth, left_or_right) {
+    var this_sub = [];
+    var this_colw = [];
+    for (var j = 0; j < subtitle.length; j++) {
+      this_sub.push(subtitle[j]);
+      this_colw.push(colWidth[j]);
+    }
+    if (left_or_right) {
+      this_sub = this_sub.reverse();
+      this_colw = this_colw.reverse();
+    }
+    var text_el = svg.append('g').selectAll("text").data(this_sub).enter();
     var thisBounds = bounds;
     var sub;
-    if (subtitle) {
-      sub = svg.append("g")
-        .attr("transform", function() {
-          if (rotated) {
-            return "translate(" + colWidth/2 + "," + (thisBounds.height - opts.axis_padding) + ")";
-          } else {
-            return "translate(0," + thisBounds.height/2 + ")";
-          }
-        })
-        .append("text")
-        .attr("transform", function() {
-          if (rotated) {
-            return "rotate(-45),translate(" + opts.axis_padding + "," + 0 + ")";
-          } else {
-            return "translate(0,0)";
-          }
-        })
-        .attr("x", function() {
-          if (rotated) {
-            return 0;
-          } else {
-            if (subtitleAlign == "l") {
-              return 0;
-            } else if (subtitleAlign == "c") {
-              return thisBounds.width/2;
-            } else if (subtitleAlign == "r") {
-              return thisBounds.width - opts.axis_padding;
-            }
-          }
-        })
-        .attr("y", function() {
-          if (rotated) {
-            return -opts.axis_padding;
-          }
-          return 0;
-        })
-        .text(subtitle)
-        .style("text-anchor", function() {
-          if (rotated) {
-            return "start";
-          }
-          if (subtitleAlign == "l") {
-            return "start";
-          } else if (subtitleAlign == "c") {
-            return "middle";
-          } else if (subtitleAlign == "r") {
-            return "end";
-          }
-        })
-        .attr("font-weight", subtitleBold ? "bold" : "normal")
-        .style("font-family", fontFam)
-        .style("font-size", fontSize)
-        .style("font-color", fontCol);
-    }
+    sub = text_el.append("g")
+      .attr("transform", function(d,i) {
+
+        var accumu_x = 0;
+        for (var kk = 0; kk < i; kk++) {
+          accumu_x = accumu_x + this_colw[kk];
+        }
+        if (!left_or_right) {
+          accumu_x = accumu_x + rightColsBounds[0].left;
+        }
+        return "translate(" + (accumu_x + this_colw[i]/2 - fontSize/2) + "," + (thisBounds.height - opts.axis_padding) + ")";
+        //} else {
+        //  return "translate(0," + thisBounds.height/2 + ")";
+        //}
+      })
+      .append("text")
+      .attr("transform", function() {
+        //if (rotated) {
+          return "rotate(-45),translate(" + opts.axis_padding + "," + 0 + ")";
+        //} else {
+        //  return "translate(0,0)";
+        //}
+      })
+      .attr("x", 0)
+      .attr("y", -opts.axis_padding)
+      .text(function(d){ return d;})
+      .style("text-anchor", function() {
+        //if (rotated) {
+          return "start";
+        //}
+        // if (subtitleAlign == "l") {
+        //   return "start";
+        // } else if (subtitleAlign == "c") {
+        //   return "middle";
+        // } else if (subtitleAlign == "r") {
+        //   return "end";
+        // }
+      })
+      //.attr("font-weight", subtitleBold ? "bold" : "normal")
+      .style("font-family", fontFam)
+      .style("font-size", fontSize)
+      .style("font-color", fontCol);
+
   }
 
+  // function insert_column_title_el (svg, bounds, rotated, subtitle, subtitleAlign, subtitleBold, fontFam, fontSize, fontCol, colWidth) {
+  //   var svg = svg.append('g');
+  //   var thisBounds = bounds;
+  //   var sub;
+  //   if (subtitle) {
+  //     sub = svg.append("g")
+  //       .attr("transform", function() {
+  //         if (rotated) {
+  //           return "translate(" + colWidth/2 + "," + (thisBounds.height - opts.axis_padding) + ")";
+  //         } else {
+  //           return "translate(0," + thisBounds.height/2 + ")";
+  //         }
+  //       })
+  //       .append("text")
+  //       .attr("transform", function() {
+  //         if (rotated) {
+  //           return "rotate(-45),translate(" + opts.axis_padding + "," + 0 + ")";
+  //         } else {
+  //           return "translate(0,0)";
+  //         }
+  //       })
+  //       .attr("x", function() {
+  //         if (rotated) {
+  //           return 0;
+  //         } else {
+  //           if (subtitleAlign == "l") {
+  //             return 0;
+  //           } else if (subtitleAlign == "c") {
+  //             return thisBounds.width/2;
+  //           } else if (subtitleAlign == "r") {
+  //             return thisBounds.width - opts.axis_padding;
+  //           }
+  //         }
+  //       })
+  //       .attr("y", function() {
+  //         if (rotated) {
+  //           return -opts.axis_padding;
+  //         }
+  //         return 0;
+  //       })
+  //       .text(subtitle)
+  //       .style("text-anchor", function() {
+  //         if (rotated) {
+  //           return "start";
+  //         }
+  //         if (subtitleAlign == "l") {
+  //           return "start";
+  //         } else if (subtitleAlign == "c") {
+  //           return "middle";
+  //         } else if (subtitleAlign == "r") {
+  //           return "end";
+  //         }
+  //       })
+  //       .attr("font-weight", subtitleBold ? "bold" : "normal")
+  //       .style("font-family", fontFam)
+  //       .style("font-size", fontSize)
+  //       .style("font-color", fontCol);
+  //   }
+  // }
 
-  function insert_right_columns(svg, bounds, data, fontFamily, fontSize, align, left_or_right, index) {
-    // bounds is an array of columns, data is an array of data columns
-    var svg = svg.append('g');
-    var thisColData = data;
-    var thisBounds = bounds;
-    // set axis options
-    var scale = d3.scale.ordinal()
-        .domain(d3.range(0, thisColData.length))
-        .rangeBands([0, thisBounds.height]);
 
-    var axis = d3.svg.axis()
-        .scale(scale)
-        .orient("left")
-        .outerTickSize(0)
-        .innerTickSize(0)
-        .tickPadding(0)
-        .tickFormat(function(d, i) { return thisColData[i]; });// hack for repeated values
+  // function insert_right_columns(svg, bounds, data, fontFamily, fontSize, align, left_or_right, index) {
+  //   // bounds is an array of columns, data is an array of data columns
+  //   var svg = svg.append('g');
+  //   var thisColData = data;
+  //   var thisBounds = bounds;
+  //   // set axis options
+  //   var scale = d3.scale.ordinal()
+  //       .domain(d3.range(0, thisColData.length))
+  //       .rangeBands([0, thisBounds.height]);
 
-    opts.right_columns_axis.push(axis);
-    opts.right_columns_scales.push(scale);
-    // Create the actual axis
-    var axisNodes = svg.append('g')
-        .attr("class", "axisNodes" + index)
-        .attr("transform", function() {
-          if (align =="l") {
-            return "translate(" + opts.axis_padding + ",0)";
-          } else if (align == "c") {
-            return "translate(" + thisBounds.width/2 + ",0)";
-          } else if (align == "r") {
-            return "translate(" + (thisBounds.width) + ",0)";
-          }
-          // if (options.table_style) {
-          //   return "translate(0,0)";
-          // } else {
-          //   return "translate(" + (thisBounds.width - opts.axis_padding) + ",0)";
-          // }
-        })
-        .call(axis);
+  //   var axis = d3.svg.axis()
+  //       .scale(scale)
+  //       .orient("left")
+  //       .outerTickSize(0)
+  //       .innerTickSize(0)
+  //       .tickPadding(0)
+  //       .tickFormat(function(d, i) { return thisColData[i]; });// hack for repeated values
 
-    var fontSize = left_or_right ? options.left_columns_font_size : options.right_columns_font_size;
-    axisNodes.selectAll("text")
-      .attr("class", "coltick" + index)
-      .attr("id", function (d,i) {
-        return "c" + i;
-      }) 
-      .style("opacity", 1)
-      .style("font-size", fontSize)
-      .style("font-family", left_or_right ? options.left_columns_font_family : options.right_columns_font_family);
+  //   opts.right_columns_axis.push(axis);
+  //   opts.right_columns_scales.push(scale);
+  //   // Create the actual axis
+  //   var axisNodes = svg.append('g')
+  //       .attr("class", "axisNodes" + index)
+  //       .attr("transform", function() {
+  //         if (align =="l") {
+  //           return "translate(" + opts.axis_padding + ",0)";
+  //         } else if (align == "c") {
+  //           return "translate(" + thisBounds.width/2 + ",0)";
+  //         } else if (align == "r") {
+  //           return "translate(" + (thisBounds.width) + ",0)";
+  //         }
+  //         // if (options.table_style) {
+  //         //   return "translate(0,0)";
+  //         // } else {
+  //         //   return "translate(" + (thisBounds.width - opts.axis_padding) + ",0)";
+  //         // }
+  //       })
+  //       .call(axis);
 
-    var mouseTargets = svg.append("g")
-      .selectAll("g").data(thisColData);
+  //   var fontSize = left_or_right ? options.left_columns_font_size : options.right_columns_font_size;
+  //   axisNodes.selectAll("text")
+  //     .attr("class", "coltick" + index)
+  //     .attr("id", function (d,i) {
+  //       return "c" + i;
+  //     }) 
+  //     .style("opacity", 1)
+  //     .style("font-size", fontSize)
+  //     .style("font-family", left_or_right ? options.left_columns_font_family : options.right_columns_font_family);
 
-    mouseTargets
-      .enter()
-        .append("g").append("rect")
-          .style("cursor", "pointer")
-          .attr("transform", "")
-          .attr("fill", "transparent")
-          .on("click", function(d, i) {
-            var dim = 'y';
-            var hl = controller.highlight() || {x:null, y:null};
-            if (hl[dim] == i) {
-              // If clicked already-highlighted row/col, then unhighlight
-              hl[dim] = null;
-              controller.highlight(hl);
-            } else {
-              hl[dim] = i;
-              controller.highlight(hl);
-            }
-            d3.event.stopPropagation();
-          });
+  //   var mouseTargets = svg.append("g")
+  //     .selectAll("g").data(thisColData);
 
-    opts.right_columns_mouseTargets.push(mouseTargets);
+  //   mouseTargets
+  //     .enter()
+  //       .append("g").append("rect")
+  //         .style("cursor", "pointer")
+  //         .attr("transform", "")
+  //         .attr("fill", "transparent")
+  //         .on("click", function(d, i) {
+  //           var dim = 'y';
+  //           var hl = controller.highlight() || {x:null, y:null};
+  //           if (hl[dim] == i) {
+  //             // If clicked already-highlighted row/col, then unhighlight
+  //             hl[dim] = null;
+  //             controller.highlight(hl);
+  //           } else {
+  //             hl[dim] = i;
+  //             controller.highlight(hl);
+  //           }
+  //           d3.event.stopPropagation();
+  //         });
 
-    function layoutMouseTargets(selection) {
-      var _h = scale.rangeBand();
-      var _w = bounds.width;
-      selection
-          .attr("transform", function(d, i) {
-            var x = opts.axis_padding;
-            var y = scale(i);
-            return "translate(" + x + "," + y + ")";
-          })
-        .selectAll("rect")
-          .attr("height", _h)
-          .attr("width", _w);
-    }
-    layoutMouseTargets(mouseTargets);
+  //   opts.right_columns_mouseTargets.push(mouseTargets);
 
-    axisNodes.selectAll("text")
-      .style("text-anchor", "start")
-      .style("font-family", "sans-serif");
+  //   function layoutMouseTargets(selection) {
+  //     var _h = scale.rangeBand();
+  //     var _w = bounds.width;
+  //     selection
+  //         .attr("transform", function(d, i) {
+  //           var x = opts.axis_padding;
+  //           var y = scale(i);
+  //           return "translate(" + x + "," + y + ")";
+  //         })
+  //       .selectAll("rect")
+  //         .attr("height", _h)
+  //         .attr("width", _w);
+  //   }
+  //   layoutMouseTargets(mouseTargets);
 
-    if (align == "c") {
-      axisNodes.selectAll("text")
-        .style("text-anchor", "middle");
-    } else if (align == "r") {
-      axisNodes.selectAll("text")
-        .style("text-anchor", "end");
-    }
+  //   axisNodes.selectAll("text")
+  //     .style("text-anchor", "start")
+  //     .style("font-family", "sans-serif");
 
-    controller.on('highlight.axis-y', function(hl) {
-      var selected = hl['y'];
-      for (var j = 0; j < opts.right_columns.length; j++) {
-        d3.selectAll(".coltick" + j)
-          .style("opacity", function(dd,ii) {
-            if (typeof(selected) !== 'number') {
-              return 1;
-            }
-            var opa = parseFloat(d3.select(this).style("opacity"));
-            var el_id = d3.select(this).attr("id");
-            el_id = parseInt(el_id.substr(1));
-            if (selected == el_id) {
-              return 1;
-            } else {
-              return 0.4;
-            }
-          });
-      }
-    });
+  //   if (align == "c") {
+  //     axisNodes.selectAll("text")
+  //       .style("text-anchor", "middle");
+  //   } else if (align == "r") {
+  //     axisNodes.selectAll("text")
+  //       .style("text-anchor", "end");
+  //   }
 
-    controller.on('transform.axis-y', function(_) {
-      var dim = 1;
-      //scale.domain(leaves.slice(_.extent[0][dim], _.extent[1][dim]));
-      for (var j = 0; j < opts.right_columns.length; j++) {
-        var rb = [_.translate[dim], bounds.height * _.scale[dim] + _.translate[dim]];
-        opts.right_columns_scales[j].rangeBands(rb);
+    // controller.on('highlight.axis-y', function(hl) {
+    //   var selected = hl['y'];
+    //   for (var j = 0; j < opts.right_columns.length; j++) {
+    //     d3.selectAll(".coltick" + j)
+    //       .style("opacity", function(dd,ii) {
+    //         if (typeof(selected) !== 'number') {
+    //           return 1;
+    //         }
+    //         var opa = parseFloat(d3.select(this).style("opacity"));
+    //         var el_id = d3.select(this).attr("id");
+    //         el_id = parseInt(el_id.substr(1));
+    //         if (selected == el_id) {
+    //           return 1;
+    //         } else {
+    //           return 0.4;
+    //         }
+    //       });
+    //   }
+    // });
 
-        var tAxisNodes = d3.select(".axisNodes" + j)
-          .transition()
-          .duration(opts.anim_duration)
-          .ease('linear');
+    // controller.on('transform.axis-y', function(_) {
+    //   var dim = 1;
+    //   //scale.domain(leaves.slice(_.extent[0][dim], _.extent[1][dim]));
+    //   for (var j = 0; j < opts.right_columns.length; j++) {
+    //     var rb = [_.translate[dim], bounds.height * _.scale[dim] + _.translate[dim]];
+    //     opts.right_columns_scales[j].rangeBands(rb);
 
-        tAxisNodes.call(opts.right_columns_axis[j]);
+    //     var tAxisNodes = d3.select(".axisNodes" + j)
+    //       .transition()
+    //       .duration(opts.anim_duration)
+    //       .ease('linear');
 
-        d3.select(".axisNodes" + j).selectAll("text")
-            .style("text-anchor", function() {
-              if (options.right_columns_align[j] == "l") {
-                return "start";
-              } else if (options.right_columns_align[j] == "c") {
-                return "middle";
-              } else if (options.right_columns_align[j] == "r") {
-                return "end";
-              }
-            });
+    //     tAxisNodes.call(opts.right_columns_axis[j]);
 
-        tAxisNodes.selectAll("g")
-            .style("opacity", function(d, i) {
-              if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
-                return 1;
-              } else {
-                return 0;
-              }
-            });
+    //     d3.select(".axisNodes" + j).selectAll("text")
+    //         .style("text-anchor", function() {
+    //           if (options.right_columns_align[j] == "l") {
+    //             return "start";
+    //           } else if (options.right_columns_align[j] == "c") {
+    //             return "middle";
+    //           } else if (options.right_columns_align[j] == "r") {
+    //             return "end";
+    //           }
+    //         });
 
-        tAxisNodes.selectAll("text")
-            .style("text-anchor", function() {
-              if (options.right_columns_align[j] == "l") {
-                return "start";
-              } else if (options.right_columns_align[j] == "c") {
-                return "middle";
-              } else if (options.right_columns_align[j] == "r") {
-                return "end";
-              }
-            });
+    //     tAxisNodes.selectAll("g")
+    //         .style("opacity", function(d, i) {
+    //           if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+    //             return 1;
+    //           } else {
+    //             return 0;
+    //           }
+    //         });
 
-        function layoutMouseTargetsLocal(selection) {
-          var _h = opts.right_columns_scales[j].rangeBand();
-          var _w = opts.right_columns_width[j];
-          selection
-              .attr("transform", function(d, i) {
-                var x = 0;
-                var y = opts.right_columns_scales[j](i);
-                return "translate(" + x + "," + y + ")";
-              })
-            .selectAll("rect")
-              .attr("height", _h)
-              .attr("width", _w);
-        }
+    //     tAxisNodes.selectAll("text")
+    //         .style("text-anchor", function() {
+    //           if (options.right_columns_align[j] == "l") {
+    //             return "start";
+    //           } else if (options.right_columns_align[j] == "c") {
+    //             return "middle";
+    //           } else if (options.right_columns_align[j] == "r") {
+    //             return "end";
+    //           }
+    //         });
 
-        opts.right_columns_mouseTargets[j].transition().duration(opts.anim_duration).ease('linear')
-            .call(layoutMouseTargetsLocal)
-            .style("opacity", function(d, i) {
-              if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
-                return 1;
-              } else {
-                return 0;
-              }
-            });
-      }
+    //     function layoutMouseTargetsLocal(selection) {
+    //       var _h = opts.right_columns_scales[j].rangeBand();
+    //       var _w = opts.right_columns_width[j];
+    //       selection
+    //           .attr("transform", function(d, i) {
+    //             var x = 0;
+    //             var y = opts.right_columns_scales[j](i);
+    //             return "translate(" + x + "," + y + ")";
+    //           })
+    //         .selectAll("rect")
+    //           .attr("height", _h)
+    //           .attr("width", _w);
+    //     }
+
+    //     opts.right_columns_mouseTargets[j].transition().duration(opts.anim_duration).ease('linear')
+    //         .call(layoutMouseTargetsLocal)
+    //         .style("opacity", function(d, i) {
+    //           if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+    //             return 1;
+    //           } else {
+    //             return 0;
+    //           }
+    //         });
+    //   }
 
       // Set text-anchor on the non-transitioned node to prevent jumpiness
       // in RStudio Viewer pane
@@ -1875,9 +2409,9 @@ function heatmap(selector, data, options) {
       // }
       
 
-    });
+    //});
 
-  }
+  //}
 
 
   function colormap(svg, data, width, height) {
@@ -2354,14 +2888,19 @@ function heatmap(selector, data, options) {
     if (options.table_style) {
       axis.innerTickSize(0);
     }
+
+    var xboundsleft = 0;
+    if (opts.left_columns && options.xaxis_location == "top") {
+      xboundsleft = opts.left_columns_total_width - padding;
+    }
     // Create the actual axis
     var axisNodes = svg.append("g")
         .attr("transform", function() {
           if (rotated) {
             if (axis_location === "bottom") {
-              return "translate(" + xaxisBounds.left + "," + padding + ")";
+              return "translate(" + (xboundsleft + xaxisBounds.left) + "," + padding + ")";
             } else if (axis_location === "top") {
-              return "translate(" + xaxisBounds.left + "," + (xaxisBounds.height - padding) + ")";
+              return "translate(" + (xboundsleft + xaxisBounds.left) + "," + (xaxisBounds.height - padding) + ")";
             }
           } else {
             if (axis_location === "right") {
@@ -2410,7 +2949,7 @@ function heatmap(selector, data, options) {
       var _w = rotated ? height * 1.414 * 1.2 : width;
       selection
           .attr("transform", function(d, i) {
-            var x = rotated ? (axis_location === "bottom" ? scale(i) + scale.rangeBand()/2 + xaxisBounds.left : scale(i) + xaxisBounds.left) : 0;
+            var x = rotated ? (axis_location === "bottom" ? scale(i) + scale.rangeBand()/2 + xaxisBounds.left + xboundsleft : scale(i) + xaxisBounds.left + xboundsleft) : 0;
             var y = rotated ? (axis_location === "bottom" ? padding + 6 : height - _h/1.414 - padding - 6): scale(i);
             return "translate(" + x + "," + y + ")";
           })
@@ -2442,11 +2981,32 @@ function heatmap(selector, data, options) {
       var ticks = axisNodes.selectAll('.tick');
       var selected = hl[rotated ? 'x' : 'y'];
       if (typeof(selected) !== 'number') {
-        ticks.classed('faded', false);
+        ticks.style('opacity', function(d,i) {
+          if (rotated) {
+            var ttt = d3.transform(d3.select(this).attr("transform"));
+            if (ttt.translate[0] < 0 || ttt.translate[0] > width) {
+              return 0;
+            } else {
+              return 1;
+            }
+          }
+        });
         return;
       }
-      ticks.classed('faded', function(d, i) {
-        return i !== selected;
+      ticks.style('opacity', function(d, i) {
+        if (i !== selected) {
+          return 0.4;
+        } else {
+          return 1;
+        }
+      });
+      ticks.each(function(d,i) {
+        if (rotated) {
+          var ttt = d3.transform(d3.select(this).attr("transform"));
+          if (ttt.translate[0] < 0 || ttt.translate[0] > width) {
+            d3.select(this).style("opacity", 0);
+          }
+        }
       });
     });
 
