@@ -2077,8 +2077,8 @@ function heatmap(selector, data, options) {
     // rotated is y, unrotated is x
 
     svg = svg.append('g');
-    var fontsize = rotated ? opts.yaxis_title_font_size : opts.xaxis_title_font_size;
-    var fontBold = rotated ? opts.yaxis_title_bold : opts.xaxis_title_bold;
+    var fontsize = rotated ? options.yaxis_title_font_size : options.xaxis_title_font_size;
+    var fontBold = rotated ? options.yaxis_title_bold : options.xaxis_title_bold;
 
     var this_title = svg.append("text")
       .text(data)
