@@ -768,9 +768,9 @@ function heatmap(selector, data, options) {
           }
         } else {
           if (opts.right_columns) {
-            if (opts.right_sub_len/1.1 > opts.right_columns_width[opts.right_columns_width.length-1]) {
+            if (opts.right_sub_len/1.1 > opts.right_columns_width[opts.right_columns_width.length-1]/2) {
               opts.col_element_names.push("yaxis");
-              opts.col_element_map["yaxis"] = opts.right_sub_len/1.1;
+              opts.col_element_map["yaxis"] = opts.right_sub_len/1.1 - opts.right_columns_width[opts.right_columns_width.length-1]/2;
             }
           } else {
             opts.col_element_names.push("yaxis");
@@ -782,6 +782,11 @@ function heatmap(selector, data, options) {
         if (opts.legend_colors) {
           opts.col_element_names.push("legend");
           opts.col_element_map["legend"] = opts.legend_total_width;
+        } else {
+          if (opts.right_columns && opts.right_sub_len/1.1 > opts.right_columns_width[opts.right_columns_width.length-1]/2) {
+            opts.col_element_names.push("yaxis");
+            opts.col_element_map["yaxis"] = opts.right_sub_len/1.1 - opts.right_columns_width[opts.right_columns_width.length-1]/2;
+          }
         }
       }
     }
