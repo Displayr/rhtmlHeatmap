@@ -181,19 +181,16 @@ Heatmap <- function(x,
   title_font_size = 24,
   title_font_family = "sans-serif",
   title_font_color = "#000000",
-  title_font_bold = FALSE,
 
   subtitle = NULL,
   subtitle_font_size = 18,
   subtitle_font_family = "sans-serif",
   subtitle_font_color = "#000000",
-  subtitle_font_bold = FALSE,
 
   footer = NULL,
   footer_font_size = 11,
   footer_font_family = "sans-serif",
   footer_font_color = "#000000",
-  footer_font_bold = FALSE,
 
   xaxis_hidden = FALSE,
   xaxis_height = 80,
@@ -203,7 +200,6 @@ Heatmap <- function(x,
   xaxis_location = "bottom",
 
   xaxis_title = NULL,
-  xaxis_title_bold = FALSE,
   xaxis_title_font_size = 14,
   xaxis_title_font_family = "sans-serif",
   xaxis_title_font_color = "#000000",
@@ -216,7 +212,6 @@ Heatmap <- function(x,
   yaxis_location = "right",
 
   yaxis_title = NULL,
-  yaxis_title_bold = FALSE,
   yaxis_title_font_size = 14,
   yaxis_title_font_family = "sans-serif",
   yaxis_title_font_color = "#000000",
@@ -229,14 +224,12 @@ Heatmap <- function(x,
 
   left_columns_subtitles = NULL,
   left_columns_subtitles_align = NULL,
-  left_columns_subtitles_bold = NULL,
   left_columns_subtitles_font_size = 12,
   left_columns_subtitles_font_family = "sans-serif",
   left_columns_subtitles_font_color = "#000000",
 
   left_columns_title = NULL,
   left_columns_title_align = NULL,
-  left_columns_title_bold = NULL,
   left_columns_title_font_size = 14,
   left_columns_title_font_family = "sans-serif",
   left_columns_title_font_color = "#000000",
@@ -249,14 +242,12 @@ Heatmap <- function(x,
 
   right_columns_subtitles = NULL,
   right_columns_subtitles_align = NULL,
-  right_columns_subtitles_bold = NULL,
   right_columns_subtitles_font_size = 12,
   right_columns_subtitles_font_family = "sans-serif",
   right_columns_subtitles_font_color = "#000000",
 
   right_columns_title = NULL,
   right_columns_title_align = NULL,
-  right_columns_title_bold = NULL,
   right_columns_title_font_size = 14,
   right_columns_title_font_family = "sans-serif",
   right_columns_title_font_color = "#000000",
@@ -569,7 +560,7 @@ Heatmap <- function(x,
   # colors is now a function that takes a number and returns an #RRGGBB value
   imgUri <- encodeAsPNG(t(x), colors)
 
-  check.extra.columns <- function(input, alignVec, subVec, subAlignVec, subBoldVec, isLeft) {
+  check.extra.columns <- function(input, alignVec, subVec, subAlignVec, isLeft) {
     if (is.null(input)) {
       return(NULL)
     }
@@ -611,38 +602,38 @@ Heatmap <- function(x,
       if (!is.null(subAlignVec)) {
         subAlignVec = rev(subAlignVec)
       }
-      if (!is.null(subBoldVec)) {
-        subBoldVec = rev(subBoldVec)
-      }
+      # if (!is.null(subBoldVec)) {
+      #   subBoldVec = rev(subBoldVec)
+      # }
     }
     colnames(output) = NULL
     rownames(output) = NULL
-    return(list(t(output), alignVec, subVec, subAlignVec, subBoldVec))
+    return(list(t(output), alignVec, subVec, subAlignVec))
   }
 
   cout = check.extra.columns(left_columns,
                               left_columns_align,
                               left_columns_subtitles,
                               left_columns_subtitles_align,
-                              left_columns_subtitles_bold,
+                              #left_columns_subtitles_bold,
                               TRUE)
   left_columns = cout[[1]]
   left_columns_align = cout[[2]]
   left_columns_subtitles = cout[[3]]
   left_columns_subtitles_align = cout[[4]]
-  left_columns_subtitles_bold = cout[[5]]
+  #left_columns_subtitles_bold = cout[[5]]
 
   cout = check.extra.columns(right_columns,
                              right_columns_align,
                              right_columns_subtitles,
                              right_columns_subtitles_align,
-                             right_columns_subtitles_bold,
+                             #right_columns_subtitles_bold,
                              FALSE)
   right_columns = cout[[1]]
   right_columns_align = cout[[2]]
   right_columns_subtitles = cout[[3]]
   right_columns_subtitles_align = cout[[4]]
-  right_columns_subtitles_bold = cout[[5]]
+  #right_columns_subtitles_bold = cout[[5]]
 
   options <- NULL
 
@@ -662,13 +653,13 @@ Heatmap <- function(x,
       yaxis_hidden = yaxis_hidden,
 
       xaxis_title = xaxis_title,
-      xaxis_title_bold = xaxis_title_bold,
+      #xaxis_title_bold = xaxis_title_bold,
       xaxis_title_font_size = xaxis_title_font_size,
       xaxis_title_font_family = xaxis_title_font_family,
       xaxis_title_font_color = xaxis_title_font_color,
 
       yaxis_title = yaxis_title,
-      yaxis_title_bold = yaxis_title_bold,
+      #yaxis_title_bold = yaxis_title_bold,
       yaxis_title_font_size = yaxis_title_font_size,
       yaxis_title_font_family = yaxis_title_font_family,
       yaxis_title_font_color = yaxis_title_font_color,
@@ -687,7 +678,7 @@ Heatmap <- function(x,
       footer_font_size = footer_font_size,
       footer_font_family = footer_font_family,
       footer_font_color = footer_font_color,
-      footer_font_bold = footer_font_bold,
+      #footer_font_bold = footer_font_bold,
 
       tip_font_size = tip_font_size,
       tip_font_family = tip_font_family,
@@ -707,14 +698,14 @@ Heatmap <- function(x,
 
       left_columns_title = left_columns_title,
       left_columns_title_align = left_columns_title_align,
-      left_columns_title_bold = left_columns_title_bold,
+      #left_columns_title_bold = left_columns_title_bold,
       left_columns_title_font_size = left_columns_title_font_size,
       left_columns_title_font_family = left_columns_title_font_family,
       left_columns_title_font_color = left_columns_title_font_color,
 
       left_columns_subtitles = left_columns_subtitles,
       left_columns_subtitles_align = left_columns_subtitles_align,
-      left_columns_subtitles_bold = left_columns_subtitles_bold,
+      #left_columns_subtitles_bold = left_columns_subtitles_bold,
       left_columns_subtitles_font_size = left_columns_subtitles_font_size,
       left_columns_subtitles_font_family = left_columns_subtitles_font_family,
       left_columns_subtitles_font_color = left_columns_subtitles_font_color,
@@ -727,14 +718,14 @@ Heatmap <- function(x,
 
       right_columns_title = right_columns_title,
       right_columns_title_align = right_columns_title_align,
-      right_columns_title_bold = right_columns_title_bold,
+      #right_columns_title_bold = right_columns_title_bold,
       right_columns_title_font_size = right_columns_title_font_size,
       right_columns_title_font_family = right_columns_title_font_family,
       right_columns_title_font_color = right_columns_title_font_color,
 
       right_columns_subtitles = right_columns_subtitles,
       right_columns_subtitles_align = right_columns_subtitles_align,
-      right_columns_subtitles_bold = right_columns_subtitles_bold,
+      #right_columns_subtitles_bold = right_columns_subtitles_bold,
       right_columns_subtitles_font_size = right_columns_subtitles_font_size,
       right_columns_subtitles_font_family = right_columns_subtitles_font_family,
       right_columns_subtitles_font_color = right_columns_subtitles_font_color,
