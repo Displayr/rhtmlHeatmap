@@ -590,9 +590,9 @@ Heatmap <- function(x,
 
     output[is.na(output)] = "No Data"
     output = as.matrix(output)
-    output = output[rowInd,]
+    output = as.matrix(output[rowInd,])
     if (isLeft) {
-      output = output[,ncol(output):1]
+      output = as.matrix(output[,ncol(output):1])
       if (!is.null(alignVec)) {
         alignVec = rev(alignVec)
       }
