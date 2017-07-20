@@ -26,18 +26,11 @@ NULL
 #' @param width Width in pixels (optional, defaults to automatic sizing).
 #' @param height Height in pixels (optional, defaults to automatic sizing).
 #'
-#' @param xaxis_height Size of axes, in pixels. Default is calculated automatically with axis font size specified.
-#' @param yaxis_width Size of axes, in pixels. Default is calculated automatically with axis font size specified.
-#' @param xaxis_font_size Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 12.
-#' @param yaxis_font_size Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 11.
-#' @param xaxis_location Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".
-#' @param yaxis_location Location of the y axis, c("right", "left"). Defaults to "right". "left" only works when dendrogram is "none".
-#' @param xaxis_title Title text of the x axis.
+
+
 #' @param yaxis_title Title text of the y axis.
-#' @param xaxis_title_font_size Size of axis title text. Defaults to 14.
 #' @param yaxis_title_font_size Size of axis title text. Defaults to 14.
-#' @param xaxis_hidden Boolean variable to hide x axis. Defaults to FALSE.
-#' @param yaxis_hidden Boolean variable to hide y axis. Defaults to FALSE.
+
 #'
 #'
 #' @param brush_color The base color to be used for the brush. The brush will be
@@ -75,7 +68,9 @@ NULL
 #' @param cellnote_in_cell Overrides cellnote when the user wish to display texts inside the cells that are different from the tooltips.
 #' @param show_cellnote_in_cell If \code{TRUE}, print cellnotes in the cells. Defaults to FALSE.
 #' @param cell_font_size Sets the maximum font size of cellnotes. Defauls to 11.
+#' @param cell_font_family Sets the font family of cellnotes. Defauls to "sans-serif",
 #' @param tip_font_size Sets the font size of texts in the tooltip. Defaults to 11.
+#' @param tip_font_family Sets the font size of texts in the tooltip. Defaults to "sans-serif".
 #' @param extra_tooltip_info A list of matrices that contains extra information to show in the tooltips. Dim of each matrix must equal to \code{x}.
 #' @param lower_triangle A logical value to specify if only the lower triangle will be displayed. Defaults to FALSE and will give an error if \code{x} is not a square matrix.
 #' @param color_range A vector of length 2 that specifies the range of values that colors get mapped to. The default is computed from \code{x}. If \code{x} is a factor, this argument is ignored.
@@ -87,6 +82,8 @@ NULL
 #' and will give it a value cexCol*14
 #'
 #' @param show_legend logical. Defaults to TRUE. However, if \code{scale} is not "none", legend will not be shown.
+#' @param legend_font_family character. Sets the font family of the legend, defaults to "sans-serif".
+#' @param legend_font_color Sets the font color of the legend, defaults to "#000000".
 #' @param legend_font_size positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).
 #' @param legend_width positive integer. Sets the desired width of the legend bar. Defaults to 60 (pixcels).
 #' @param legend_digits positive integer. Sets the decimal places of the legend texts. Defaults to 1 if the max value of \code{x} is less than 1.0.
@@ -98,14 +95,72 @@ NULL
 #' @param title_font_size integer. Font size of the chart title, defaults to 24 pixcels.
 #' @param title_font_family character. Font family of the chart title, defaults to "sans-serif".
 #' @param title_font_color An RGB character to set the color of the chart title. Defaults to "#000000".
+#'
 #' @param subtitle character. Sets the subtitle of the chart, defaults to NULL. The subtitle is centred.
 #' @param subtitle_font_size integer. Font size of the chart subtitle, defaults to 18 pixcels.
 #' @param subtitle_font_family character. Font family of the chart subtitle, defaults to "sans-serif".
 #' @param subtitle_font_color An RGB character to set the color of the chart subtitle. Defaults to "#000000".
+#'
 #' @param footer character. Sets the footer of the chart, defaults to NULL. The footer is left-aligned.
 #' @param footer_font_size integer. Font size of the chart footer_font_size, defaults to 11 pixcels.
 #' @param footer_font_family character. Font family of the chart footer_font_family, defaults to "sans-serif".
 #' @param footer_font_color An RGB character to set the color of the chart footer_font_color. Defaults to "#000000".
+#'
+#' @param xaxis_hidden Boolean variable to hide x axis. Defaults to FALSE.
+#' @param xaxis_height Size of axes, in pixels. Default is calculated automatically with axis font size specified.
+#' @param xaxis_location Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".
+#' @param xaxis_font_size Font size of x axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 12.
+#' @param xaxis_font_family Font family of x axis labels. Defaults to "sans-serif".
+#' @param xaxis_font_color Font folor of x axis labels. Defaults to "#000000".
+
+#' @param xaxis_title Title text of the x axis.
+#' @param xaxis_title_font_size Size of axis title text. Defaults to 14.
+#' @param xaxis_title_font_family Font family of x axis title. Defaults to "sans-serif".
+#' @param xaxis_title_font_color Font folor of x axis title. Defaults to "#000000".
+
+#' @param yaxis_hidden Boolean variable to hide y axis. Defaults to FALSE. To use a table layout with \code{left_columns} or \code{right_columns}, this parameter must be FALSE.
+#' @param yaxis_width Size of axes, in pixels. Default is calculated automatically with axis font size specified.
+#' @param yaxis_location Location of the y axis, c("right", "left"). Defaults to "right". "left" only works when dendrogram is "none".
+#' @param yaxis_font_size Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 11.
+#' @param yaxis_font_family Font family of y axis labels. Defaults to "sans-serif".
+#' @param yaxis_font_color Font folor of y axis labels. Defaults to "#000000".
+
+#' @param yaxis_title Title text of the y axis.
+#' @param yaxis_title_font_size Size of axis title text. Defaults to 14.
+#' @param yaxis_title_font_family Font family of y axis title. Defaults to "sans-serif".
+#' @param yaxis_title_font_color Font folor of y axis title. Defaults to "#000000".
+
+#' @param left_columns Matrix-like object with N columns, N>0. These columns are put on the left side of the heatmap to replace the y axis. yaxis_hidden must be set to TRUE.
+#' @param left_columns_align a character vector to set the alignment of \code{left_columns}, with length same as the number of columns of \code{left_columns}. Allowed characters are "l", "c" and "r".
+#' @param left_columns_font_size Sets the font size of the left_columns. Defaults to 11.
+#' @param left_columns_font_family Sets the font family of the left_columns. Defaults to "sans-serif".
+#' @param left_columns_font_color Sets the font color of the left_columns. Defaults to "#000000".
+
+#' @param left_columns_subtitles Vector with length N, N>0. Sets the top heading of the left_columns. Will not have an effect if left_columns is NULL.
+#' @param left_columns_subtitles_font_size Sets the font size of left_columns_subtitles. Defaults to 12.
+#' @param left_columns_subtitles_font_family Sets the font family of left_columns_subtitles. Defaults to "sans-serif".
+#' @param left_columns_subtitles_font_color Sets the font color of left_columns_subtitles. Defaults to "#000000".
+
+#' @param left_columns_title Character. Sets the title of the left_columns. Will not have an effect if left_columns or left_columns_subtitles is NULL.
+#' @param left_columns_title_font_size Sets the font size of left_columns_title. Defaults to 14.
+#' @param left_columns_title_font_family Sets the font family of left_columns_title. Defaults to "sans-serif".
+#' @param left_columns_title_font_color Sets the font color of left_columns_title. Defaults to "#000000".
+
+#' @param right_columns Matrix-like object with N columns, N>0. These columns are put on the right side of the heatmap to replace the y axis. yaxis_hidden must be set to TRUE.
+#' @param right_columns_align a character vector to set the alignment of \code{right_columns}, with length same as the number of columns of \code{right_columns}. Allowed characters are "l", "c" and "r".
+#' @param right_columns_font_size Sets the font size of the right_columns. Defaults to 11.
+#' @param right_columns_font_family Sets the font family of the right_columns. Defaults to "sans-serif".
+#' @param right_columns_font_color Sets the font color of the right_columns. Defaults to "#000000".
+
+#' @param right_columns_subtitles Vector with length N, N>0. Sets the top heading of the right_columns. Will not have an effect if right_columns is NULL.
+#' @param right_columns_subtitles_font_size Sets the font size of right_columns_subtitles. Defaults to 12.
+#' @param right_columns_subtitles_font_family Sets the font family of right_columns_subtitles. Defaults to "sans-serif".
+#' @param right_columns_subtitles_font_color Sets the font color of right_columns_subtitles. Defaults to "#000000".
+
+#' @param right_columns_title Character. Sets the title of the right_columns. Will not have an effect if right_columns or right_columns_subtitles is NULL.
+#' @param right_columns_title_font_size Sets the font size of right_columns_title. Defaults to 14.
+#' @param right_columns_title_font_family Sets the font family of right_columns_title. Defaults to "sans-serif".
+#' @param right_columns_title_font_color Sets the font color of right_columns_title. Defaults to "#000000".
 #' @param ... currently ignored
 #'
 #' @import htmlwidgets
@@ -120,6 +175,9 @@ NULL
 #' @examples
 #' library(rhtmlHeatmap)
 #' Heatmap(mtcars, scale = "column", colors = "Blues")
+#'
+#' For more examples see the /examples/examples.R file
+#' in the source package
 #'
 #'
 Heatmap <- function(x,
@@ -223,13 +281,11 @@ Heatmap <- function(x,
   left_columns_font_color = "#000000",
 
   left_columns_subtitles = NULL,
-  left_columns_subtitles_align = NULL,
   left_columns_subtitles_font_size = 12,
   left_columns_subtitles_font_family = "sans-serif",
   left_columns_subtitles_font_color = "#000000",
 
   left_columns_title = NULL,
-  left_columns_title_align = NULL,
   left_columns_title_font_size = 14,
   left_columns_title_font_family = "sans-serif",
   left_columns_title_font_color = "#000000",
@@ -241,13 +297,11 @@ Heatmap <- function(x,
   right_columns_font_color = "#000000",
 
   right_columns_subtitles = NULL,
-  right_columns_subtitles_align = NULL,
   right_columns_subtitles_font_size = 12,
   right_columns_subtitles_font_family = "sans-serif",
   right_columns_subtitles_font_color = "#000000",
 
   right_columns_title = NULL,
-  right_columns_title_align = NULL,
   right_columns_title_font_size = 14,
   right_columns_title_font_family = "sans-serif",
   right_columns_title_font_color = "#000000",
@@ -560,7 +614,7 @@ Heatmap <- function(x,
   # colors is now a function that takes a number and returns an #RRGGBB value
   imgUri <- encodeAsPNG(t(x), colors)
 
-  check.extra.columns <- function(input, alignVec, subVec, subAlignVec, isLeft) {
+  check.extra.columns <- function(input, alignVec, subVec, isLeft) {
     if (is.null(input)) {
       return(NULL)
     }
@@ -599,40 +653,40 @@ Heatmap <- function(x,
       if (!is.null(subVec)) {
         subVec = rev(subVec)
       }
-      if (!is.null(subAlignVec)) {
-        subAlignVec = rev(subAlignVec)
-      }
+      # if (!is.null(subAlignVec)) {
+      #   subAlignVec = rev(subAlignVec)
+      # }
       # if (!is.null(subBoldVec)) {
       #   subBoldVec = rev(subBoldVec)
       # }
     }
     colnames(output) = NULL
     rownames(output) = NULL
-    return(list(t(output), alignVec, subVec, subAlignVec))
+    return(list(t(output), alignVec, subVec))
   }
 
   cout = check.extra.columns(left_columns,
                               left_columns_align,
                               left_columns_subtitles,
-                              left_columns_subtitles_align,
+                              #left_columns_subtitles_align,
                               #left_columns_subtitles_bold,
                               TRUE)
   left_columns = cout[[1]]
   left_columns_align = cout[[2]]
   left_columns_subtitles = cout[[3]]
-  left_columns_subtitles_align = cout[[4]]
+  #left_columns_subtitles_align = cout[[4]]
   #left_columns_subtitles_bold = cout[[5]]
 
   cout = check.extra.columns(right_columns,
                              right_columns_align,
                              right_columns_subtitles,
-                             right_columns_subtitles_align,
+                             #right_columns_subtitles_align,
                              #right_columns_subtitles_bold,
                              FALSE)
   right_columns = cout[[1]]
   right_columns_align = cout[[2]]
   right_columns_subtitles = cout[[3]]
-  right_columns_subtitles_align = cout[[4]]
+  #right_columns_subtitles_align = cout[[4]]
   #right_columns_subtitles_bold = cout[[5]]
 
   options <- NULL
@@ -697,14 +751,14 @@ Heatmap <- function(x,
       left_columns_font_color = left_columns_font_color,
 
       left_columns_title = left_columns_title,
-      left_columns_title_align = left_columns_title_align,
+      #left_columns_title_align = left_columns_title_align,
       #left_columns_title_bold = left_columns_title_bold,
       left_columns_title_font_size = left_columns_title_font_size,
       left_columns_title_font_family = left_columns_title_font_family,
       left_columns_title_font_color = left_columns_title_font_color,
 
       left_columns_subtitles = left_columns_subtitles,
-      left_columns_subtitles_align = left_columns_subtitles_align,
+      #left_columns_subtitles_align = left_columns_subtitles_align,
       #left_columns_subtitles_bold = left_columns_subtitles_bold,
       left_columns_subtitles_font_size = left_columns_subtitles_font_size,
       left_columns_subtitles_font_family = left_columns_subtitles_font_family,
@@ -717,14 +771,14 @@ Heatmap <- function(x,
       right_columns_font_color = right_columns_font_color,
 
       right_columns_title = right_columns_title,
-      right_columns_title_align = right_columns_title_align,
+      #right_columns_title_align = right_columns_title_align,
       #right_columns_title_bold = right_columns_title_bold,
       right_columns_title_font_size = right_columns_title_font_size,
       right_columns_title_font_family = right_columns_title_font_family,
       right_columns_title_font_color = right_columns_title_font_color,
 
       right_columns_subtitles = right_columns_subtitles,
-      right_columns_subtitles_align = right_columns_subtitles_align,
+      #right_columns_subtitles_align = right_columns_subtitles_align,
       #right_columns_subtitles_bold = right_columns_subtitles_bold,
       right_columns_subtitles_font_size = right_columns_subtitles_font_size,
       right_columns_subtitles_font_family = right_columns_subtitles_font_family,

@@ -38,22 +38,19 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   left_columns_align = NULL, left_columns_font_size = 11,
   left_columns_font_family = "sans-serif",
   left_columns_font_color = "#000000", left_columns_subtitles = NULL,
-  left_columns_subtitles_align = NULL,
   left_columns_subtitles_font_size = 12,
   left_columns_subtitles_font_family = "sans-serif",
   left_columns_subtitles_font_color = "#000000", left_columns_title = NULL,
-  left_columns_title_align = NULL, left_columns_title_font_size = 14,
+  left_columns_title_font_size = 14,
   left_columns_title_font_family = "sans-serif",
   left_columns_title_font_color = "#000000", right_columns = NULL,
   right_columns_align = NULL, right_columns_font_size = 11,
   right_columns_font_family = "sans-serif",
   right_columns_font_color = "#000000", right_columns_subtitles = NULL,
-  right_columns_subtitles_align = NULL,
   right_columns_subtitles_font_size = 12,
   right_columns_subtitles_font_family = "sans-serif",
   right_columns_subtitles_font_color = "#000000",
-  right_columns_title = NULL, right_columns_title_align = NULL,
-  right_columns_title_font_size = 14,
+  right_columns_title = NULL, right_columns_title_font_size = 14,
   right_columns_title_font_family = "sans-serif",
   right_columns_title_font_color = "#000000", brush_color = "#0000FF",
   show_grid = TRUE, anim_duration = 500, ...)
@@ -120,11 +117,19 @@ should cellnote be scaled if x is also scaled?}
 
 \item{cell_font_size}{Sets the maximum font size of cellnotes. Defauls to 11.}
 
+\item{cell_font_family}{Sets the font family of cellnotes. Defauls to "sans-serif",}
+
 \item{tip_font_size}{Sets the font size of texts in the tooltip. Defaults to 11.}
+
+\item{tip_font_family}{Sets the font size of texts in the tooltip. Defaults to "sans-serif".}
 
 \item{show_legend}{logical. Defaults to TRUE. However, if \code{scale} is not "none", legend will not be shown.}
 
 \item{legend_font_size}{positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).}
+
+\item{legend_font_family}{character. Sets the font family of the legend, defaults to "sans-serif".}
+
+\item{legend_font_color}{Sets the font color of the legend, defaults to "#000000".}
 
 \item{legend_width}{positive integer. Sets the desired width of the legend bar. Defaults to 60 (pixcels).}
 
@@ -171,7 +176,11 @@ standalone visualizations, not R Markdown or Shiny.}
 
 \item{xaxis_height}{Size of axes, in pixels. Default is calculated automatically with axis font size specified.}
 
-\item{xaxis_font_size}{Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 12.}
+\item{xaxis_font_size}{Font size of x axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 12.}
+
+\item{xaxis_font_family}{Font family of x axis labels. Defaults to "sans-serif".}
+
+\item{xaxis_font_color}{Font folor of x axis labels. Defaults to "#000000".}
 
 \item{xaxis_location}{Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".}
 
@@ -179,17 +188,81 @@ standalone visualizations, not R Markdown or Shiny.}
 
 \item{xaxis_title_font_size}{Size of axis title text. Defaults to 14.}
 
-\item{yaxis_hidden}{Boolean variable to hide y axis. Defaults to FALSE.}
+\item{xaxis_title_font_family}{Font family of x axis title. Defaults to "sans-serif".}
+
+\item{xaxis_title_font_color}{Font folor of x axis title. Defaults to "#000000".}
+
+\item{yaxis_hidden}{Boolean variable to hide y axis. Defaults to FALSE. To use a table layout with \code{left_columns} or \code{right_columns}, this parameter must be FALSE.}
 
 \item{yaxis_width}{Size of axes, in pixels. Default is calculated automatically with axis font size specified.}
 
 \item{yaxis_font_size}{Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 11.}
+
+\item{yaxis_font_family}{Font family of y axis labels. Defaults to "sans-serif".}
+
+\item{yaxis_font_color}{Font folor of y axis labels. Defaults to "#000000".}
 
 \item{yaxis_location}{Location of the y axis, c("right", "left"). Defaults to "right". "left" only works when dendrogram is "none".}
 
 \item{yaxis_title}{Title text of the y axis.}
 
 \item{yaxis_title_font_size}{Size of axis title text. Defaults to 14.}
+
+\item{yaxis_title_font_family}{Font family of y axis title. Defaults to "sans-serif".}
+
+\item{yaxis_title_font_color}{Font folor of y axis title. Defaults to "#000000".}
+
+\item{left_columns}{Matrix-like object with N columns, N>0. These columns are put on the left side of the heatmap to replace the y axis. yaxis_hidden must be set to TRUE.}
+
+\item{left_columns_align}{a character vector to set the alignment of \code{left_columns}, with length same as the number of columns of \code{left_columns}. Allowed characters are "l", "c" and "r".}
+
+\item{left_columns_font_size}{Sets the font size of the left_columns. Defaults to 11.}
+
+\item{left_columns_font_family}{Sets the font family of the left_columns. Defaults to "sans-serif".}
+
+\item{left_columns_font_color}{Sets the font color of the left_columns. Defaults to "#000000".}
+
+\item{left_columns_subtitles}{Vector with length N, N>0. Sets the top heading of the left_columns. Will not have an effect if left_columns is NULL.}
+
+\item{left_columns_subtitles_font_size}{Sets the font size of left_columns_subtitles. Defaults to 12.}
+
+\item{left_columns_subtitles_font_family}{Sets the font family of left_columns_subtitles. Defaults to "sans-serif".}
+
+\item{left_columns_subtitles_font_color}{Sets the font color of left_columns_subtitles. Defaults to "#000000".}
+
+\item{left_columns_title}{Character. Sets the title of the left_columns. Will not have an effect if left_columns or left_columns_subtitles is NULL.}
+
+\item{left_columns_title_font_size}{Sets the font size of left_columns_title. Defaults to 14.}
+
+\item{left_columns_title_font_family}{Sets the font family of left_columns_title. Defaults to "sans-serif".}
+
+\item{left_columns_title_font_color}{Sets the font color of left_columns_title. Defaults to "#000000".}
+
+\item{right_columns}{Matrix-like object with N columns, N>0. These columns are put on the right side of the heatmap to replace the y axis. yaxis_hidden must be set to TRUE.}
+
+\item{right_columns_align}{a character vector to set the alignment of \code{right_columns}, with length same as the number of columns of \code{right_columns}. Allowed characters are "l", "c" and "r".}
+
+\item{right_columns_font_size}{Sets the font size of the right_columns. Defaults to 11.}
+
+\item{right_columns_font_family}{Sets the font family of the right_columns. Defaults to "sans-serif".}
+
+\item{right_columns_font_color}{Sets the font color of the right_columns. Defaults to "#000000".}
+
+\item{right_columns_subtitles}{Vector with length N, N>0. Sets the top heading of the right_columns. Will not have an effect if right_columns is NULL.}
+
+\item{right_columns_subtitles_font_size}{Sets the font size of right_columns_subtitles. Defaults to 12.}
+
+\item{right_columns_subtitles_font_family}{Sets the font family of right_columns_subtitles. Defaults to "sans-serif".}
+
+\item{right_columns_subtitles_font_color}{Sets the font color of right_columns_subtitles. Defaults to "#000000".}
+
+\item{right_columns_title}{Character. Sets the title of the right_columns. Will not have an effect if right_columns or right_columns_subtitles is NULL.}
+
+\item{right_columns_title_font_size}{Sets the font size of right_columns_title. Defaults to 14.}
+
+\item{right_columns_title_font_family}{Sets the font family of right_columns_title. Defaults to "sans-serif".}
+
+\item{right_columns_title_font_color}{Sets the font color of right_columns_title. Defaults to "#000000".}
 
 \item{brush_color}{The base color to be used for the brush. The brush will be
 filled with a low-opacity version of this color. \code{"#RRGGBB"} format
@@ -203,6 +276,10 @@ non-integer).}
   For large \code{x} it may help performance to set this value to \code{0}.}
 
 \item{...}{currently ignored}
+
+\item{yaxis_title}{Title text of the y axis.}
+
+\item{yaxis_title_font_size}{Size of axis title text. Defaults to 14.}
 }
 \description{
 Creates a D3.js-based heatmap widget. Modified from d3heatmap package.
@@ -210,6 +287,9 @@ Creates a D3.js-based heatmap widget. Modified from d3heatmap package.
 \examples{
 library(rhtmlHeatmap)
 Heatmap(mtcars, scale = "column", colors = "Blues")
+
+For more examples see the /examples/examples.R file
+in the source package
 }
 \seealso{
 \link{heatmap}, \link[gplots]{heatmap.2}
