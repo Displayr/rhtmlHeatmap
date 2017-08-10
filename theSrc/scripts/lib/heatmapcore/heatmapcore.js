@@ -296,7 +296,9 @@ function heatmap(selector, data, options) {
   opts.legend_left_space = 26;
   opts.legend_x_padding = 4;
   opts.legend_bar_width = (options.legend_width - opts.legend_x_padding*2)/2;
-  opts.legend_format = !opts.legend_colors ? null : opts.x_is_factor ? null : d3.max(opts.legend_range) > 10 ? d3.format(",.0f") : d3.format(",." + opts.legend_digits + "f");
+
+  opts.legend_format = null;
+
 
   opts.title_margin_X = 10;
   opts.title_margin_top = 5;
@@ -447,21 +449,62 @@ function heatmap(selector, data, options) {
       return output;
     };
 
-    var compute_legend_text_length = function(input, text_widths) {
+    var compute_legend_text_length = function(text_widths) {
+
       var dummySvg = inner.append("svg");
-      var dummy_g = dummySvg
-        .append("g")
-        .classed("dummy_g", true);
+      var legendAxisG = dummySvg.append("g");
 
-      var dummy_cols = dummy_g
-        .selectAll(".text")
-        .data(input);
+      var legendRects = dummySvg.selectAll("rect")
+        .data(opts.legend_colors);
 
-      dummy_cols.enter()
-        .append("text")
-        .text(function(d){return opts.legend_format(d);})
+      var boundsPaddingX = 4 + opts.legend_left_space,
+          boundsPaddingY = 20,
+          rectWidth = 10,
+          rectHeight = 10;
+      // append axis
+      var legendScale;
+      if (opts.x_is_factor) {
+        legendScale = d3.scale.ordinal().rangeBands([opts.legend_colors.length * rectHeight, 0]).nice();
+      } else {
+        legendScale = d3.scale.linear().range([opts.legend_colors.length * rectHeight, 0]).nice();
+      }
+
+      legendScale.domain(opts.legend_range);
+
+      var legendAxis = d3.svg.axis()
+          .scale(legendScale)
+          .orient("right")
+          .tickSize(0)
+          .tickValues( legendScale.ticks( opts.x_is_factor ? opts.legend_colors.length : 8 ).concat( legendScale.domain() ) );
+
+      legendAxisG.call(legendAxis);
+      var legendTicksCount = legendAxisG.selectAll("text")[0].length;
+
+      if (opts.legend_colors && !opts.x_is_factor) {
+        if (opts.legend_digits) {
+          opts.legend_format = d3.format(",." + opts.legend_digits + "f");
+        } else {
+          var legend_step = (d3.max(opts.legend_range) - d3.min(opts.legend_range))/(legendTicksCount-1);
+          console.log(opts.legend_range + " " + legendTicksCount);
+          var legend_dig;
+          if (legend_step < 0.1) {
+            legend_dig = -Math.floor( Math.log(legend_step) / Math.log(10) + 1) + 1;
+          } else if (legend_step > 0.1 && legend_step < 1) {
+            legend_dig = 1;
+          } else {
+            legend_dig = 0;
+          }
+          opts.legend_format = d3.format(",." + legend_dig + "f");
+        }
+      }
+
+      legendAxis.tickFormat(opts.legend_format);
+      legendAxisG.call(legendAxis);
+
+      legendAxisG.selectAll("text")
+        .style("font-size", opts.legend_font_size + "px")
         .style("font-family", options.legend_font_family)
-        .style("font-size", opts.legend_font_size)
+        .style("fill", options.legend_font_color)
         .each(function(d,i) {
           text_widths[i] = this.getComputedTextLength();
         });
@@ -533,7 +576,7 @@ function heatmap(selector, data, options) {
       for (i = 0;i < opts.legend_range.length; i++) {
         opts.legend_text_len.push(0);
       }
-      compute_legend_text_length(opts.legend_range, opts.legend_text_len);
+      compute_legend_text_length(opts.legend_text_len);
       opts.legend_total_width = opts.legend_left_space + opts.legend_bar_width + opts.legend_x_padding*2 + d3.max(opts.legend_text_len);
     }
 
@@ -2036,9 +2079,9 @@ function heatmap(selector, data, options) {
     legendAxisG.attr("transform", "translate(" + (boundsPaddingX + rectWidth) + "," + boundsPaddingY + ")");
     var legendScale;
     if (opts.x_is_factor) {
-      legendScale = d3.scale.ordinal().rangeBands([colors.length * rectHeight, 0]);
+      legendScale = d3.scale.ordinal().rangeBands([colors.length * rectHeight, 0]).nice();
     } else {
-      legendScale = d3.scale.linear().range([colors.length * rectHeight, 0]);
+      legendScale = d3.scale.linear().range([colors.length * rectHeight, 0]).nice();
     }
 
     legendScale.domain(opts.legend_range);
@@ -2054,6 +2097,7 @@ function heatmap(selector, data, options) {
         .scale(legendScale)
         .orient("right")
         .tickSize(0)
+        .tickValues( legendScale.ticks( opts.x_is_factor ? opts.legend_colors.length : 8 ).concat( legendScale.domain() ) )
         .tickFormat(opts.legend_format);
 
     legendAxisG.call(legendAxis);

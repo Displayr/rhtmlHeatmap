@@ -86,7 +86,7 @@ NULL
 #' @param legend_font_color Sets the font color of the legend, defaults to "#000000".
 #' @param legend_font_size positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).
 #' @param legend_width positive integer. Sets the desired width of the legend bar. Defaults to 60 (pixcels).
-#' @param legend_digits positive integer. Sets the decimal places of the legend texts. Defaults to 1 if the max value of \code{x} is less than 1.0.
+#' @param legend_digits positive integer. Sets the decimal places of the legend texts. Estimates the decimal places needed by default.
 #'
 #' @param labRow character vectors with row labels to use (from top to bottom); default to rownames(x).
 #' @param labCol character vectors with column labels to use (from left to right); default to colnames(x).
@@ -228,7 +228,7 @@ Heatmap <- function(x,
   legend_font_family = "sans-serif",
   legend_font_color = "#000000",
   legend_width = 60,
-  legend_digits = 1,
+  legend_digits = NULL,
 
   ##TODO: decide later which names/conventions to keep
   theme = NULL,

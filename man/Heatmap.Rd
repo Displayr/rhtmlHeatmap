@@ -18,7 +18,7 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   cell_font_size = 11, cell_font_family = "sans-serif",
   tip_font_size = 11, tip_font_family = "sans-serif", show_legend = TRUE,
   legend_font_size = 11, legend_font_family = "sans-serif",
-  legend_font_color = "#000000", legend_width = 60, legend_digits = 1,
+  legend_font_color = "#000000", legend_width = 60, legend_digits = NULL,
   theme = NULL, colors = "RdYlBu", width = NULL, height = NULL,
   title = NULL, title_font_size = 24, title_font_family = "sans-serif",
   title_font_color = "#000000", subtitle = NULL, subtitle_font_size = 18,
@@ -133,7 +133,7 @@ should cellnote be scaled if x is also scaled?}
 
 \item{legend_width}{positive integer. Sets the desired width of the legend bar. Defaults to 60 (pixcels).}
 
-\item{legend_digits}{positive integer. Sets the decimal places of the legend texts. Defaults to 1 if the max value of \code{x} is less than 1.0.}
+\item{legend_digits}{positive integer. Sets the decimal places of the legend texts. Estimates the decimal places needed by default.}
 
 \item{theme}{A custom CSS theme to use. Currently the only valid values are
 \code{""} and \code{"dark"}. \code{"dark"} is primarily intended for
