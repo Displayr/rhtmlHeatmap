@@ -489,7 +489,7 @@ function heatmap(selector, data, options) {
           var legend_dig;
           if (legend_step < 0.1) {
             legend_dig = -Math.floor( Math.log(legend_step) / Math.log(10) + 1) + 1;
-          } else if (legend_step > 0.1 && legend_step < 1) {
+          } else if (legend_step >= 0.1 && legend_step < 1) {
             legend_dig = 1;
           } else {
             legend_dig = 0;
