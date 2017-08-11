@@ -513,6 +513,7 @@ Heatmap <- function(x,
   }
 
   # handling NAs
+  cellnote = apply(cellnote, 2, function(d){ if (is.factor(d)) { return(as.character(d)) } else { return(d) }})
   cellnote[is.na(cellnote)] = "No data"
 
   # handling cellnote_in_cell
@@ -641,8 +642,8 @@ Heatmap <- function(x,
     } else {
       stop(paste0(name, "is not a vector, matrix or data frame."))
     }
-
-    output[is.na(output)] = "No Data"
+    output = apply(output, 2, function(d){ if (is.factor(d)) { return(as.character(d)) } else { return(d) }})
+    output[is.na(output)] = ""
     output = as.matrix(output)
     output = as.matrix(output[rowInd,])
     if (isLeft) {
