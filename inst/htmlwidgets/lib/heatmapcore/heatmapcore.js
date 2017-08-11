@@ -474,8 +474,7 @@ function heatmap(selector, data, options) {
       var legendAxis = d3.svg.axis()
           .scale(legendScale)
           .orient("right")
-          .tickSize(0)
-          .tickValues( legendScale.ticks( opts.x_is_factor ? opts.legend_colors.length : 8 ).concat( legendScale.domain() ) );
+          .tickSize(0);
 
       legendAxisG.call(legendAxis);
       var legendTicksCount = legendAxisG.selectAll("text")[0].length;
@@ -2097,7 +2096,6 @@ function heatmap(selector, data, options) {
         .scale(legendScale)
         .orient("right")
         .tickSize(0)
-        .tickValues( legendScale.ticks( opts.x_is_factor ? opts.legend_colors.length : 8 ).concat( legendScale.domain() ) )
         .tickFormat(opts.legend_format);
 
     legendAxisG.call(legendAxis);
