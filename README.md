@@ -1,5 +1,12 @@
 An improved heatmap package based on d3heatmap.
 
+Example Usage in R
+-------
+
+    devtools::install_github("Displayr/rhtmlHeatmap")
+    library(rhtmlHeatmap)
+    Heatmap(mtcars, scale="column", colors="Blues")
+
 Features
 -------
 This heatmap package contains a number of features that improve on d3heatmap.

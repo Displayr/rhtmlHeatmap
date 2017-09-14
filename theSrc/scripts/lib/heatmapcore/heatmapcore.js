@@ -1,3 +1,10 @@
+/* eslint-disable */
+
+import d3 from  'd3'
+const d3Tip = require('d3-tip')
+
+d3Tip(d3)
+
 function heatmap(selector, data, options) {
   'use strict'
 
@@ -206,6 +213,7 @@ function heatmap(selector, data, options) {
   // Set option defaults & copy settings
   var opts = {};
   options = options || {};
+
   opts.shownote_in_cell = options.shownote_in_cell;
 
   opts.width = options.width || bbox.width;
@@ -871,7 +879,6 @@ function heatmap(selector, data, options) {
     }
   })();
 
-
   var row_heights = [], col_widths = [], i = 0, j = 0;
   for (i = 0; i < opts.col_element_names.length; i++) {
     col_widths.push(opts.col_element_map[opts.col_element_names[i]]);
@@ -920,6 +927,12 @@ function heatmap(selector, data, options) {
   for (i = 0; i < opts.row_element_names.length; i++) {
     row_heights.push(opts.row_element_map[opts.row_element_names[i]]);
   }
+
+  console.log('col_widths after')
+  console.log(JSON.stringify(col_widths, {}, 2))
+  console.log('row_heights after')
+  console.log(JSON.stringify(row_heights, {}, 2))
+
 
   gridSizer = new GridSizer(
     col_widths,
@@ -1714,7 +1727,7 @@ function heatmap(selector, data, options) {
     var y = d3.scale.linear().domain([0, rows]).range([0, height]);
     var old_x = d3.scale.linear().domain([0, cols]).range([0, width]);
     var old_y = d3.scale.linear().domain([0, rows]).range([0, height]);
-    var tip = d3.tip()
+    var tip = d3Tip()
         .attr('class', 'rhtmlHeatmap-tip')
         .html(function(d, i) {
           var rowTitle = opts.yaxis_title ? opts.yaxis_title : "Row";
@@ -2507,3 +2520,6 @@ function heatmap(selector, data, options) {
     }
   };
 }
+
+module.exports = heatmap
+/* eslint-enable */
