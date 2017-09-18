@@ -649,10 +649,10 @@ Heatmap <- function(x,
     if (isLeft) {
       output = as.matrix(output[,ncol(output):1])
       if (!is.null(alignVec)) {
-        alignVec = rev(alignVec)
+        alignVec = as.array(rev(alignVec))
       }
       if (!is.null(subVec)) {
-        subVec = rev(subVec)
+        subVec = as.array(rev(subVec))
       }
       # if (!is.null(subAlignVec)) {
       #   subAlignVec = rev(subAlignVec)
