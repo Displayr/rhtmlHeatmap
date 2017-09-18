@@ -118,7 +118,7 @@ NULL
 #' @param xaxis_title_font_family Font family of x axis title. Defaults to "sans-serif".
 #' @param xaxis_title_font_color Font folor of x axis title. Defaults to "#000000".
 
-#' @param yaxis_hidden Boolean variable to hide y axis. Defaults to FALSE. To use a table layout with \code{left_columns} or \code{right_columns}, this parameter must be FALSE.
+#' @param yaxis_hidden Boolean variable to hide y axis. Defaults to FALSE. To use a table layout with \code{left_columns} or \code{right_columns}, this parameter must be TRUE.
 #' @param yaxis_width Size of axes, in pixels. Default is calculated automatically with axis font size specified.
 #' @param yaxis_location Location of the y axis, c("right", "left"). Defaults to "right". "left" only works when dendrogram is "none".
 #' @param yaxis_font_size Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 11.

@@ -192,7 +192,7 @@ standalone visualizations, not R Markdown or Shiny.}
 
 \item{xaxis_title_font_color}{Font folor of x axis title. Defaults to "#000000".}
 
-\item{yaxis_hidden}{Boolean variable to hide y axis. Defaults to FALSE. To use a table layout with \code{left_columns} or \code{right_columns}, this parameter must be FALSE.}
+\item{yaxis_hidden}{Boolean variable to hide y axis. Defaults to FALSE. To use a table layout with \code{left_columns} or \code{right_columns}, this parameter must be TRUE.}
 
 \item{yaxis_width}{Size of axes, in pixels. Default is calculated automatically with axis font size specified.}
 
