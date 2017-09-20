@@ -660,6 +660,13 @@ Heatmap <- function(x,
       # if (!is.null(subBoldVec)) {
       #   subBoldVec = rev(subBoldVec)
       # }
+    } else {
+      if (!is.null(alignVec)) {
+        alignVec = as.array(alignVec)
+      }
+      if (!is.null(subVec)) {
+        subVec = as.array(subVec)
+      }
     }
     colnames(output) = NULL
     rownames(output) = NULL
