@@ -3,6 +3,10 @@
   "engines": {
     "node": ">=6.9.5"
   },
+  "scripts": {
+    "prepush": "node ./bin/prepush",
+    "test": "gulp testSpecs && gulp testVisual"
+  },
   "devDependencies": {
     "gulp": "3.9.1",
     "husky": "0.13.3",
