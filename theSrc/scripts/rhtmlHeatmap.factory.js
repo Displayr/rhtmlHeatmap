@@ -3,28 +3,17 @@
 import d3 from 'd3'
 const heatmap = require('./lib/heatmapcore/heatmapcore')
 
-module.exports = {
-
-  name: 'rhtmlHeatmap',
-
-  type: 'output',
-
-  initialize: function (el, width, height) {
-    return {
-      lastTheme: null,
-      lastValue: null
-    }
-  },
-
-  renderValue: function (el, x, instance) {
-    this.doRenderValue(el, x, instance)
-  },
+module.exports = function (element, width, height, stateChangedCallback) {
+  const instance = {
+    lastTheme: null,
+    lastValue: null
+  }
 
   // Need dedicated helper function that can be called by both renderValue
   // and resize. resize can't call this.renderValue because that will be
   // routed to the Shiny wrapper method from htmlwidgets, which expects the
   // wrapper data object, not x.
-  doRenderValue: function (el, x, instance) {
+  function doRenderValue (x) {
     var self = this
 
     instance.lastValue = x
@@ -36,12 +25,12 @@ module.exports = {
       d3.select(document.body).classed('theme-' + x.theme, true)
     }
 
-    el.innerHTML = ''
+    element.innerHTML = ''
     d3.select(document.body).select('.rhtmlHeatmap-tip').remove()
 
-    this.loadImage(x.image, function (imgData, w, h) {
+    loadImage(x.image, function (imgData, w, h) {
       if (w !== x.matrix.dim[0] || h !== x.matrix.dim[1]) {
-        throw new Error("Color dimensions didn't match data dimensions")
+        throw new Error('Color dimensions didn\'t match data dimensions')
       }
 
       var merged = []
@@ -85,10 +74,11 @@ module.exports = {
       x.matrix.merged = merged
       // console.log(JSON.stringify({merged: x.matrix.merged}, null, "  "));
 
-      var hm = heatmap(el, x, x.options)
+      var hm = heatmap(element, x, x.options)
       if (window.Shiny) {
-        var id = self.getId(el)
+        var id = self.getId(element)
         hm.on('hover', function (e) {
+          console.log('foo')
           window.Shiny.onInputChange(id + '_hover', !e.data ? e.data : {
             label: e.data.label,
             row: x.matrix.rows[e.data.row],
@@ -96,25 +86,19 @@ module.exports = {
           })
         })
         /* heatmap doesn't currently send click, since it means zoom-out
-        hm.on('click', function(e) {
-          Shiny.onInputChange(id + '_click', !e.data ? e.data : {
-            label: e.data.label,
-            row: e.data.row + 1,
-            col: e.data.col + 1
-          });
-        });
-        */
+         hm.on('click', function(e) {
+         Shiny.onInputChange(id + '_click', !e.data ? e.data : {
+         label: e.data.label,
+         row: e.data.row + 1,
+         col: e.data.col + 1
+         });
+         });
+         */
       }
     })
-  },
+  }
 
-  resize: function (el, width, height, instance) {
-    if (instance.lastValue) {
-      this.doRenderValue(el, instance.lastValue, instance)
-    }
-  },
-
-  loadImage: function (uri, callback) {
+  function loadImage (uri, callback) {
     var img = new Image()
     img.onload = function () {
       // Save size
@@ -140,5 +124,17 @@ module.exports = {
       callback(imgData, w, h)
     }
     img.src = uri
+  }
+
+  return {
+    renderValue (incomingConfig, userState) {
+      doRenderValue(incomingConfig)
+    },
+
+    resize (newWidth, newHeight) {
+      if (instance.lastValue) {
+        doRenderValue(instance.lastValue)
+      }
+    }
   }
 }
