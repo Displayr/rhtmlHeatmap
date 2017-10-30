@@ -17,6 +17,6 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "d3": "3.5.3",
-    "d3-tip": "0.7.1"
+    "d3-tip": "Displayr/d3-tip#v1.3.0"
   }
 }
