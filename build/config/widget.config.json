@@ -1,7 +1,12 @@
 {
-  "widgetClassFile": "theSrc/scripts/lib/heatmapcore/heatmapcore.js",
   "widgetEntryPoint": "theSrc/scripts/rhtmlHeatmap.js",
+  "widgetFactory": "theSrc/scripts/rhtmlHeatmap.factory.js",
   "widgetName": "rhtmlHeatmap",
   "rFunction": "rhtmlHeatmap::Heatmap",
-  "isReadySelector": "div.inner"
+  "visualRegressionSuite": {
+    "isReadySelector": "div.inner"
+  },
+  "internalWebSettings": {
+    "includeDimensionsOnWidgetDiv": true
+  }
 }

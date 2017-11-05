@@ -1,6 +1,10 @@
 /* global HTMLWidgets */
 
 import 'babel-polyfill'
-import heatmapDefinition from './rhtmlHeatmap.definition'
+import widgetFactory from './rhtmlHeatmap.factory'
 
-HTMLWidgets.widget(heatmapDefinition)
+HTMLWidgets.widget({
+  name: 'rhtmlHeatmap',
+  type: 'output',
+  factory: widgetFactory
+})
