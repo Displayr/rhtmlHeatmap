@@ -1,0 +1,15 @@
+{
+  "options": {
+    "right_columns": null,
+    "right_columns_align": null,
+    "right_columns_font_size": 11,
+    "right_columns_font_family": "sans-serif",
+    "right_columns_font_color": "#000000",
+    "right_columns_title": null,
+    "right_columns_title_align": null,
+    "right_columns_title_bold": null,
+    "right_columns_title_font_size": 14,
+    "right_columns_title_font_family": "sans-serif",
+    "right_columns_title_font_color": "#000000"
+  }
+}

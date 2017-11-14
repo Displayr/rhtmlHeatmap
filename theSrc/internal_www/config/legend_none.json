@@ -1,0 +1,11 @@
+{
+  "options": {
+    "legend_colors": null,
+    "legend_range": null,
+    "legend_width": 60,
+    "legend_digits": 1,
+    "legend_font_size": 11,
+    "legend_font_family": "sans-serif",
+    "legend_font_color": "#000000"
+  }
+}

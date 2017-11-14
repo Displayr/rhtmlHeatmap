@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <link href='/style/heatmapcore.css' rel='stylesheet' type='text/css'>
+  <link href='/styles/internal_www.css' rel='stylesheet' type='text/css'>
+</head>
+<body style="background-color:white">
+
+<div snapshot-name="column_and_axis_interactions">
+
+  <h2>Base Cases</h2>
+  <hr/>
+  <div class="row">
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left Columns + Top X Axis. No YAxis (Base Case)", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.right_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_none'>
+    </div>
+  </div>
+
+  <h2>Left Column + Y Axis Interactions </h2>
+  Known Issues:
+  <ul>
+    <li>The 1st example shows the left column title being incorrectly places above the yaxis, not the left most left column</li>
+    <li>The 3rd example shows the yaxis title being placed too far to the right. This is because the yaxis svg space is being given too much width</li>
+  </ul>
+  <hr/>
+  <div class="row">
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left Columns + Top X Axis. Left Y Axis", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.right_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_left|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left Columns + Top X Axis. Left Y Axis No Title", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.right_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_left'>
+    </div>
+
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left Columns + Top X Axis. Right Y Axis", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.right_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_right|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left Columns + Top X Axis. Right Y Axis No Title", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.right_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_right'>
+    </div>
+  </div>
+
+  <div class="row">
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left Columns + Bottom X Axis. Left Y Axis", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.right_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_left|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left Columns + Bottom X Axis. Left Y Axis No Title", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.right_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_left'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left Columns + Bottom X Axis. Right Y Axis", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.right_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_right|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left Columns + Bottom X Axis. Right Y Axis No Title", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.right_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_right'>
+    </div>
+  </div>
+
+  <h2>Right Column + Y Axis Interactions </h2>
+  Known Issues:
+  <ul>
+    <li>All of these right column only examples should display a right column title of "RC Title"</li>
+  </ul>
+  <hr/>
+  <div class="row">
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Right Columns + Top X Axis. Left Y Axis", "title_font_size": 12 } }|
+            data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.left_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_left|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Right Columns + Top X Axis. Left Y Axis No Title", "title_font_size": 12 } }|
+            data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.left_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_left'>
+    </div>
+
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Right Columns + Top X Axis. Right Y Axis", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.left_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_right|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Right Columns + Top X Axis. Right Y Axis No Title", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.left_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_right'>
+    </div>
+  </div>
+
+  <div class="row">
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Right Columns + Top X Axis. Left Y Axis", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.left_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_left|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Right Columns + Top X Axis. Left Y Axis No Title", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.left_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_left'>
+    </div>
+
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Right Columns + Top X Axis. Right Y Axis", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.left_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_right|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Right Columns + Top X Axis. Right Y Axis No Title", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.left_columns_none|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_right'>
+    </div>
+  </div>
+
+
+  <h2>Left and Right Column + Y Axis Interactions </h2>
+  Known Issues:
+  <ul>
+    <li>The 1st example shows the right column title being incorrectly placed</li>
+    <li>The 3rd example shows the yaxis title being placed too far to the right. This is because the yaxis svg space is being given too much width</li>
+  </ul>
+  <hr/>
+  <div class="row">
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left and Right Columns + Top X Axis. Left Y Axis", "title_font_size": 12 } }|
+            data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_left|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left and Right Columns + Top X Axis. Left Y Axis No Title", "title_font_size": 12 } }|
+            data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_left'>
+    </div>
+
+    <div style="display:inline-block" class="example for-consideration" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left and Right Columns + Top X Axis. Right Y Axis", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_right|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left and Right Columns + Top X Axis. Right Y Axis No Title", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_top|
+        config.yaxis_right'>
+    </div>
+  </div>
+
+  <div class="row">
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left and Right Columns + Top X Axis. Left Y Axis", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_left|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left and Right Columns + Top X Axis. Left Y Axis No Title", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_left'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left and Right Columns + Top X Axis. Right Y Axis", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_right|
+        config.yaxis_title'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-border="true" data-width="400" data-height="400" data-config='
+        { "options": { "title": "Left and Right Columns + Top X Axis. Right Y Axis No Title", "title_font_size": 12 } }|
+        data.minimal_3x3|
+        config.misc|
+        config.minimal_3x3.right_columns_two_center_align|
+        config.minimal_3x3.left_columns_two_center_align|
+        config.subtitle_none|
+        config.footer_none|
+        config.xaxis_bottom|
+        config.yaxis_right'>
+    </div>
+  </div>
+</div>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<div class="row">
+
+</div>
+
+<script src="/js/renderContentPage.js"></script>
+</body>
+</html>

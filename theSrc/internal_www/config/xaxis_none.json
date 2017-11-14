@@ -1,0 +1,14 @@
+{
+  "options": {
+    "xaxis_height": 80,
+    "xaxis_font_size": 12,
+    "xaxis_font_family": "sans-serif",
+    "xaxis_font_color": "#000000",
+    "xaxis_location": "top",
+    "xaxis_hidden": true,
+    "xaxis_title": null,
+    "xaxis_title_font_size": 14,
+    "xaxis_title_font_family": "sans-serif",
+    "xaxis_title_font_color": "#000000"
+  }
+}
