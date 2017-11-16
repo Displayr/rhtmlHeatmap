@@ -1,0 +1,14 @@
+{
+  "options": {
+    "yaxis_hidden": true,
+    "yaxis_width": 120,
+    "yaxis_font_size": 11,
+    "yaxis_font_family": "sans-serif",
+    "yaxis_font_color": "#000000",
+    "yaxis_location": "right",
+    "yaxis_title": null,
+    "yaxis_title_font_size": 14,
+    "yaxis_title_font_family": "sans-serif",
+    "yaxis_title_font_color": "#000000"
+  }
+}

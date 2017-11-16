@@ -918,6 +918,7 @@ function heatmap(selector, data, options) {
     opts.row_element_map["xtitle"] = opts.topaxis_title_height;
   }
 
+  // TODO KZ this was just done above ?
   row_heights = [], col_widths = [], i = 0, j = 0, gridSizer = undefined;
   for (i = 0; i < opts.col_element_names.length; i++) {
     col_widths.push(opts.col_element_map[opts.col_element_names[i]]);
@@ -1212,8 +1213,18 @@ function heatmap(selector, data, options) {
       if (!options.xaxis_hidden && options.xaxis_location == "top") {
         var this_el = el.select('svg.xaxis');
         var this_bounds = xaxisBounds;
-        insert_column_subtitle (this_el, 
-          this_bounds, 
+        console.log(`xaxis top inserting left subtitles. bounds : ${this_bounds}`)
+
+        var x_offset = 0
+        if (!opts.yaxis_hidden && opts.yaxis_location == 'left') {
+          var yaxis_width = opts.col_element_map['yaxis']
+          var ytitle_width = opts.col_element_map['ytitle'] || 0
+          x_offset = yaxis_width + ytitle_width
+        }
+
+        insert_column_subtitle (this_el,
+          x_offset,
+          this_bounds.height,
           opts.left_columns_subtitles, 
           options.left_columns_subtitles_font_family,
           options.left_columns_subtitles_font_size,
@@ -1223,8 +1234,18 @@ function heatmap(selector, data, options) {
       } else {
         var this_el = el.select('svg.graph_topaxis_el');
         var this_bounds = topAxisElBounds;
-        insert_column_subtitle (this_el, 
-          this_bounds, 
+        console.log(`xaxis !top inserting left subtitles. bounds : ${this_bounds}`)
+
+        var x_offset = 0
+        if (!opts.yaxis_hidden && opts.yaxis_location == 'left') {
+          var yaxis_width = opts.col_element_map['yaxis']
+          var ytitle_width = opts.col_element_map['ytitle'] || 0
+          x_offset = yaxis_width + ytitle_width
+        }
+
+        insert_column_subtitle (this_el,
+          x_offset,
+          this_bounds.height,
           opts.left_columns_subtitles, 
           options.left_columns_subtitles_font_family,
           options.left_columns_subtitles_font_size,
@@ -1291,7 +1312,8 @@ function heatmap(selector, data, options) {
         var this_el = el.select('svg.xaxis');
         var this_bounds = xaxisBounds;
         insert_column_subtitle (this_el, 
-          this_bounds, 
+          0,
+          this_bounds.height,
           opts.right_columns_subtitles, 
           options.right_columns_subtitles_font_family,
           options.right_columns_subtitles_font_size,
@@ -1302,7 +1324,8 @@ function heatmap(selector, data, options) {
         var this_el = el.select('svg.graph_topaxis_el');
         var this_bounds = topAxisElBounds;
         insert_column_subtitle (this_el, 
-          this_bounds, 
+          0,
+          this_bounds.height,
           opts.right_columns_subtitles, 
           options.right_columns_subtitles_font_family,
           options.right_columns_subtitles_font_size,
@@ -1633,7 +1656,7 @@ function heatmap(selector, data, options) {
     }
   }
 
-  function insert_column_subtitle (svg, bounds, subtitle, fontFam, fontSize, fontCol, colWidth, left_or_right) {
+  function insert_column_subtitle (svg, x_offset, container_height, subtitle, fontFam, fontSize, fontCol, colWidth, left_or_right) {
     var this_sub = [];
     var this_colw = [];
     for (var j = 0; j < subtitle.length; j++) {
@@ -1645,19 +1668,19 @@ function heatmap(selector, data, options) {
       this_colw = this_colw.reverse();
     }
     var text_el = svg.append('g').selectAll("text").data(this_sub).enter();
-    var thisBounds = bounds;
     var sub;
     sub = text_el.append("g")
       .attr("transform", function(d,i) {
 
-        var accumu_x = 0;
+        var accumu_x = x_offset;
         for (var kk = 0; kk < i; kk++) {
           accumu_x = accumu_x + this_colw[kk];
         }
         if (!left_or_right) {
           accumu_x = accumu_x + rightColsBounds[0].left;
         }
-        return "translate(" + (accumu_x + this_colw[i]/2 - fontSize/2) + "," + (thisBounds.height - opts.axis_padding) + ")";
+        console.log(`for subtitle(${i})` + "translate(" + (accumu_x + this_colw[i]/2 - fontSize/2) + "," + (container_height - opts.axis_padding) + ")")
+        return "translate(" + (accumu_x + this_colw[i]/2 - fontSize/2) + "," + (container_height - opts.axis_padding) + ")";
       })
       .append("text")
       .attr("transform", function() {
@@ -2210,7 +2233,15 @@ function heatmap(selector, data, options) {
     var xboundsleft = 0;
     if (opts.left_columns && options.xaxis_location == "top") {
       xboundsleft = opts.left_columns_total_width - padding;
+
+      if (!opts.yaxis_hidden && opts.yaxis_location == 'left') {
+        var yaxis_width = opts.col_element_map['yaxis']
+        var ytitle_width = opts.col_element_map['ytitle'] || 0
+        xboundsleft += yaxis_width + ytitle_width
+      }
     }
+
+
     // Create the actual axis
     var axisNodes = svg.append("g")
         .attr("transform", function() {

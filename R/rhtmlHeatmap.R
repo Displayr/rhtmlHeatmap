@@ -319,10 +319,6 @@ Heatmap <- function(x,
   }
   if(!is.matrix(x)) stop("x must be a matrix")
 
-  if ((!is.null(left_columns) || !is.null(right_columns)) && !yaxis_hidden) {
-    stop("When left_columns or right_columns is supplied, yaxis_hidden must be set to TRUE to override existing y axis")
-  }
-
   nr <- dim(x)[1]
   nc <- dim(x)[2]
   ### TODO: debating if to include this or not:

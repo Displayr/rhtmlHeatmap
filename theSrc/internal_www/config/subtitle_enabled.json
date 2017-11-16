@@ -1,0 +1,8 @@
+{
+  "options": {
+    "subtitle": "Subtitle Text",
+    "subtitle_font_size": 18,
+    "subtitle_font_family": "sans-serif",
+    "subtitle_font_color": "#000000"
+  }
+}
