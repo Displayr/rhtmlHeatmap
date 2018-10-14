@@ -1,0 +1,72 @@
+{
+  "rows": null,
+  "cols": null,
+  "matrix": {
+    "data": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "dim": [
+      3,
+      3
+    ],
+    "rows": [
+      "Row-1",
+      "Row-2",
+      "Row-3"
+    ],
+    "cols": [
+      "Col-1",
+      "Col-2",
+      "Col-3"
+    ],
+    "cells_to_hide": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "cellnote_in_cell": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ]
+  },
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAEklEQVR42mPUyttfzwAFjDg5AH/sBYa1VBOMAAAAAElFTkSuQmCC",
+  "theme": null,
+  "options": {
+    "tip_font_size": 11,
+    "tip_font_family": "sans-serif",
+    "cell_font_size": 11,
+    "cell_font_family": "sans-serif",
+
+    "brush_color": "#0000FF",
+    "show_grid": true,
+    "x_is_factor": false,
+    "shownote_in_cell": true,
+    "extra_tooltip_info": null,
+    "table_style": true,
+    "anim_duration": 500,
+    "yclust_width": 0,
+    "xclust_height": 0
+  }
+}
+

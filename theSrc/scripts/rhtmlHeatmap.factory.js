@@ -1,7 +1,7 @@
 /* global Image */
 
 import d3 from 'd3'
-const heatmap = require('./lib/heatmapcore/heatmapcore')
+const Heatmap = require('./lib/heatmapcore/heatmapcore')
 
 module.exports = function (element, width, height, stateChangedCallback) {
   const instance = {
@@ -74,7 +74,7 @@ module.exports = function (element, width, height, stateChangedCallback) {
       x.matrix.merged = merged
       // console.log(JSON.stringify({merged: x.matrix.merged}, null, "  "));
 
-      var hm = heatmap(element, x, x.options)
+      var hm = new Heatmap(element, x, x.options)
       if (window.Shiny) {
         var id = self.getId(element)
         hm.on('hover', function (e) {

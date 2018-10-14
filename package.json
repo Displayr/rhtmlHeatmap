@@ -11,12 +11,12 @@
     "gulp": "3.9.1",
     "husky": "0.13.3",
     "jquery": "^3.2.1",
-    "lodash": "^4.17.4",
-    "rhtmlBuildUtils": "Displayr/rhtmlBuildUtils"
+    "lodash": "^4.17.4"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
-    "d3": "3.5.3",
-    "d3-tip": "Displayr/d3-tip#v3.0.0"
+    "d3": "3.5.11",
+    "d3-tip": "Displayr/d3-tip#v3.0.0",
+    "rhtmlBuildUtils": "Displayr/rhtmlBuildUtils#3.0.3"
   }
 }

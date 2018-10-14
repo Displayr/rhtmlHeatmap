@@ -3,10 +3,14 @@
   "widgetFactory": "theSrc/scripts/rhtmlHeatmap.factory.js",
   "widgetName": "rhtmlHeatmap",
   "rFunction": "rhtmlHeatmap::Heatmap",
-  "visualRegressionSuite": {
-    "isReadySelector": "div.inner"
-  },
+  "visualRegressionSuite": {},
   "internalWebSettings": {
-    "includeDimensionsOnWidgetDiv": true
+    "includeDimensionsOnWidgetDiv": true,
+    "default_border": true,
+    "css": [
+      "/style/heatmapcore.css"
+    ],
+    "isReadySelector": "div[rhtmlHeatmap-status=ready]",
+    "singleWidgetSnapshotSelector": "div[rhtmlHeatmap-status=ready]"
   }
 }
