@@ -428,9 +428,9 @@ Heatmap <- function(x,
 
   ## reorder x (and others)
   ##=======================
-  x <- x[rowInd, colInd]
+  x <- x[rowInd, colInd, drop = FALSE]
   if (!missing(cellnote))
-    cellnote <- cellnote[rowInd, colInd]
+    cellnote <- cellnote[rowInd, colInd, drop = FALSE]
 
   if (!is.null(extra_tooltip_info)) {
     if (is.matrix(extra_tooltip_info)) {
