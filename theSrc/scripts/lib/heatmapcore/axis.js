@@ -1,6 +1,43 @@
 import d3 from 'd3'
+import wrap_new from './wrap_new'
 
-function axisLabels (svg, data, rotated, width, height, padding, axis_location, opts, controller, xaxisBounds, yaxisBounds) {
+function title (svg, data, rotated, width, height, opts) {
+  // rotated is y, unrotated is x
+
+  svg = svg.append('g')
+  var fontsize = rotated ? opts.yaxis_title_font_size : opts.xaxis_title_font_size
+  var fontBold = rotated ? opts.yaxis_title_bold : opts.xaxis_title_bold
+  var fontColor = rotated ? opts.yaxis_title_font_color : opts.xaxis_title_font_color
+  var fontFam = rotated ? opts.yaxis_title_font_family : opts.xaxis_title_font_family
+
+  var this_title = svg.append('text')
+    .text(data)
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('dy', 0)
+    .attr('transform', function () {
+      if (rotated) {
+        return 'translate(' + (width / 2) + ',' + (height / 2) + '),rotate(-90)'
+      } else {
+        if (opts.xaxis_location === 'top') {
+          return 'translate(' + (width / 2 + opts.left_columns_total_width) + ',' + (fontsize) + ')'
+        } else {
+          return 'translate(' + (width / 2) + ',' + (fontsize) + ')'
+        }
+      }
+    })
+    .style('font-weight', fontBold ? 'bold' : 'normal')
+    .style('font-size', fontsize)
+    .style('fill', fontColor)
+    .style('font-family', fontFam)
+    .style('text-anchor', 'middle')
+
+  if (!rotated) {
+    this_title.call(wrap_new, width)
+  }
+}
+
+function labels (svg, data, rotated, width, height, padding, axis_location, opts, controller, xaxisBounds, yaxisBounds) {
   svg = svg.append('g')
 
   // The data variable is either cluster info, or a flat list of names.
@@ -202,4 +239,77 @@ function axisLabels (svg, data, rotated, width, height, padding, axis_location, 
   })
 }
 
-module.exports = axisLabels
+function label_length (svg, input, x_or_y, fontsize, fontfamily, opts) {
+  var dummySvg = svg.append('svg')
+  var dummy_g = dummySvg
+    .append('g')
+    .attr('class', 'axis')
+
+  var texts = dummy_g
+    .selectAll('text')
+    .data(input)
+
+  texts.enter()
+    .append('text')
+    .text(function (d) { return d })
+    .style('font-size', fontsize)
+    .style('font-family', fontfamily)
+
+  var text_length = 0
+  var text_lengths = []
+  var text_hash = {}
+
+  texts.each(function (d, i) {
+    var current_len = this.getBBox().width
+    current_len = x_or_y
+      ? current_len / 1.4 + opts.xaxis_offset + opts.axis_padding
+      : current_len + opts.yaxis_offset + opts.axis_padding
+    text_lengths.push(current_len)
+    text_length = text_length < current_len ? current_len : text_length
+  })
+
+  var output
+
+  if (x_or_y) {
+    output = text_length > opts.height / 3 ? opts.height / 3 : text_length
+  } else {
+    output = text_length > opts.width / 3 ? opts.width / 3 : text_length
+  }
+
+  texts.each(function (d, i) {
+    var text_array = input[i].split('')
+    var new_text = input[i]
+    var modified_text = input[i]
+    var new_length
+    var c = 0
+
+    while (text_lengths[i] > output && text_array.length > 1) {
+      text_array.pop()
+      new_text = text_array.join('')
+
+      if (text_hash[new_text]) {
+        text_hash[new_text] += 1
+        modified_text = new_text + '...'
+      } else {
+        text_hash[new_text] = 1
+        modified_text = new_text + '...'
+      }
+
+      new_length = d3.select(this).text(modified_text).node().getBBox().width
+      new_length = x_or_y
+        ? new_length / 1.4 + opts.xaxis_offset + opts.axis_padding
+        : new_length + opts.yaxis_offset + opts.axis_padding
+      text_lengths[i] = new_length
+      c++
+    }
+
+    if (c > 0) {
+      input[i] = modified_text
+    }
+  })
+
+  dummySvg.remove()
+  return output
+}
+
+module.exports = { labels, title, label_length }

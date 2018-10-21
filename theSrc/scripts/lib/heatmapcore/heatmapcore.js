@@ -6,8 +6,7 @@ import dendrogram from './dendrogram'
 import colormap from './colormap'
 import legend from './legend'
 import title_footer from './title_footer'
-import axis_title from './axis_title'
-import axisLabels from './axisLabels'
+import axis from './axis'
 import wrap_new from './wrap_new'
 
 class Heatmap {
@@ -22,473 +21,301 @@ class Heatmap {
     // Set option defaults & copy settings
     var opts = buildConfig(options, bbox.width, bbox.height)
 
-    var compute_title_footer_height = function (svg, input, fontFam, fontSize, fontCol, wrapWidth, bold) {
-      var dummySvg = svg.append('svg')
+    var inner = el.append('div').classed('inner', true)
+    this.inner = inner
+    inner.append('div').classed('info', true) // TODO nothing is added to info
+
+    var compute_col_text_widths = function (input, text_widths) {
+      var dummySvg = inner.append('svg')
       var dummy_g = dummySvg
         .append('g')
         .classed('dummy_g', true)
 
-      var text_el = dummy_g.append('text')
-        .text(input)
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('dy', 0)
-        .style('font-family', fontFam)
-        .style('font-size', fontSize)
-        .style('fill', fontCol)
-        .attr('font-weight', bold ? 'bold' : 'normal')
-        .call(wrap_new, wrapWidth)
+      var dummy_cols = dummy_g
+        .selectAll('.dummy')
+        .data(input)
 
-      var output = text_el.node().getBBox().height
+      var dummy_cols_each = dummy_cols.enter()
+        .append('g')
+        .attr('data-index', function (d, i) { return i })
+        .selectAll('.dummy')
+        .data(function (d) { return d })
+
+      dummy_cols_each.enter()
+        .append('text')
+        .text(function (d) { return d })
+        .style('font-family', opts.yaxis_font_family)
+        .style('font-size', opts.left_columns_font_size)
+        .each(function (d, i) {
+          var parent_index = d3.select(this.parentNode).attr('data-index')
+          var textLength = this.getComputedTextLength()
+          text_widths[parent_index] = text_widths[parent_index] > textLength ? text_widths[parent_index] : textLength
+        })
+
       dummySvg.remove()
-      return output
-    };
+    }
 
-    (function () {
-      var inner = el.append('div').classed('inner', true)
-      inner.append('div').classed('info', true) // TODO nothing is added to info
-
-      var compute_col_text_widths = function (input, text_widths, left_or_right) {
-        var dummySvg = inner.append('svg')
-        var dummy_g = dummySvg
-          .append('g')
-          .classed('dummy_g', true)
-
-        var dummy_cols = dummy_g
-          .selectAll('.dummy')
-          .data(input)
-
-        var dummy_cols_each = dummy_cols.enter()
-          .append('g')
-          .attr('data-index', function (d, i) { return i })
-          .selectAll('.dummy')
-          .data(function (d) { return d })
-
-        dummy_cols_each.enter()
-          .append('text')
-          .text(function (d) { return d })
-          .style('font-family', opts.yaxis_font_family)
-          .style('font-size', opts.left_columns_font_size)
-          .each(function (d, i) {
-            var parent_index = d3.select(this.parentNode).attr('data-index')
-            var textLength = this.getComputedTextLength()
-            text_widths[parent_index] = text_widths[parent_index] > textLength ? text_widths[parent_index] : textLength
-          })
-
-        dummySvg.remove()
-      }
-
-      var compute_axis_label_dim = function (input, x_or_y, fontsize, fontfamily, additional) {
-        var dummySvg = inner.append('svg')
-        var dummy_g = dummySvg
-          .append('g')
-          .attr('class', 'axis')
-
-        var texts = dummy_g
-          .selectAll('text')
-          .data(input)
-
-        texts.enter()
-          .append('text')
-          .text(function (d) { return d })
-          .style('font-size', fontsize)
-          .style('font-family', fontfamily)
-
-        var text_length = 0
-        var text_lengths = []
-        var text_hash = {}
-
-        texts.each(function (d, i) {
-          var current_len = this.getBBox().width
-          current_len = x_or_y
-            ? current_len / 1.4 + opts.xaxis_offset + opts.axis_padding
-            : current_len + opts.yaxis_offset + opts.axis_padding
-          text_lengths.push(current_len)
-          text_length = text_length < current_len ? current_len : text_length
-        })
-
-        var output
-
-        if (x_or_y) {
-          output = text_length > opts.height / 3 ? opts.height / 3 : text_length
-        } else {
-          output = text_length > opts.width / 3 ? opts.width / 3 : text_length
-        }
-
-        texts.each(function (d, i) {
-          var text_array = input[i].split('')
-          var new_text = input[i]
-          var modified_text = input[i]
-          var new_length
-          var c = 0
-
-          while (text_lengths[i] > output && text_array.length > 1) {
-            text_array.pop()
-            new_text = text_array.join('')
-
-            if (text_hash[new_text]) {
-              text_hash[new_text] += 1
-              modified_text = new_text + '...'
-            } else {
-              text_hash[new_text] = 1
-              modified_text = new_text + '...'
-            }
-
-            new_length = d3.select(this).text(modified_text).node().getBBox().width
-            new_length = x_or_y
-              ? new_length / 1.4 + opts.xaxis_offset + opts.axis_padding
-              : new_length + opts.yaxis_offset + opts.axis_padding
-            text_lengths[i] = new_length
-            c++
-          }
-
-          if (c > 0) {
-            input[i] = modified_text
-          }
-        })
-
-        dummySvg.remove()
-        return output
-      }
-
-      var compute_legend_text_length = function (text_widths) {
-        var dummySvg = inner.append('svg')
-        var legendAxisG = dummySvg.append('g')
-
-        dummySvg.selectAll('rect').data(opts.legend_colors)
-
-        var rectHeight = 10
-
-        // append axis
-        var legendScale
-        if (opts.x_is_factor) {
-          legendScale = d3.scale.ordinal().rangeBands([opts.legend_colors.length * rectHeight, 0]).nice()
-        } else {
-          legendScale = d3.scale.linear().range([opts.legend_colors.length * rectHeight, 0]).nice()
-        }
-
-        legendScale.domain(opts.legend_range)
-
-        var legendAxis = d3.svg.axis()
-          .scale(legendScale)
-          .orient('right')
-          .tickSize(0)
-
-        legendAxisG.call(legendAxis)
-        var legendTicksCount = legendAxisG.selectAll('text')[0].length
-
-        if (opts.legend_colors && !opts.x_is_factor) {
-          if (opts.legend_digits) {
-            opts.legend_format = d3.format(',.' + opts.legend_digits + 'f')
-          } else {
-            var legend_step = (d3.max(opts.legend_range) - d3.min(opts.legend_range)) / (legendTicksCount - 1)
-            console.log(opts.legend_range + ' ' + legendTicksCount)
-            var legend_dig
-            if (legend_step < 0.1) {
-              legend_dig = -Math.floor(Math.log(legend_step) / Math.log(10) + 1) + 1
-            } else if (legend_step >= 0.1 && legend_step < 1) {
-              legend_dig = 1
-            } else {
-              legend_dig = 0
-            }
-            opts.legend_format = d3.format(',.' + legend_dig + 'f')
-          }
-        }
-
-        legendAxis.tickFormat(opts.legend_format)
-        legendAxisG.call(legendAxis)
-
-        legendAxisG.selectAll('text')
-          .style('font-size', opts.legend_font_size + 'px')
-          .style('font-family', opts.legend_font_family)
-          .style('fill', opts.legend_font_color)
-          .each(function (d, i) {
-            text_widths[i] = this.getComputedTextLength()
-          })
-
-        dummySvg.remove()
-      }
-
-      var i = 0
-      var x_texts
-      var y_texts
-      opts.xaxis_title_height = 0
-      // deal with x axis and its title
-      if (!opts.xaxis_hidden) {
-        if (data.cols) {
-          opts.xaxis_location = 'bottom'
-        }
-
-        if (opts.xaxis_location === 'bottom') {
-          opts.row_element_names.push('xaxis')
-        } else {
-          opts.row_element_names.unshift('xaxis')
-        }
-
-        if (opts.xaxis_title) {
-          if (opts.xaxis_location === 'bottom') {
-            opts.row_element_names.push('xtitle')
-          } else {
-            opts.row_element_names.unshift('xtitle')
-          }
-          opts.xaxis_title_height = opts.xaxis_font_size * 1.5 + 5
-          opts.row_element_map['xtitle'] = opts.xaxis_title_height
-        }
-
-        if (data.matrix.cols.length) {
-          x_texts = data.matrix.cols
-        } else {
-          x_texts = [data.matrix.cols]
-        }
-
-        for (i = 0; i < x_texts.length; i++) {
-          opts.xlabs_raw.push(x_texts[i])
-          opts.xlabs_mod.push(x_texts[i])
-        }
-
-        opts.xaxis_len = compute_axis_label_dim(opts.xlabs_mod,
-          true,
-          opts.xaxis_font_size,
-          opts.xaxis_font_family)
-        opts.row_element_map['xaxis'] = opts.xaxis_len
-      }
-
+    var i = 0
+    var x_texts
+    var y_texts
+    opts.xaxis_title_height = 0
+    // deal with x axis and its title
+    if (!opts.xaxis_hidden) {
       if (data.cols) {
-        opts.row_element_names.unshift('col_dendro')
+        opts.xaxis_location = 'bottom'
       }
 
-      if (opts.footer) {
-        opts.row_element_names.push('footer')
-        opts.row_element_map['footer'] =
-          compute_title_footer_height(
-            inner,
-            opts.footer,
-            opts.footer_font_family,
-            opts.footer_font_size,
-            opts.footer_font_color,
-            opts.footer_width,
-            opts.footer_font_bold) + opts.footer_margin_Y * 2
-      }
-
-      if (opts.legend_colors) {
-        for (i = 0; i < opts.legend_range.length; i++) {
-          opts.legend_text_len.push(0)
-        }
-        compute_legend_text_length(opts.legend_text_len)
-        opts.legend_total_width = opts.legend_left_space + opts.legend_bar_width + opts.legend_x_padding * 2 + d3.max(opts.legend_text_len)
-      }
-
-      // columns to the left of the main plot data
-      opts.larger_columns_subtitles_font_size = opts.left_columns_subtitles_font_size > opts.right_columns_subtitles_font_size ? opts.left_columns_subtitles_font_size : opts.right_columns_subtitles_font_size
-      opts.larger_columns_title_font_size = opts.left_columns_title_font_size > opts.right_columns_title_font_size ? opts.left_columns_title_font_size : opts.right_columns_title_font_size
-      opts.left_columns_total_width = 0
-
-      if (opts.left_columns) {
-        var left_cols_widths = []
-        opts.left_columns_width = []
-        for (i = 0; i < opts.left_columns.length; i++) {
-          left_cols_widths.push(0)
-          opts.col_element_names.unshift('left_col' + i)
-        }
-
-        // compute mean column width
-        compute_col_text_widths(opts.left_columns, left_cols_widths, true)
-
-        for (i = 0; i < opts.left_columns.length; i++) {
-          if (left_cols_widths[i] > opts.width * 0.2) {
-            left_cols_widths[i] = opts.width * 0.2
-          }
-          opts.col_element_map['left_col' + i] = left_cols_widths[i] + opts.axis_padding * 2
-          opts.left_columns_width.push(left_cols_widths[i] + opts.axis_padding * 2)
-          opts.left_columns_total_width = d3.sum(opts.left_columns_width)
-        }
-      }
-
-      opts.right_columns_total_width = 0
-      if (opts.right_columns) {
-        var right_cols_widths = []
-        opts.right_columns_width = []
-        for (i = 0; i < opts.right_columns.length; i++) {
-          right_cols_widths.push(0)
-          opts.col_element_names.push('right_col' + i)
-        }
-
-        // compute mean column width
-        compute_col_text_widths(opts.right_columns, right_cols_widths, true)
-
-        for (i = 0; i < opts.right_columns.length; i++) {
-          if (right_cols_widths[i] > opts.width * 0.2) {
-            right_cols_widths[i] = opts.width * 0.2
-          }
-          opts.col_element_map['right_col' + i] = right_cols_widths[i] + opts.axis_padding * 2
-          opts.right_columns_width.push(right_cols_widths[i] + opts.axis_padding * 2)
-        }
-        opts.right_columns_total_width = d3.sum(opts.right_columns_width)
-      }
-
-      opts.left_columns_subtitles = opts.left_columns ? opts.left_columns_subtitles : undefined
-      opts.left_columns_title = opts.left_columns && opts.left_columns_subtitles ? opts.left_columns_title : undefined
-      opts.right_columns_subtitles = opts.right_columns ? opts.right_columns_subtitles : undefined
-      opts.right_columns_title = opts.right_columns && opts.right_columns_subtitles ? opts.right_columns_title : undefined
-      opts.left_sub_len = 0
-      opts.right_sub_len = 0
-
-      if (opts.left_columns_subtitles) {
-        // compute text width of left column subtitles
-        opts.left_sub_len = compute_axis_label_dim(opts.left_columns_subtitles,
-          true,
-          opts.left_columns_subtitles_font_size,
-          opts.left_columns_subtitles_font_family)
-      }
-
-      if (opts.right_columns_subtitles) {
-        // compute text width of right column subtitles
-        opts.right_sub_len = compute_axis_label_dim(opts.right_columns_subtitles,
-          true,
-          opts.right_columns_subtitles_font_size,
-          opts.right_columns_subtitles_font_family)
-      }
-
-      // compare text width of left column subtitles, right column subtitles and x axis
-      if (opts.xaxis_hidden) {
-        opts.xaxis_location = undefined
-      }
-
-      if (!opts.xaxis_hidden && opts.xaxis_location === 'top') {
-        opts.topaxis_len = Math.max(opts.xaxis_len, opts.left_sub_len, opts.right_sub_len)
-        opts.row_element_map['xaxis'] = opts.topaxis_len
+      if (opts.xaxis_location === 'bottom') {
+        opts.row_element_names.push('xaxis')
       } else {
-        opts.topaxis_len = Math.max(opts.left_sub_len, opts.right_sub_len)
-        if (opts.topaxis_len > 0) {
-          opts.row_element_names.unshift('top_axis_el')
-          opts.row_element_map['top_axis_el'] = opts.topaxis_len
+        opts.row_element_names.unshift('xaxis')
+      }
+
+      if (opts.xaxis_title) {
+        if (opts.xaxis_location === 'bottom') {
+          opts.row_element_names.push('xtitle')
+        } else {
+          opts.row_element_names.unshift('xtitle')
         }
+        opts.xaxis_title_height = opts.xaxis_font_size * 1.5 + 5
+        opts.row_element_map['xtitle'] = opts.xaxis_title_height
       }
 
-      opts.left_col_title_height = 0
-      opts.right_col_title_height = 0
-
-      if (opts.left_columns_title) {
-        // compute height and wrap of left column title
-        opts.left_col_title_height =
-          compute_title_footer_height(
-            inner,
-            opts.left_columns_title,
-            opts.left_columns_title_font_family,
-            opts.left_columns_title_font_size,
-            opts.left_columns_title_font_color,
-            opts.left_columns_total_width,
-            opts.left_columns_title_bold) + opts.axis_padding * 2
-      }
-
-      if (opts.right_columns_title) {
-        opts.right_col_title_height =
-          compute_title_footer_height(
-            inner,
-            opts.right_columns_title,
-            opts.right_columns_title_font_family,
-            opts.right_columns_title_font_size,
-            opts.right_columns_title_font_color,
-            opts.right_columns_total_width,
-            opts.right_columns_title_bold) + opts.axis_padding * 2
-      }
-
-      if (!opts.xaxis_hidden && opts.xaxis_location === 'top' && opts.xaxis_title) {
-        opts.topaxis_title_height = Math.max(opts.xaxis_title_height, opts.left_col_title_height, opts.right_col_title_height)
-        opts.row_element_map['xtitle'] = opts.topaxis_title_height
+      if (data.matrix.cols.length) {
+        x_texts = data.matrix.cols
       } else {
-        opts.topaxis_title_height = Math.max(opts.left_col_title_height, opts.right_col_title_height)
-        if (opts.topaxis_title_height > 0) {
-          opts.row_element_names.unshift('top_axis_title_el')
-          opts.row_element_map['top_axis_title_el'] = opts.topaxis_title_height
-        }
+        x_texts = [data.matrix.cols]
       }
 
-      if (!opts.yaxis_hidden) {
-        if (data.rows) {
-          opts.yaxis_location = 'right'
+      for (i = 0; i < x_texts.length; i++) {
+        opts.xlabs_raw.push(x_texts[i])
+        opts.xlabs_mod.push(x_texts[i])
+      }
+
+      opts.xaxis_len = axis.label_length(
+        this.inner,
+        opts.xlabs_mod,
+        true,
+        opts.xaxis_font_size,
+        opts.xaxis_font_family,
+        opts)
+      opts.row_element_map['xaxis'] = opts.xaxis_len
+    }
+
+    if (data.cols) {
+      opts.row_element_names.unshift('col_dendro')
+    }
+
+    if (opts.footer) {
+      opts.row_element_names.push('footer')
+      opts.row_element_map['footer'] =
+        title_footer.compute_height(
+          inner,
+          opts.footer,
+          opts.footer_font_family,
+          opts.footer_font_size,
+          opts.footer_font_color,
+          opts.footer_width,
+          opts.footer_font_bold) + opts.footer_margin_Y * 2
+    }
+
+    if (opts.legend_colors) {
+      const legend_text_lengths = legend.compute_lengths(this.inner, opts)
+      opts.legend_total_width = opts.legend_left_space + opts.legend_bar_width + opts.legend_x_padding * 2 + d3.max(legend_text_lengths)
+    }
+
+    // columns to the left of the main plot data
+    opts.larger_columns_subtitles_font_size = opts.left_columns_subtitles_font_size > opts.right_columns_subtitles_font_size ? opts.left_columns_subtitles_font_size : opts.right_columns_subtitles_font_size
+    opts.larger_columns_title_font_size = opts.left_columns_title_font_size > opts.right_columns_title_font_size ? opts.left_columns_title_font_size : opts.right_columns_title_font_size
+    opts.left_columns_total_width = 0
+
+    if (opts.left_columns) {
+      var left_cols_widths = []
+      opts.left_columns_width = []
+      for (i = 0; i < opts.left_columns.length; i++) {
+        left_cols_widths.push(0)
+        opts.col_element_names.unshift('left_col' + i)
+      }
+
+      // compute mean column width
+      compute_col_text_widths(opts.left_columns, left_cols_widths, true)
+
+      for (i = 0; i < opts.left_columns.length; i++) {
+        if (left_cols_widths[i] > opts.width * 0.2) {
+          left_cols_widths[i] = opts.width * 0.2
         }
+        opts.col_element_map['left_col' + i] = left_cols_widths[i] + opts.axis_padding * 2
+        opts.left_columns_width.push(left_cols_widths[i] + opts.axis_padding * 2)
+        opts.left_columns_total_width = d3.sum(opts.left_columns_width)
+      }
+    }
+
+    opts.right_columns_total_width = 0
+    if (opts.right_columns) {
+      var right_cols_widths = []
+      opts.right_columns_width = []
+      for (i = 0; i < opts.right_columns.length; i++) {
+        right_cols_widths.push(0)
+        opts.col_element_names.push('right_col' + i)
+      }
+
+      // compute mean column width
+      compute_col_text_widths(opts.right_columns, right_cols_widths, true)
+
+      for (i = 0; i < opts.right_columns.length; i++) {
+        if (right_cols_widths[i] > opts.width * 0.2) {
+          right_cols_widths[i] = opts.width * 0.2
+        }
+        opts.col_element_map['right_col' + i] = right_cols_widths[i] + opts.axis_padding * 2
+        opts.right_columns_width.push(right_cols_widths[i] + opts.axis_padding * 2)
+      }
+      opts.right_columns_total_width = d3.sum(opts.right_columns_width)
+    }
+
+    opts.left_columns_subtitles = opts.left_columns ? opts.left_columns_subtitles : undefined
+    opts.left_columns_title = opts.left_columns && opts.left_columns_subtitles ? opts.left_columns_title : undefined
+    opts.right_columns_subtitles = opts.right_columns ? opts.right_columns_subtitles : undefined
+    opts.right_columns_title = opts.right_columns && opts.right_columns_subtitles ? opts.right_columns_title : undefined
+    opts.left_sub_len = 0
+    opts.right_sub_len = 0
+
+    if (opts.left_columns_subtitles) {
+      // compute text width of left column subtitles
+      opts.left_sub_len = axis.label_length(
+        this.inner,
+        opts.left_columns_subtitles,
+        true,
+        opts.left_columns_subtitles_font_size,
+        opts.left_columns_subtitles_font_family,
+        opts
+      )
+    }
+
+    if (opts.right_columns_subtitles) {
+      // compute text width of right column subtitles
+      opts.right_sub_len = axis.label_length(
+        this.inner,
+        opts.right_columns_subtitles,
+        true,
+        opts.right_columns_subtitles_font_size,
+        opts.right_columns_subtitles_font_family,
+        opts)
+    }
+
+    // compare text width of left column subtitles, right column subtitles and x axis
+    if (opts.xaxis_hidden) {
+      opts.xaxis_location = undefined
+    }
+
+    if (!opts.xaxis_hidden && opts.xaxis_location === 'top') {
+      opts.topaxis_len = Math.max(opts.xaxis_len, opts.left_sub_len, opts.right_sub_len)
+      opts.row_element_map['xaxis'] = opts.topaxis_len
+    } else {
+      opts.topaxis_len = Math.max(opts.left_sub_len, opts.right_sub_len)
+      if (opts.topaxis_len > 0) {
+        opts.row_element_names.unshift('top_axis_el')
+        opts.row_element_map['top_axis_el'] = opts.topaxis_len
+      }
+    }
+
+    opts.left_col_title_height = 0
+    opts.right_col_title_height = 0
+
+    if (opts.left_columns_title) {
+      // compute height and wrap of left column title
+      opts.left_col_title_height =
+        title_footer.compute_height(
+          inner,
+          opts.left_columns_title,
+          opts.left_columns_title_font_family,
+          opts.left_columns_title_font_size,
+          opts.left_columns_title_font_color,
+          opts.left_columns_total_width,
+          opts.left_columns_title_bold) + opts.axis_padding * 2
+    }
+
+    if (opts.right_columns_title) {
+      opts.right_col_title_height =
+        title_footer.compute_height(
+          inner,
+          opts.right_columns_title,
+          opts.right_columns_title_font_family,
+          opts.right_columns_title_font_size,
+          opts.right_columns_title_font_color,
+          opts.right_columns_total_width,
+          opts.right_columns_title_bold) + opts.axis_padding * 2
+    }
+
+    if (!opts.xaxis_hidden && opts.xaxis_location === 'top' && opts.xaxis_title) {
+      opts.topaxis_title_height = Math.max(opts.xaxis_title_height, opts.left_col_title_height, opts.right_col_title_height)
+      opts.row_element_map['xtitle'] = opts.topaxis_title_height
+    } else {
+      opts.topaxis_title_height = Math.max(opts.left_col_title_height, opts.right_col_title_height)
+      if (opts.topaxis_title_height > 0) {
+        opts.row_element_names.unshift('top_axis_title_el')
+        opts.row_element_map['top_axis_title_el'] = opts.topaxis_title_height
+      }
+    }
+
+    if (!opts.yaxis_hidden) {
+      if (data.rows) {
+        opts.yaxis_location = 'right'
+      }
+
+      if (opts.yaxis_location === 'right') {
+        opts.col_element_names.push('yaxis')
+      } else {
+        opts.col_element_names.unshift('yaxis')
+      }
+
+      if (data.matrix.rows.length) {
+        y_texts = data.matrix.rows
+      } else {
+        y_texts = [data.matrix.rows]
+      }
+
+      for (i = 0; i < y_texts.length; i++) {
+        opts.ylabs_raw.push(y_texts[i])
+        opts.ylabs_mod.push(y_texts[i])
+      }
+
+      opts.col_element_map['yaxis'] = axis.label_length(
+        this.inner,
+        opts.ylabs_mod,
+        false,
+        opts.yaxis_font_size,
+        opts.yaxis_font_family,
+        opts)
+
+      if (opts.yaxis_title) {
+        if (opts.yaxis_location === 'right') {
+          opts.col_element_names.push('ytitle')
+        } else {
+          opts.col_element_names.unshift('ytitle')
+        }
+        opts.col_element_map['ytitle'] = opts.yaxis_title_font_size * 1.5 + 5
+      }
+
+      if (!opts.xaxis_hidden) {
+        var x_texts_net = opts.row_element_map['xaxis']
+        var y_width_net = x_texts_net / 1.1
 
         if (opts.yaxis_location === 'right') {
-          opts.col_element_names.push('yaxis')
-        } else {
-          opts.col_element_names.unshift('yaxis')
-        }
-
-        if (data.matrix.rows.length) {
-          y_texts = data.matrix.rows
-        } else {
-          y_texts = [data.matrix.rows]
-        }
-
-        for (i = 0; i < y_texts.length; i++) {
-          opts.ylabs_raw.push(y_texts[i])
-          opts.ylabs_mod.push(y_texts[i])
-        }
-
-        opts.col_element_map['yaxis'] = compute_axis_label_dim(opts.ylabs_mod,
-          false,
-          opts.yaxis_font_size,
-          opts.yaxis_font_family)
-
-        if (opts.yaxis_title) {
-          if (opts.yaxis_location === 'right') {
-            opts.col_element_names.push('ytitle')
-          } else {
-            opts.col_element_names.unshift('ytitle')
-          }
-          opts.col_element_map['ytitle'] = opts.yaxis_title_font_size * 1.5 + 5
-        }
-
-        if (!opts.xaxis_hidden) {
-          var x_texts_net = opts.row_element_map['xaxis']
-          var y_width_net = x_texts_net / 1.1
-
-          if (opts.yaxis_location === 'right') {
-            if (opts.legend_colors) {
-              if (y_width_net > opts.col_element_map['yaxis'] + opts.legend_total_width) {
-                opts.col_element_map['yaxis'] = y_width_net - opts.legend_total_width
-                opts.col_element_names.push('legend')
-                opts.col_element_map['legend'] = opts.legend_total_width
-              } else {
-                opts.col_element_names.push('legend')
-                opts.col_element_map['legend'] = opts.legend_total_width
-              }
-            } else {
-              if (y_width_net > opts.col_element_map['yaxis']) {
-                opts.col_element_map['yaxis'] = y_width_net
-              }
-            }
-          } else {
-            if (opts.legend_colors) {
-              if (opts.legend_total_width < y_width_net) {
-                opts.col_element_names.push('yaxis_dummy1')
-                opts.col_element_map['yaxis_dummy1'] = (y_width_net - opts.legend_total_width) / 2
-                opts.col_element_names.push('legend')
-                opts.col_element_map['legend'] = opts.legend_total_width
-                opts.col_element_names.push('yaxis_dummy2')
-                opts.col_element_map['yaxis_dummy2'] = (y_width_net - opts.legend_total_width) / 2
-              } else {
-                opts.col_element_names.push('legend')
-                opts.col_element_map['legend'] = opts.legend_total_width
-              }
-            } else {
-              opts.col_element_names.push('yaxis_dummy')
-              opts.col_element_map['yaxis_dummy'] = y_width_net
-            }
-          }
-        } else {
           if (opts.legend_colors) {
-            opts.col_element_names.push('legend')
-            opts.col_element_map['legend'] = opts.legend_total_width
+            if (y_width_net > opts.col_element_map['yaxis'] + opts.legend_total_width) {
+              opts.col_element_map['yaxis'] = y_width_net - opts.legend_total_width
+              opts.col_element_names.push('legend')
+              opts.col_element_map['legend'] = opts.legend_total_width
+            } else {
+              opts.col_element_names.push('legend')
+              opts.col_element_map['legend'] = opts.legend_total_width
+            }
+          } else {
+            if (y_width_net > opts.col_element_map['yaxis']) {
+              opts.col_element_map['yaxis'] = y_width_net
+            }
           }
-        }
-      } else {
-        if (!opts.xaxis_hidden) {
-          // keep the space to mitigate the overflow of x axis label
-          x_texts_net = opts.row_element_map['xaxis']
-          y_width_net = x_texts_net / 1.1
-
+        } else {
           if (opts.legend_colors) {
             if (opts.legend_total_width < y_width_net) {
               opts.col_element_names.push('yaxis_dummy1')
@@ -502,70 +329,98 @@ class Heatmap {
               opts.col_element_map['legend'] = opts.legend_total_width
             }
           } else {
-            if (opts.right_columns) {
-              if (opts.right_sub_len / 1.1 > opts.right_columns_width[opts.right_columns_width.length - 1] / 2) {
-                opts.col_element_names.push('yaxis')
-                opts.col_element_map['yaxis'] = opts.right_sub_len / 1.1 - opts.right_columns_width[opts.right_columns_width.length - 1] / 2
-              }
-            } else {
-              opts.col_element_names.push('yaxis')
-              opts.col_element_map['yaxis'] = y_width_net
-            }
+            opts.col_element_names.push('yaxis_dummy')
+            opts.col_element_map['yaxis_dummy'] = y_width_net
           }
-        } else {
-          if (opts.legend_colors) {
+        }
+      } else {
+        if (opts.legend_colors) {
+          opts.col_element_names.push('legend')
+          opts.col_element_map['legend'] = opts.legend_total_width
+        }
+      }
+    } else {
+      if (!opts.xaxis_hidden) {
+        // keep the space to mitigate the overflow of x axis label
+        x_texts_net = opts.row_element_map['xaxis']
+        y_width_net = x_texts_net / 1.1
+
+        if (opts.legend_colors) {
+          if (opts.legend_total_width < y_width_net) {
+            opts.col_element_names.push('yaxis_dummy1')
+            opts.col_element_map['yaxis_dummy1'] = (y_width_net - opts.legend_total_width) / 2
             opts.col_element_names.push('legend')
             opts.col_element_map['legend'] = opts.legend_total_width
+            opts.col_element_names.push('yaxis_dummy2')
+            opts.col_element_map['yaxis_dummy2'] = (y_width_net - opts.legend_total_width) / 2
           } else {
-            if (opts.right_columns && opts.right_sub_len / 1.1 > opts.right_columns_width[opts.right_columns_width.length - 1] / 2) {
+            opts.col_element_names.push('legend')
+            opts.col_element_map['legend'] = opts.legend_total_width
+          }
+        } else {
+          if (opts.right_columns) {
+            if (opts.right_sub_len / 1.1 > opts.right_columns_width[opts.right_columns_width.length - 1] / 2) {
               opts.col_element_names.push('yaxis')
               opts.col_element_map['yaxis'] = opts.right_sub_len / 1.1 - opts.right_columns_width[opts.right_columns_width.length - 1] / 2
             }
+          } else {
+            opts.col_element_names.push('yaxis')
+            opts.col_element_map['yaxis'] = y_width_net
+          }
+        }
+      } else {
+        if (opts.legend_colors) {
+          opts.col_element_names.push('legend')
+          opts.col_element_map['legend'] = opts.legend_total_width
+        } else {
+          if (opts.right_columns && opts.right_sub_len / 1.1 > opts.right_columns_width[opts.right_columns_width.length - 1] / 2) {
+            opts.col_element_names.push('yaxis')
+            opts.col_element_map['yaxis'] = opts.right_sub_len / 1.1 - opts.right_columns_width[opts.right_columns_width.length - 1] / 2
           }
         }
       }
+    }
 
-      // row dendrogram, add one more column
-      if (data.rows) {
-        opts.col_element_names.unshift('row_dendro')
-        opts.col_element_map['row_dendro'] = opts.yclust_width || opts.width * 0.12
-      }
+    // row dendrogram, add one more column
+    if (data.rows) {
+      opts.col_element_names.unshift('row_dendro')
+      opts.col_element_map['row_dendro'] = opts.yclust_width || opts.width * 0.12
+    }
 
-      // column dendrogram, add one more row
-      if (data.cols) {
-        opts.row_element_map['col_dendro'] = opts.xclust_height || opts.height * 0.12
-      }
+    // column dendrogram, add one more row
+    if (data.cols) {
+      opts.row_element_map['col_dendro'] = opts.xclust_height || opts.height * 0.12
+    }
 
-      if (opts.subtitle) {
-        opts.row_element_names.unshift('subtitle')
-        opts.row_element_map['subtitle'] =
-          compute_title_footer_height(
-            inner,
-            opts.subtitle,
-            opts.subtitle_font_family,
-            opts.subtitle_font_size,
-            opts.subtitle_font_color,
-            opts.subtitle_width,
-            opts.subtitle_font_bold) + opts.subtitle_margin_top + opts.subtitle_margin_bottom
-      }
+    if (opts.subtitle) {
+      opts.row_element_names.unshift('subtitle')
+      opts.row_element_map['subtitle'] =
+        title_footer.compute_height(
+          inner,
+          opts.subtitle,
+          opts.subtitle_font_family,
+          opts.subtitle_font_size,
+          opts.subtitle_font_color,
+          opts.subtitle_width,
+          opts.subtitle_font_bold) + opts.subtitle_margin_top + opts.subtitle_margin_bottom
+    }
 
-      if (opts.title) {
-        opts.row_element_names.unshift('title')
-        opts.row_element_map['title'] =
-          compute_title_footer_height(
-            inner,
-            opts.title,
-            opts.title_font_family,
-            opts.title_font_size,
-            opts.title_font_color,
-            opts.title_width,
-            opts.title_font_bold) + opts.title_margin_top + opts.title_margin_bottom
-      }
-    })()
+    if (opts.title) {
+      opts.row_element_names.unshift('title')
+      opts.row_element_map['title'] =
+        title_footer.compute_height(
+          inner,
+          opts.title,
+          opts.title_font_family,
+          opts.title_font_size,
+          opts.title_font_color,
+          opts.title_width,
+          opts.title_font_bold) + opts.title_margin_top + opts.title_margin_bottom
+    }
 
     var row_heights = []
     var col_widths = []
-    var i = 0
+    i = 0
     for (i = 0; i < opts.col_element_names.length; i++) {
       col_widths.push(opts.col_element_map[opts.col_element_names[i]])
     }
@@ -586,7 +441,7 @@ class Heatmap {
     if (!opts.xaxis_hidden && opts.xaxis_title) {
       var dummydiv = el.append('div')
       opts.xaxis_title_height =
-        compute_title_footer_height(
+        title_footer.compute_height(
           dummydiv,
           opts.xaxis_title,
           opts.xaxis_title_font_family,
@@ -804,14 +659,14 @@ class Heatmap {
     if (data.rows) { dendrogram(el.select('svg.rowDend'), data.rows, false, rowDendBounds.width, rowDendBounds.height, opts.axis_padding, opts.link_color, controller, opts.anim_duration) }
     if (data.cols) { dendrogram(el.select('svg.colDend'), data.cols, true, colDendBounds.width, colDendBounds.height, opts.axis_padding, opts.link_color, controller, opts.anim_duration) }
     colormap(el.select('svg.colormap'), data.matrix, colormapBounds.width, colormapBounds.height, opts, controller)
-    if (!opts.xaxis_hidden) { axisLabels(el.select('svg.xaxis'), opts.xlabs_mod, true, xaxisBounds.width0, xaxisBounds.height, opts.axis_padding, opts.xaxis_location, opts, controller, xaxisBounds, yaxisBounds) }
-    if (!opts.yaxis_hidden) { axisLabels(el.select('svg.yaxis'), opts.ylabs_mod, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding, opts.yaxis_location, opts, controller, xaxisBounds, yaxisBounds) }
-    if (opts.xaxis_title && !opts.xaxis_hidden) { axis_title(el.select('svg.xtitle'), opts.xaxis_title, false, colormapBounds.width, xtitleBounds.height, opts) }
-    if (opts.yaxis_title && !opts.yaxis_hidden) { axis_title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds.width, colormapBounds.height, opts) }
-    if (opts.legend_colors) { legend(el.select('svg.legend'), opts.legend_colors, opts.legend_range, legendBounds, opts) }
+    if (!opts.xaxis_hidden) { axis.labels(el.select('svg.xaxis'), opts.xlabs_mod, true, xaxisBounds.width0, xaxisBounds.height, opts.axis_padding, opts.xaxis_location, opts, controller, xaxisBounds, yaxisBounds) }
+    if (!opts.yaxis_hidden) { axis.labels(el.select('svg.yaxis'), opts.ylabs_mod, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding, opts.yaxis_location, opts, controller, xaxisBounds, yaxisBounds) }
+    if (opts.xaxis_title && !opts.xaxis_hidden) { axis.title(el.select('svg.xtitle'), opts.xaxis_title, false, colormapBounds.width, xtitleBounds.height, opts) }
+    if (opts.yaxis_title && !opts.yaxis_hidden) { axis.title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds.width, colormapBounds.height, opts) }
+    if (opts.legend_colors) { legend.draw(el.select('svg.legend'), opts.legend_colors, opts.legend_range, legendBounds, opts) }
 
     if (opts.title) {
-      title_footer(
+      title_footer.draw(
         el.select('svg.graph_title'),
         titleBounds,
         opts.title,
@@ -825,7 +680,7 @@ class Heatmap {
     }
 
     if (opts.subtitle) {
-      title_footer(
+      title_footer.draw(
         el.select('svg.graph_subtitle'),
         subtitleBounds,
         opts.subtitle,
@@ -839,7 +694,7 @@ class Heatmap {
     }
 
     if (opts.footer) {
-      title_footer(
+      title_footer.draw(
         el.select('svg.graph_footer'),
         footerBounds,
         opts.footer,

@@ -1,6 +1,6 @@
 import wrap_new from './wrap_new'
 
-function title_footer (svg, bounds, texts, fontFam, fontSize, fontColor, fontWeight, wrapwidth, t_st_f, opts) {
+function draw (svg, bounds, texts, fontFam, fontSize, fontColor, fontWeight, wrapwidth, t_st_f, opts) {
   svg = svg.append('g')
   var this_text = svg.append('text')
     .text(texts)
@@ -19,4 +19,26 @@ function title_footer (svg, bounds, texts, fontFam, fontSize, fontColor, fontWei
   this_text.attr('transform', 'translate(' + transX + ',' + transY + ')')
 }
 
-module.exports = title_footer
+function compute_height (svg, input, fontFam, fontSize, fontCol, wrapWidth, bold) {
+  var dummySvg = svg.append('svg')
+  var dummy_g = dummySvg
+    .append('g')
+    .classed('dummy_g', true)
+
+  var text_el = dummy_g.append('text')
+    .text(input)
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('dy', 0)
+    .style('font-family', fontFam)
+    .style('font-size', fontSize)
+    .style('fill', fontCol)
+    .attr('font-weight', bold ? 'bold' : 'normal')
+    .call(wrap_new, wrapWidth)
+
+  var output = text_el.node().getBBox().height
+  dummySvg.remove()
+  return output
+}
+
+module.exports = { draw, compute_height }

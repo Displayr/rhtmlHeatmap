@@ -18,7 +18,6 @@ const defaultConfig = {
   legend_format: null,
   legend_left_space: 26,
   legend_range: null,
-  legend_text_len: [],
   legend_width: null,
   legend_x_padding: 4,
   link_color: '#AAA',
