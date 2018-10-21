@@ -1,0 +1,205 @@
+import d3 from 'd3'
+
+function axisLabels (svg, data, rotated, width, height, padding, axis_location, opts, controller, xaxisBounds, yaxisBounds) {
+  svg = svg.append('g')
+
+  // The data variable is either cluster info, or a flat list of names.
+  // If the former, transform it to simply a list of names.
+  var leaves
+  if (data.children) {
+    leaves = d3.layout.cluster().nodes(data)
+      .filter(function (x) { return !x.children })
+      .map(function (x) { return x.label + '' })
+  } else if (data.length) {
+    leaves = data
+  }
+
+  // Define scale, axis
+
+  // set axis options
+  var scale = d3.scale.ordinal()
+    .domain(d3.range(0, leaves.length))
+    .rangeBands([0, rotated ? width : height])
+  var axis = d3.svg.axis()
+    .scale(scale)
+    .orient(axis_location)
+    .outerTickSize(0)
+    .tickPadding(padding)
+    .tickFormat(function (d, i) { return leaves[i] })// hack for repeated values
+
+  if (opts.table_style) {
+    axis.innerTickSize(0)
+  }
+
+  var xboundsleft = 0
+  if (opts.left_columns && opts.xaxis_location === 'top') {
+    xboundsleft = opts.left_columns_total_width - padding
+
+    if (!opts.yaxis_hidden && opts.yaxis_location === 'left') {
+      var yaxis_width = opts.col_element_map['yaxis']
+      var ytitle_width = opts.col_element_map['ytitle'] || 0
+      xboundsleft += yaxis_width + ytitle_width
+    }
+  }
+
+  // Create the actual axis
+  var axisNodes = svg.append('g')
+    .attr('transform', function () {
+      if (rotated) {
+        if (axis_location === 'bottom') {
+          return 'translate(' + (xboundsleft + xaxisBounds.left) + ',' + padding + ')'
+        } else if (axis_location === 'top') {
+          return 'translate(' + (xboundsleft + xaxisBounds.left) + ',' + (xaxisBounds.height - padding) + ')'
+        }
+      } else {
+        if (axis_location === 'right') {
+          return 'translate(' + padding + ',0)'
+        } else if (axis_location === 'left') {
+          return 'translate(' + (yaxisBounds.width - padding) + ',0)'
+        }
+      }
+    })
+    .call(axis)
+
+  var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size'] + 'px'
+  // var fontSize = opts[(rotated ? 'x' : 'y') + 'axis_font_size']
+  //    || Math.min(18, Math.max(9, scale.rangeBand() - (rotated ? 11: 8))) + "px";
+  axisNodes.selectAll('text')
+    .style('font-size', fontSize)
+    .style('fill', rotated ? opts.xaxis_font_color : opts.yaxis_font_color)
+    .style('font-family', rotated ? opts.xaxis_font_family : opts.yaxis_font_family)
+
+  var mouseTargets = svg.append('g')
+    .selectAll('g').data(leaves)
+  mouseTargets
+    .enter()
+    .append('g').append('rect')
+    .attr('transform', rotated ? (axis_location === 'bottom' ? 'rotate(45),translate(0,0)' : 'rotate(-45),translate(0,0)') : '')
+    .attr('fill', 'transparent')
+    .on('click', function (d, i) {
+      var dim = rotated ? 'x' : 'y'
+      var hl = controller.highlight() || {x: null, y: null}
+      // TODO address eqeqeq after verifying
+      if (hl[dim] == i) { // eslint-disable-line eqeqeq
+        // If clicked already-highlighted row/col, then unhighlight
+        hl[dim] = null
+        controller.highlight(hl)
+      } else {
+        hl[dim] = i
+        controller.highlight(hl)
+      }
+      d3.event.stopPropagation()
+    })
+
+  function layoutMouseTargets (selection) {
+    var _h = scale.rangeBand() / (rotated ? 1.414 : 1)
+    var _w = rotated ? height * 1.414 * 1.2 : width
+    selection
+      .attr('transform', function (d, i) {
+        var x = rotated ? (axis_location === 'bottom' ? scale(i) + scale.rangeBand() / 2 + xaxisBounds.left + xboundsleft : scale(i) + xaxisBounds.left + xboundsleft) : 0
+        var y = rotated ? (axis_location === 'bottom' ? padding + 6 : height - _h / 1.414 - padding - 6) : scale(i)
+        return 'translate(' + x + ',' + y + ')'
+      })
+      .selectAll('rect')
+      .attr('height', _h)
+      .attr('width', _w)
+  }
+
+  layoutMouseTargets(mouseTargets)
+  // workout what this mouseTarget is
+
+  if (rotated) {
+    axisNodes.selectAll('text')
+      .attr('transform', function () {
+        if (axis_location === 'bottom') {
+          return 'rotate(45),translate(' + padding + ', 0)'
+        } else if (axis_location === 'top') {
+          return 'rotate(-45),translate(' + (padding) + ', 0)'
+        }
+      })
+      .style('text-anchor', 'start')
+  }
+  //  else {
+  //   if (opts.table_style) {
+  //     axisNodes.selectAll("text").style("text-anchor", "start");
+  //   }
+  // }
+
+  controller.on('highlight.axis-' + (rotated ? 'x' : 'y'), function (hl) {
+    var ticks = axisNodes.selectAll('.tick')
+    var selected = hl[rotated ? 'x' : 'y']
+    if (typeof (selected) !== 'number') {
+      ticks.style('opacity', function (d, i) {
+        if (rotated) {
+          var ttt = d3.transform(d3.select(this).attr('transform'))
+          if (ttt.translate[0] < 0 || ttt.translate[0] > width) {
+            return 0
+          } else {
+            return 1
+          }
+        }
+      })
+      return
+    }
+    ticks.style('opacity', function (d, i) {
+      if (i !== selected) {
+        return 0.4
+      } else {
+        return 1
+      }
+    })
+    ticks.each(function (d, i) {
+      if (rotated) {
+        var ttt = d3.transform(d3.select(this).attr('transform'))
+        if (ttt.translate[0] < 0 || ttt.translate[0] > width) {
+          d3.select(this).style('opacity', 0)
+        }
+      }
+    })
+  })
+
+  controller.on('transform.axis-' + (rotated ? 'x' : 'y'), function (_) {
+    var dim = rotated ? 0 : 1
+    // scale.domain(leaves.slice(_.extent[0][dim], _.extent[1][dim]));
+    var rb = [_.translate[dim], (rotated ? width : height) * _.scale[dim] + _.translate[dim]]
+    scale.rangeBands(rb)
+    var tAxisNodes = axisNodes.transition().duration(opts.anim_duration).ease('linear')
+    tAxisNodes.call(axis)
+    // Set text-anchor on the non-transitioned node to prevent jumpiness
+    // in RStudio Viewer pane
+    // if (opts.table_style) {
+    //   axisNodes.selectAll("text").style("text-anchor", "start");
+    // } else {
+    axisNodes.selectAll('text').style('text-anchor', rotated ? 'start' : axis_location === 'right' ? 'start' : 'end')
+    // }
+
+    tAxisNodes.selectAll('g')
+      .style('opacity', function (d, i) {
+        if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+          return 1
+        } else {
+          return 0
+        }
+      })
+    // if (opts.table_style) {
+    //   tAxisNodes.selectAll("text")
+    //     .style("text-anchor", "start");
+
+    // } else {
+    tAxisNodes.selectAll('text')
+      .style('text-anchor', rotated ? 'start' : axis_location === 'right' ? 'start' : 'end')
+    // }
+
+    mouseTargets.transition().duration(opts.anim_duration).ease('linear')
+      .call(layoutMouseTargets)
+      .style('opacity', function (d, i) {
+        if (i >= _.extent[0][dim] && i < _.extent[1][dim]) {
+          return 1
+        } else {
+          return 0
+        }
+      })
+  })
+}
+
+module.exports = axisLabels

@@ -34,13 +34,6 @@ function legend (svg, colors, range, bounds, opts) {
 
   legendScale.domain(opts.legend_range)
 
-  /*    var tickCount, tickVals, step;
-      if (!opts.x_is_factor) {
-        tickCount = 10;
-        step = (opts.legend_range[1]-opts.legend_range[0])/tickCount;
-        tickVals = d3.range(opts.legend_range[0], opts.legend_range[1]+step, step);
-      }
-  */
   var legendAxis = d3.svg.axis()
     .scale(legendScale)
     .orient('right')
