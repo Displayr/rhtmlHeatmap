@@ -4,6 +4,7 @@ import Controller from './controller'
 import buildConfig from './buildConfig'
 import dendrogram from './dendrogram'
 import colormap from './colormap'
+import legend from './legend'
 
 class Heatmap {
   constructor (selector, data, options) {
@@ -803,7 +804,7 @@ class Heatmap {
     if (!opts.yaxis_hidden) { axisLabels(el.select('svg.yaxis'), opts.ylabs_mod, false, yaxisBounds.width, yaxisBounds.height, opts.axis_padding, opts.yaxis_location) }
     if (opts.xaxis_title && !opts.xaxis_hidden) { axis_title(el.select('svg.xtitle'), opts.xaxis_title, false, colormapBounds.width, xtitleBounds.height) }
     if (opts.yaxis_title && !opts.yaxis_hidden) { axis_title(el.select('svg.ytitle'), opts.yaxis_title, true, ytitleBounds.width, colormapBounds.height) }
-    if (opts.legend_colors) { legend(el.select('svg.legend'), opts.legend_colors, opts.legend_range, legendBounds) }
+    if (opts.legend_colors) { legend(el.select('svg.legend'), opts.legend_colors, opts.legend_range, legendBounds, opts) }
 
     if (opts.title) {
       title_footer(
@@ -1394,61 +1395,7 @@ class Heatmap {
         .call(wrap_new, colWidth)
     }
 
-    // TODO extract these : colormap, legend, title_footer, axis_title, axisLabels
-
-    function legend (svg, colors, range, bounds) {
-      var legendAxisG = svg.append('g')
-      svg = svg.append('g')
-
-      var legendRects = svg.selectAll('rect')
-        .data(colors)
-
-      var boundsPaddingX = 4 + opts.legend_left_space
-      var boundsPaddingY = 20
-      var rectWidth = opts.legend_bar_width
-      var rectHeight = (bounds.height - boundsPaddingY * 2) / colors.length
-
-      legendRects.enter()
-        .append('rect')
-        .attr('width', rectWidth)
-        .attr('height', rectHeight)
-        .attr('transform', function (d, i) {
-          return 'translate(' + (boundsPaddingX) + ',' + (rectHeight * i + boundsPaddingY) + ')'
-        })
-        .style('fill', function (d) { return d })
-        .style('stroke', function (d) { return d })
-        .style('stroke-width', '1px')
-
-      // append axis
-      legendAxisG.attr('transform', 'translate(' + (boundsPaddingX + rectWidth) + ',' + boundsPaddingY + ')')
-      var legendScale
-      if (opts.x_is_factor) {
-        legendScale = d3.scale.ordinal().rangeBands([colors.length * rectHeight, 0]).nice()
-      } else {
-        legendScale = d3.scale.linear().range([colors.length * rectHeight, 0]).nice()
-      }
-
-      legendScale.domain(opts.legend_range)
-
-      /*    var tickCount, tickVals, step;
-          if (!opts.x_is_factor) {
-            tickCount = 10;
-            step = (opts.legend_range[1]-opts.legend_range[0])/tickCount;
-            tickVals = d3.range(opts.legend_range[0], opts.legend_range[1]+step, step);
-          }
-      */
-      var legendAxis = d3.svg.axis()
-        .scale(legendScale)
-        .orient('right')
-        .tickSize(0)
-        .tickFormat(opts.legend_format)
-
-      legendAxisG.call(legendAxis)
-      legendAxisG.selectAll('text')
-        .style('font-size', opts.legend_font_size + 'px')
-        .style('font-family', opts.legend_font_family)
-        .style('fill', opts.legend_font_color)
-    }
+    // TODO extract these : title_footer, axis_title, axisLabels
 
     function title_footer (svg, bounds, texts, fontFam, fontSize, fontColor, fontWeight, wrapwidth, t_st_f) {
       svg = svg.append('g')
