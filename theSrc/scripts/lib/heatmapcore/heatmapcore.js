@@ -4,6 +4,7 @@ import Controller from './controller'
 import buildConfig from './buildConfig'
 import dendrogram from './dendrogram'
 import colormap from './colormap'
+import columns from './columns'
 import legend from './legend'
 import title_footer from './title_footer'
 import axis from './axis'
@@ -24,36 +25,6 @@ class Heatmap {
     var inner = el.append('div').classed('inner', true)
     this.inner = inner
     inner.append('div').classed('info', true) // TODO nothing is added to info
-
-    var compute_col_text_widths = function (input, text_widths) {
-      var dummySvg = inner.append('svg')
-      var dummy_g = dummySvg
-        .append('g')
-        .classed('dummy_g', true)
-
-      var dummy_cols = dummy_g
-        .selectAll('.dummy')
-        .data(input)
-
-      var dummy_cols_each = dummy_cols.enter()
-        .append('g')
-        .attr('data-index', function (d, i) { return i })
-        .selectAll('.dummy')
-        .data(function (d) { return d })
-
-      dummy_cols_each.enter()
-        .append('text')
-        .text(function (d) { return d })
-        .style('font-family', opts.yaxis_font_family)
-        .style('font-size', opts.left_columns_font_size)
-        .each(function (d, i) {
-          var parent_index = d3.select(this.parentNode).attr('data-index')
-          var textLength = this.getComputedTextLength()
-          text_widths[parent_index] = text_widths[parent_index] > textLength ? text_widths[parent_index] : textLength
-        })
-
-      dummySvg.remove()
-    }
 
     var i = 0
     var x_texts
@@ -130,15 +101,12 @@ class Heatmap {
     opts.left_columns_total_width = 0
 
     if (opts.left_columns) {
-      var left_cols_widths = []
       opts.left_columns_width = []
       for (i = 0; i < opts.left_columns.length; i++) {
-        left_cols_widths.push(0)
         opts.col_element_names.unshift('left_col' + i)
       }
 
-      // compute mean column width
-      compute_col_text_widths(opts.left_columns, left_cols_widths, true)
+      let left_cols_widths = columns.compute_lengths(this.inner, opts.left_columns, opts)
 
       for (i = 0; i < opts.left_columns.length; i++) {
         if (left_cols_widths[i] > opts.width * 0.2) {
@@ -152,15 +120,12 @@ class Heatmap {
 
     opts.right_columns_total_width = 0
     if (opts.right_columns) {
-      var right_cols_widths = []
       opts.right_columns_width = []
       for (i = 0; i < opts.right_columns.length; i++) {
-        right_cols_widths.push(0)
         opts.col_element_names.push('right_col' + i)
       }
 
-      // compute mean column width
-      compute_col_text_widths(opts.right_columns, right_cols_widths, true)
+      let right_cols_widths = columns.compute_lengths(this.inner, opts.right_columns, opts)
 
       for (i = 0; i < opts.right_columns.length; i++) {
         if (right_cols_widths[i] > opts.width * 0.2) {
