@@ -13,6 +13,7 @@ import wrap_new from './wrap_new'
 class Heatmap {
   constructor (selector, data, options) {
     var el = d3.select(selector)
+    el.classed('rhtmlHeatmap', true)
     el.attr(`rhtmlHeatmap-status`, 'loading')
 
     var bbox = el.node().getBoundingClientRect()
@@ -24,7 +25,6 @@ class Heatmap {
 
     var inner = el.append('div').classed('inner', true)
     this.inner = inner
-    inner.append('div').classed('info', true) // TODO nothing is added to info
 
     var i = 0
     var x_texts
