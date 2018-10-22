@@ -66,7 +66,10 @@
     "table_style": true,
     "anim_duration": 500,
     "yclust_width": 0,
-    "xclust_height": 0
+    "xclust_height": 0,
+
+    "yaxis_hidden": false,
+    "yaxis_location": "left"
   }
 }
 

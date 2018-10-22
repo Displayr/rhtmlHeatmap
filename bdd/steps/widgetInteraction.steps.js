@@ -58,4 +58,10 @@ module.exports = function () {
         .perform()
     })
   })
+
+  this.When(/^I click row ([0-9]+) name$/, function (rowIndex) {
+    return wrapInPromiseAndLogErrors(() => {
+      return this.context.heatmapPlot.rowName(rowIndex).click()
+    })
+  })
 }
