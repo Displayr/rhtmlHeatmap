@@ -1,0 +1,610 @@
+{
+  "rows": {
+    "members": 7,
+    "height": 1.58105750053629,
+    "edgePar": {
+      "col": ""
+    },
+    "children": [
+      {
+        "members": 5,
+        "height": 0.987317760501466,
+        "edgePar": {
+          "col": ""
+        },
+        "children": [
+          {
+            "members": 3,
+            "height": 0.899602504179331,
+            "edgePar": {
+              "col": ""
+            },
+            "children": [
+              {
+                "members": 2,
+                "height": 0.389821301091045,
+                "edgePar": {
+                  "col": ""
+                },
+                "children": [
+                  {
+                    "members": 1,
+                    "height": 0,
+                    "label": "Coke Zero",
+                    "edgePar": {
+                      "col": ""
+                    }
+                  },
+                  {
+                    "members": 1,
+                    "height": 0,
+                    "label": "Pepsi Max",
+                    "edgePar": {
+                      "col": ""
+                    }
+                  }
+                ]
+              },
+              {
+                "members": 1,
+                "height": 0,
+                "label": "None of these",
+                "edgePar": {
+                  "col": ""
+                }
+              }
+            ]
+          },
+          {
+            "members": 2,
+            "height": 0.283283447024361,
+            "edgePar": {
+              "col": ""
+            },
+            "children": [
+              {
+                "members": 1,
+                "height": 0,
+                "label": "Diet Pepsi",
+                "edgePar": {
+                  "col": ""
+                }
+              },
+              {
+                "members": 1,
+                "height": 0,
+                "label": "Diet Coke",
+                "edgePar": {
+                  "col": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "members": 2,
+        "height": 0.487928132100834,
+        "edgePar": {
+          "col": ""
+        },
+        "children": [
+          {
+            "members": 1,
+            "height": 0,
+            "label": "Coke",
+            "edgePar": {
+              "col": ""
+            }
+          },
+          {
+            "members": 1,
+            "height": 0,
+            "label": "Pepsi",
+            "edgePar": {
+              "col": ""
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "cols": {
+    "members": 9,
+    "height": 1.60013080575203,
+    "edgePar": {
+      "col": ""
+    },
+    "children": [
+      {
+        "members": 2,
+        "height": 0.334509609884121,
+        "edgePar": {
+          "col": ""
+        },
+        "children": [
+          {
+            "members": 1,
+            "height": 0,
+            "label": "Older",
+            "edgePar": {
+              "col": ""
+            }
+          },
+          {
+            "members": 1,
+            "height": 0,
+            "label": "Traditional",
+            "edgePar": {
+              "col": ""
+            }
+          }
+        ]
+      },
+      {
+        "members": 7,
+        "height": 1.1227990229398,
+        "edgePar": {
+          "col": ""
+        },
+        "children": [
+          {
+            "members": 2,
+            "height": 0.315681661175876,
+            "edgePar": {
+              "col": ""
+            },
+            "children": [
+              {
+                "members": 1,
+                "height": 0,
+                "label": "Health-conscious",
+                "edgePar": {
+                  "col": ""
+                }
+              },
+              {
+                "members": 1,
+                "height": 0,
+                "label": "Weight-conscious",
+                "edgePar": {
+                  "col": ""
+                }
+              }
+            ]
+          },
+          {
+            "members": 5,
+            "height": 0.882876259599405,
+            "edgePar": {
+              "col": ""
+            },
+            "children": [
+              {
+                "members": 2,
+                "height": 0.256534643807654,
+                "edgePar": {
+                  "col": ""
+                },
+                "children": [
+                  {
+                    "members": 1,
+                    "height": 0,
+                    "label": "Rebellious",
+                    "edgePar": {
+                      "col": ""
+                    }
+                  },
+                  {
+                    "members": 1,
+                    "height": 0,
+                    "label": "Open to new experiences",
+                    "edgePar": {
+                      "col": ""
+                    }
+                  }
+                ]
+              },
+              {
+                "members": 3,
+                "height": 0.563737227312161,
+                "edgePar": {
+                  "col": ""
+                },
+                "children": [
+                  {
+                    "members": 1,
+                    "height": 0,
+                    "label": "Feminine",
+                    "edgePar": {
+                      "col": ""
+                    }
+                  },
+                  {
+                    "members": 2,
+                    "height": 0.174285099067584,
+                    "edgePar": {
+                      "col": ""
+                    },
+                    "children": [
+                      {
+                        "members": 1,
+                        "height": 0,
+                        "label": "Sleepy",
+                        "edgePar": {
+                          "col": ""
+                        }
+                      },
+                      {
+                        "members": 1,
+                        "height": 0,
+                        "label": "Innocent",
+                        "edgePar": {
+                          "col": ""
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "matrix": {
+    "data": [
+      "5%",
+      "3%",
+      "55%",
+      "65%",
+      "31%",
+      "52%",
+      "22%",
+      "9%",
+      "13%",
+      "6%",
+      "4%",
+      "31%",
+      "41%",
+      "45%",
+      "50%",
+      "10%",
+      "6%",
+      "7%",
+      "9%",
+      "3%",
+      "17%",
+      "6%",
+      "16%",
+      "12%",
+      "10%",
+      "39%",
+      "30%",
+      "9%",
+      "3%",
+      "58%",
+      "76%",
+      "4%",
+      "16%",
+      "61%",
+      "30%",
+      "43%",
+      "22%",
+      "15%",
+      "59%",
+      "76%",
+      "5%",
+      "9%",
+      "57%",
+      "24%",
+      "23%",
+      "65%",
+      "92%",
+      "2%",
+      "1%",
+      "26%",
+      "23%",
+      "6%",
+      "9%",
+      "9%",
+      "38%",
+      "54%",
+      "2%",
+      "0%",
+      "18%",
+      "16%",
+      "9%",
+      "14%",
+      "10%"
+    ],
+    "dim": [
+      7,
+      9
+    ],
+    "rows": [
+      "Coke Zero",
+      "Pepsi Max",
+      "None of these",
+      "Diet Pepsi",
+      "Diet Coke",
+      "Coke",
+      "Pepsi"
+    ],
+    "cols": [
+      "Older",
+      "Traditional",
+      "Health-conscious",
+      "Weight-conscious",
+      "Rebellious",
+      "Open to new experiences",
+      "Feminine",
+      "Sleepy",
+      "Innocent"
+    ],
+    "cells_to_hide": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "cellnote_in_cell": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAJCAYAAAD+WDajAAABAElEQVQYlQXBPS9DUQCA4fecc3tuc6tpRRGDQULYjGIiEgax8CfsHc0MLDa/AYlKJBoxaWKwSEui2i7VUKpV1Q9u2+s6nkdcZmvGEoL4YYb6R4e1pSlu81XW58YRicyr+fF8BoMaW0lOczXKn9+43V/E/G7KxFcmcSyLP2PwjSFiB3istxEXD1Xz3HIJaYVWgqN0hbGow+JEBBmQkv2zHJvb50S1Znl6iOR1kdRTE7F6cGMWZmIMhzR7iSzlQomTnQ06fQ9ZemnS9w1v7R6dlotXvMdWkhEniNhK5s2AVsyOhun5PgDHdxUKpQbiKlc3WknS71/YShJzNI2uR9hW/AOTimkf8WyuSwAAAABJRU5ErkJggg==",
+  "theme": null,
+  "options": {
+    "xaxis_height": 80,
+    "xaxis_font_size": 10,
+    "xaxis_font_family": "Arial",
+    "xaxis_font_color": "#2C2C2C",
+    "xaxis_location": "top",
+    "xaxis_hidden": false,
+    "yaxis_width": 120,
+    "yaxis_font_size": 10,
+    "yaxis_font_family": "Arial",
+    "yaxis_font_color": "#2C2C2C",
+    "yaxis_location": "left",
+    "yaxis_hidden": false,
+    "xaxis_title": "Q5",
+    "xaxis_title_font_size": 12,
+    "xaxis_title_font_family": "Arial",
+    "xaxis_title_font_color": "#2C2C2C",
+    "yaxis_title": "",
+    "yaxis_title_font_size": 12,
+    "yaxis_title_font_family": "Arial",
+    "yaxis_title_font_color": "#2C2C2C",
+    "title": "",
+    "title_font_size": 16,
+    "title_font_family": "Arial",
+    "title_font_color": "#2C2C2C",
+    "subtitle": "",
+    "subtitle_font_size": null,
+    "subtitle_font_family": null,
+    "subtitle_font_color": null,
+    "footer": "",
+    "footer_font_size": 8,
+    "footer_font_family": "Arial",
+    "footer_font_color": "#2C2C2C",
+    "tip_font_size": 10,
+    "tip_font_family": "Arial",
+    "cell_font_size": 10,
+    "cell_font_family": "Arial",
+    "legend_font_size": 10,
+    "legend_font_family": "Arial",
+    "legend_font_color": "#2C2C2C",
+    "left_columns": null,
+    "left_columns_align": null,
+    "left_columns_font_size": 10,
+    "left_columns_font_family": "Arial",
+    "left_columns_font_color": "#2C2C2C",
+    "left_columns_title": null,
+    "left_columns_title_font_size": 14,
+    "left_columns_title_font_family": "sans-serif",
+    "left_columns_title_font_color": "#000000",
+    "left_columns_subtitles": null,
+    "left_columns_subtitles_font_size": 10,
+    "left_columns_subtitles_font_family": "Arial",
+    "left_columns_subtitles_font_color": "#2C2C2C",
+    "right_columns": null,
+    "right_columns_align": null,
+    "right_columns_font_size": 10,
+    "right_columns_font_family": "Arial",
+    "right_columns_font_color": "#2C2C2C",
+    "right_columns_title": null,
+    "right_columns_title_font_size": 14,
+    "right_columns_title_font_family": "sans-serif",
+    "right_columns_title_font_color": "#000000",
+    "right_columns_subtitles": null,
+    "right_columns_subtitles_font_size": 10,
+    "right_columns_subtitles_font_family": "Arial",
+    "right_columns_subtitles_font_color": "#2C2C2C",
+    "brush_color": "#0000FF",
+    "show_grid": true,
+    "x_is_factor": false,
+    "legend_colors": [
+      "#08306B",
+      "#083471",
+      "#083877",
+      "#083C7C",
+      "#084082",
+      "#084488",
+      "#09488E",
+      "#0A4C92",
+      "#0C5097",
+      "#0D549B",
+      "#0F58A0",
+      "#105BA4",
+      "#145FA7",
+      "#1863AB",
+      "#1B67AE",
+      "#1D6CB1",
+      "#2070B4",
+      "#2474B6",
+      "#2978B8",
+      "#2D7CBA",
+      "#3180BC",
+      "#3484BE",
+      "#3888C0",
+      "#3D8BC2",
+      "#418FC4",
+      "#4693C7",
+      "#4A96C9",
+      "#4E9ACB",
+      "#539ECD",
+      "#59A1CF",
+      "#5EA5D1",
+      "#63A8D3",
+      "#68ACD5",
+      "#6DAFD6",
+      "#74B2D8",
+      "#7AB6D9",
+      "#80B9DA",
+      "#86BCDC",
+      "#8CC0DD",
+      "#92C2DE",
+      "#98C5E0",
+      "#9DC8E1",
+      "#A3CBE3",
+      "#A8CDE4",
+      "#ADD0E6",
+      "#B2D2E8",
+      "#B7D4E9",
+      "#BCD7EB",
+      "#C1D9ED",
+      "#C6DBEF"
+    ],
+    "legend_range": [
+      0,
+      0.923547400611621
+    ],
+    "legend_width": 60,
+    "legend_digits": null,
+    "shownote_in_cell": false,
+    "extra_tooltip_info": null,
+    "anim_duration": 500
+  }
+}
