@@ -1,0 +1,104 @@
+{
+  "rows": {
+    "members": 3,
+    "height": 1.58105750053629,
+    "edgePar": {
+      "col": ""
+    },
+    "children": [
+      {
+        "members": 2,
+        "height": 0.487928132100834,
+        "edgePar": {
+          "col": ""
+        },
+        "children": [
+          {
+            "members": 1,
+            "height": 0,
+            "label": "Col-1",
+            "edgePar": {
+              "col": ""
+            }
+          },
+          {
+            "members": 1,
+            "height": 0,
+            "label": "Col-2",
+            "edgePar": {
+              "col": ""
+            }
+          }
+        ]
+      },
+      {
+        "members": 1,
+        "height": 0.487928132100834,
+        "edgePar": {
+          "col": ""
+        },
+        "children": [
+          {
+            "members": 1,
+            "height": 0,
+            "label": "Col-3",
+            "edgePar": {
+              "col": ""
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "cols": {
+    "members": 3,
+    "height": 1.58105750053629,
+    "edgePar": {
+      "col": ""
+    },
+    "children": [
+      {
+        "members": 2,
+        "height": 0.487928132100834,
+        "edgePar": {
+          "col": ""
+        },
+        "children": [
+          {
+            "members": 1,
+            "height": 0,
+            "label": "Row-1",
+            "edgePar": {
+              "col": ""
+            }
+          },
+          {
+            "members": 1,
+            "height": 0,
+            "label": "Row-2",
+            "edgePar": {
+              "col": ""
+            }
+          }
+        ]
+      },
+      {
+        "members": 1,
+        "height": 0.487928132100834,
+        "edgePar": {
+          "col": ""
+        },
+        "children": [
+          {
+            "members": 1,
+            "height": 0,
+            "label": "Row-3",
+            "edgePar": {
+              "col": ""
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
