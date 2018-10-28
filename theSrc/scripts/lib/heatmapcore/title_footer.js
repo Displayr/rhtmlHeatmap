@@ -41,4 +41,26 @@ function compute_height (svg, input, fontFam, fontSize, fontCol, wrapWidth, bold
   return output
 }
 
-module.exports = { draw, compute_height }
+function computeDimensions (svg, input, fontFam, fontSize, fontCol, wrapWidth, bold) {
+  var dummySvg = svg.append('svg')
+  var dummy_g = dummySvg
+    .append('g')
+    .classed('dummy_g', true)
+
+  var text_el = dummy_g.append('text')
+    .text(input)
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('dy', 0)
+    .style('font-family', fontFam)
+    .style('font-size', fontSize)
+    .style('fill', fontCol)
+    .attr('font-weight', bold ? 'bold' : 'normal')
+    .call(wrap_new, wrapWidth)
+
+  var bbox = text_el.node().getBBox()
+  dummySvg.remove()
+  return { width: bbox.width, height: bbox.height }
+}
+
+module.exports = { draw, compute_height, computeDimensions }
