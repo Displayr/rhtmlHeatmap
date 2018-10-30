@@ -1,6 +1,8 @@
 /* global Image */
 
+import _ from 'lodash'
 import d3 from 'd3'
+import {Footer, Title, Subtitle} from 'rhtmlParts'
 const Heatmap = require('./lib/heatmapcore/heatmapcore')
 
 module.exports = function (element) {
@@ -26,11 +28,90 @@ module.exports = function (element) {
     element.innerHTML = ''
     d3.select(document.body).select('.rhtmlHeatmap-tip').remove()
 
+    const {width, height} = getContainerDimensions(_.has(element, 'length') ? element[0] : element)
+    const uniqueCssPrefix = 'foo-banana'
+    let titleHeight = 0
+    let subtitleHeight = 0
+    let footerHeight = 0
+
+    const outerSvg = d3.select(element)
+      .append('svg')
+      .attr('class', 'svgContent')
+      .attr('width', width)
+      .attr('height', height)
+
+    if (x.options.title) {
+      const title = new Title({
+        text: x.options.title,
+        fontColor: x.options.title_font_color,
+        fontSize: x.options.title_font_size,
+        fontFamily: x.options.title_font_family,
+        topPadding: 0,
+        bottomPadding: 10,
+        innerPadding: 2
+      })
+      title.setX(width / 2)
+      title.setMaxWidth(width)
+      title.drawWith(uniqueCssPrefix, outerSvg)
+      titleHeight = title.getHeight()
+    }
+
+    if (x.options.subtitle) {
+      const subtitle = new Subtitle({
+        subtitleText: x.options.subtitle,
+        subtitleFontColor: x.options.subtitle_font_color,
+        subtitleFontSize: x.options.subtitle_font_size,
+        subtitleFontFamily: x.options.subtitle_font_family,
+        yOffset: titleHeight,
+        bottomPadding: 10,
+        innerPadding: 2
+      })
+      subtitle.setX(width / 2)
+      subtitle.setMaxWidth(width)
+      subtitle.drawWith(uniqueCssPrefix, outerSvg)
+      subtitleHeight = subtitle.getHeight()
+    }
+
+    if (x.options.footer) {
+      const footer = new Footer({
+        footerText: x.options.footer,
+        footerFontColor: x.options.footer_font_color,
+        footerFontSize: x.options.footer_font_size,
+        footerFontFamily: x.options.footer_font_family,
+        containerHeight: height,
+        topPadding: 10,
+        bottomPadding: 10,
+        innerPadding: 2
+      })
+      footer.setX(width / 2)
+      footer.setMaxWidth(width)
+      footer.setContainerHeight(height)
+      footer.drawWith(uniqueCssPrefix, outerSvg)
+      footerHeight = footer.getHeight()
+    }
+
+    const plotHeight = height -
+      titleHeight -
+      subtitleHeight -
+      footerHeight
+
+    console.log(`canvas height: ${height}`)
+    console.log(`titleHeight: ${titleHeight}`)
+    console.log(`subtitleHeight: ${subtitleHeight}`)
+    console.log(`footerHeight: ${footerHeight}`)
+    console.log(`setting plot width: ${width}`)
+    console.log(`setting plot height: ${plotHeight}`)
+
+    const pieGroupYOffset = titleHeight + subtitleHeight
+    outerSvg.append('g')
+      .attr('class', 'heatmap-container')
+      .attr('transform', `translate(0,${pieGroupYOffset})`)
+
     loadImage(x.image)
       .then(({imgData, width, height}) => processImageData({imgData, width, height, x}))
       .then(merged => {
         x.matrix.merged = merged
-        return new Heatmap(element, x, x.options)
+        return new Heatmap('.heatmap-container', x, x.options, width, plotHeight)
       })
       .catch(error => { throw error })
   }
@@ -113,14 +194,24 @@ module.exports = function (element) {
   }
 
   return {
-    renderValue (incomingConfig, userState) {
+    renderValue (incomingConfig) {
       doRenderValue(incomingConfig)
     },
 
-    resize (newWidth, newHeight) {
+    resize () {
       if (instance.lastValue) {
         doRenderValue(instance.lastValue)
       }
     }
+  }
+}
+
+// TODO to utils
+function getContainerDimensions (rootElement) {
+  try {
+    return rootElement.getBoundingClientRect()
+  } catch (err) {
+    err.message = `fail in getContainerDimensions: ${err.message}`
+    throw err
   }
 }

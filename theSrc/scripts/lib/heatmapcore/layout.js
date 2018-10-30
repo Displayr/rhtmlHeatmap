@@ -39,7 +39,7 @@ const HeatmapRows = [
   { name: 'TOP_COLUMN_LABELS', cells: [cells.LEFT_COLUMN_SUBTITLE, cells.TOP_XAXIS, cells.RIGHT_COLUMN_SUBTITLE] },
   { name: 'COLORMAP', cells: [cells.LEFT_DENDROGRAM, cells.LEFT_YAXIS_TITLE, cells.LEFT_YAXIS, cells.LEFT_COLUMN, cells.COLORMAP, cells.RIGHT_COLUMN, cells.RIGHT_YAXIS, cells.RIGHT_YAXIS_TITLE, cells.COLOR_LEGEND] },
   { name: 'BOTTOM_COLUMN_LABELS', cells: [cells.BOTTOM_XAXIS] },
-  { name: 'BOTTOM_COLUMN_TITLES', cells: [cells.BOTTOM_XAXIS_TITLE] },
+  { name: 'BOTTOM_COLUMN_TITLES', cells: [cells.BOTTOM_XAXIS_TITLE] }
 ]
 
 class HeatmapLayout {
@@ -202,7 +202,7 @@ class HeatmapLayout {
     let foundRowName = false
     return _(HeatmapRows)
       .filter(({name}) => {
-        if (name === rowName) { foundRowName = true}
+        if (name === rowName) { foundRowName = true }
         return !foundRowName
       })
       .map('name')
@@ -213,7 +213,7 @@ class HeatmapLayout {
     let foundColumnName = false
     return _(HeatmapColumns)
       .filter(({name}) => {
-        if (name === columnName) { foundColumnName = true}
+        if (name === columnName) { foundColumnName = true }
         return !foundColumnName
       })
       .map('name')

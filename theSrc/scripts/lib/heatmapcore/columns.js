@@ -24,9 +24,6 @@ function compute_lengths (svg, columnTexts, opts) {
     .style('font-size', opts.left_columns_font_size)
     .each(function (d, i) {
       var parent_index = d3.select(this.parentNode).attr('data-index')
-      console.log('parent_index')
-      console.log(JSON.stringify(parent_index, {}, 2))
-
       var textLength = this.getComputedTextLength()
       text_widths[parent_index] = text_widths[parent_index] > textLength ? text_widths[parent_index] : textLength
     })

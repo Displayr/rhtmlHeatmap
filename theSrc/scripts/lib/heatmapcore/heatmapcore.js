@@ -12,43 +12,39 @@ import wrap_new from './wrap_new'
 import { HeatmapLayout, CellNames } from './layout'
 
 class Heatmap {
-  constructor (selector, data, options) {
+  constructor (selector, data, options, width, height) {
     var el = d3.select(selector)
     el.classed('rhtmlHeatmap', true)
     el.attr(`rhtmlHeatmap-status`, 'loading')
 
-    var bbox = el.node().getBoundingClientRect()
+    // var bbox = el.node().getBoundingClientRect()
+    // console.log('bbox')
+    // console.log(JSON.stringify(bbox, {}, 2))
 
     var controller = new Controller()
 
     // Set option defaults & copy settings
-    var opts = buildConfig(options, bbox.width, bbox.height)
+    var opts = buildConfig(options, width, height)
     this.options = opts
 
     this.data = this.normalizeData(data)
 
-    var inner = el.append('div').classed('inner', true)
+    var inner = el.append('g').classed('inner', true)
     this.inner = inner
 
     this.buildLayout()
 
-    function cssify (styles) {
-      return {
-        position: 'absolute',
-        top: styles.top + 'px',
-        left: styles.left + 'px',
-        width: styles.width + 'px',
-        height: styles.height + 'px'
-      }
+    function buildTransform ({ left, top }) {
+      return `translate(${left},${top})`
     }
 
     // TODO NB unpick axis.labels later (its all f*cked)
     const xaxisBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.TOP_XAXIS) ? CellNames.TOP_XAXIS : CellNames.BOTTOM_XAXIS)
     const yaxisBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.LEFT_YAXIS) ? CellNames.LEFT_YAXIS : CellNames.RIGHT_YAXIS)
     if (this.layout.enabled('TOP_XAXIS')) {
-      inner.append('svg').classed('axis xaxis', true).style(cssify(xaxisBounds))
+      inner.append('g').classed('axis xaxis', true).attr('transform', buildTransform(xaxisBounds))
 
-      const text_el = el.select('svg.xaxis').append('g').selectAll('text').data(this.data.matrix.cols).enter()
+      const text_el = el.select('g.xaxis').append('g').selectAll('text').data(this.data.matrix.cols).enter()
 
       const columnWidth = this.layout.getCellBounds(CellNames.COLORMAP).width / this.data.matrix.cols.length
       const fontSize = this.options.xaxis_font_size
@@ -76,14 +72,14 @@ class Heatmap {
         .style('font-size', fontSize)
         // .style('fill', fontColor)
 
-      // axis.labels(el.select('svg.xaxis'), this.data.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, this.options.axis_padding, 'bottom', this.options, controller, xaxisBounds, yaxisBounds)
+      // axis.labels(el.select('g.xaxis'), this.data.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, this.options.axis_padding, 'bottom', this.options, controller, xaxisBounds, yaxisBounds)
     }
 
     if (this.layout.enabled('BOTTOM_XAXIS')) {
-      inner.append('svg').classed('axis xaxis', true).style(cssify(xaxisBounds))
-      // axis.labels(el.select('svg.xaxis'), this.data.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, this.options.axis_padding, this.options.axis_location, this.options, controller, xaxisBounds, yaxisBounds)
+      inner.append('g').classed('axis xaxis', true).attr('transform', buildTransform(xaxisBounds))
+      // axis.labels(el.select('g.xaxis'), this.data.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, this.options.axis_padding, this.options.axis_location, this.options, controller, xaxisBounds, yaxisBounds)
 
-      const text_el = el.select('svg.xaxis').append('g').selectAll('text').data(this.data.matrix.cols).enter()
+      const text_el = el.select('g.xaxis').append('g').selectAll('text').data(this.data.matrix.cols).enter()
 
       const columnWidth = this.layout.getCellBounds(CellNames.COLORMAP).width / this.data.matrix.cols.length
       const fontSize = this.options.xaxis_font_size
@@ -109,15 +105,14 @@ class Heatmap {
         .style('font-family', fontFam)
         .style('font-size', fontSize)
       // .style('fill', fontColor)
-
     }
 
     if (this.layout.enabled('LEFT_YAXIS')) {
-      inner.append('svg').classed('axis yaxis', true).style(cssify(yaxisBounds))
-      // axis.labels(el.select('svg.yaxis'), this.data.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, this.options.axis_padding, this.options.yaxis_location, this.options, controller, xaxisBounds, yaxisBounds)
+      inner.append('g').classed('axis yaxis', true).attr('transform', buildTransform(yaxisBounds))
+      // axis.labels(el.select('g.yaxis'), this.data.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, this.options.axis_padding, this.options.yaxis_location, this.options, controller, xaxisBounds, yaxisBounds)
 
       insert_columns(
-        el.select('svg.yaxis'),
+        el.select('g.yaxis'),
         yaxisBounds,
         this.data.matrix.rows,
         this.options.yaxis_font_family,
@@ -130,11 +125,11 @@ class Heatmap {
     }
 
     if (this.layout.enabled('RIGHT_YAXIS')) {
-      inner.append('svg').classed('axis yaxis', true).style(cssify(yaxisBounds))
-      // axis.labels(el.select('svg.yaxis'), this.data.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, this.options.axis_padding, this.options.yaxis_location, this.options, controller, xaxisBounds, yaxisBounds)
+      inner.append('g').classed('axis yaxis', true).attr('transform', buildTransform(yaxisBounds))
+      // axis.labels(el.select('g.yaxis'), this.data.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, this.options.axis_padding, this.options.yaxis_location, this.options, controller, xaxisBounds, yaxisBounds)
 
       insert_columns(
-        el.select('svg.yaxis'),
+        el.select('g.yaxis'),
         yaxisBounds,
         this.data.matrix.rows,
         this.options.yaxis_font_family,
@@ -148,41 +143,42 @@ class Heatmap {
 
     if (this.layout.enabled('XAXIS_TITLE')) {
       const xtitleBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.TOP_XAXIS_TITLE) ? CellNames.TOP_XAXIS_TITLE : CellNames.BOTTOM_XAXIS_TITLE)
-      inner.append('svg').classed('xtitle', true).style(cssify(xtitleBounds))
-      axis.title(el.select('svg.xtitle'), this.options.xaxis_title, false, xtitleBounds.width, xtitleBounds.height, this.options)
+      inner.append('g').classed('xtitle', true).attr('transform', buildTransform(xtitleBounds))
+      axis.title(el.select('g.xtitle'), this.options.xaxis_title, false, xtitleBounds.width, xtitleBounds.height, this.options)
     }
 
     if (this.layout.enabled('YAXIS_TITLE')) {
       const ytitleBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.RIGHT_YAXIS_TITLE) ? CellNames.RIGHT_YAXIS_TITLE : CellNames.LEFT_YAXIS_TITLE)
-      inner.append('svg').classed('ytitle', true).style(cssify(ytitleBounds))
+      inner.append('g').classed('ytitle', true).attr('transform', buildTransform(ytitleBounds))
       console.log('ytitleBounds')
       console.log(JSON.stringify(ytitleBounds, {}, 2))
 
-      axis.title(el.select('svg.ytitle'), this.options.yaxis_title, true, ytitleBounds.width, ytitleBounds.height, this.options)
+      axis.title(el.select('g.ytitle'), this.options.yaxis_title, true, ytitleBounds.width, ytitleBounds.height, this.options)
     }
 
     if (this.layout.enabled(CellNames.TOP_DENDROGRAM)) {
       const colDendBounds = this.layout.getCellBounds(CellNames.TOP_DENDROGRAM)
-      inner.append('svg').classed('dendrogram colDend', true).style(cssify(colDendBounds))
-      dendrogram(el.select('svg.colDend'), data.cols, true, colDendBounds.width, colDendBounds.height, this.options.axis_padding, this.options.link_color, controller, this.options.anim_duration)
+      inner.append('g').classed('dendrogram colDend', true).attr('transform', buildTransform(colDendBounds))
+      dendrogram(el.select('g.colDend'), data.cols, true, colDendBounds.width, colDendBounds.height, this.options.axis_padding, this.options.link_color, controller, this.options.anim_duration)
     }
 
     if (this.layout.enabled(CellNames.LEFT_DENDROGRAM)) {
       const rowDendBounds = this.layout.getCellBounds(CellNames.LEFT_DENDROGRAM)
-      inner.append('svg').classed('dendrogram rowDend', true).style(cssify(rowDendBounds))
-      dendrogram(el.select('svg.rowDend'), data.rows, false, rowDendBounds.width, rowDendBounds.height, this.options.axis_padding, this.options.link_color, controller, this.options.anim_duration)
+      inner.append('g').classed('dendrogram rowDend', true).attr('transform', buildTransform(rowDendBounds))
+      dendrogram(el.select('g.rowDend'), data.rows, false, rowDendBounds.width, rowDendBounds.height, this.options.axis_padding, this.options.link_color, controller, this.options.anim_duration)
     }
 
     if (this.layout.enabled(CellNames.COLORMAP)) {
       let colormapBounds = this.layout.getCellBounds(CellNames.COLORMAP)
-      inner.append('svg').classed('colormap', true).style(cssify(colormapBounds))
-      colormap(el.select('svg.colormap'), data.matrix, colormapBounds.width, colormapBounds.height, this.options, controller)
+      // inner.append('g').classed('colormap', true).attr('transform', buildTransform(colormapBounds))
+      inner.append('g').classed('colormap', true).attr('transform', buildTransform(colormapBounds))
+      colormap(el.select('g.colormap'), data.matrix, colormapBounds.width, colormapBounds.height, this.options, controller)
     }
 
     if (this.layout.enabled(CellNames.COLOR_LEGEND)) {
       var legendBounds = this.layout.getCellBounds(CellNames.COLOR_LEGEND)
-      inner.append('svg').classed('legend', true).style(cssify(legendBounds))
-      legend.draw(el.select('svg.legend'), this.options.legend_colors, this.options.legend_range, legendBounds, this.options)
+      inner.append('g').classed('legend', true).attr('transform', buildTransform(legendBounds))
+      legend.draw(el.select('g.legend'), this.options.legend_colors, this.options.legend_range, legendBounds, this.options)
     }
 
     if (this.layout.enabled(CellNames.LEFT_COLUMN)) {
@@ -190,17 +186,17 @@ class Heatmap {
       const leftColIndividualWidths = this.layout.getCellMeta(CellNames.LEFT_COLUMN).widths
 
       let cumulativeWidth = 0
-      leftColIndividualWidths.forEach((leftColIndividualWidth,index) => {
+      leftColIndividualWidths.forEach((leftColIndividualWidth, index) => {
         const bounds = {
           top: leftColsBounds.top,
           left: leftColsBounds.left + cumulativeWidth,
           width: leftColIndividualWidth,
           height: leftColsBounds.height
         }
-        inner.append('svg').classed('graph_leftCols' + index, true).style(cssify(bounds))
+        inner.append('g').classed('graph_leftCols' + index, true).attr('transform', buildTransform(bounds))
 
         insert_columns(
-          el.select('svg.graph_leftCols' + index),
+          el.select('g.graph_leftCols' + index),
           bounds,
           this.options.left_columns[index],
           this.options.left_columns_font_family,
@@ -217,9 +213,9 @@ class Heatmap {
 
     if (this.layout.enabled(CellNames.LEFT_COLUMN_TITLE)) {
       var leftTitleBounds = this.layout.getCellBounds(CellNames.LEFT_COLUMN_TITLE)
-      inner.append('svg').classed('graph_leftCols_title', true).style(cssify(leftTitleBounds))
+      inner.append('g').classed('graph_leftCols_title', true).attr('transform', buildTransform(leftTitleBounds))
       insert_column_title(
-        el.select('svg.graph_leftCols_title'),
+        el.select('g.graph_leftCols_title'),
         leftTitleBounds,
         this.options.left_columns_title,
         this.options.left_columns_title_bold,
@@ -234,10 +230,10 @@ class Heatmap {
     if (this.layout.enabled(CellNames.LEFT_COLUMN_SUBTITLE)) {
       const leftSubtitleBounds = this.layout.getCellBounds(CellNames.LEFT_COLUMN_SUBTITLE)
       const leftSubtitleWidths = this.layout.getCellMeta(CellNames.LEFT_COLUMN).widths
-      inner.append('svg').classed('graph_leftCols_subtitle', true).style(cssify(leftSubtitleBounds))
+      inner.append('g').classed('graph_leftCols_subtitle', true).attr('transform', buildTransform(leftSubtitleBounds))
 
       insert_column_subtitle(
-        el.select('svg.graph_leftCols_subtitle'),
+        el.select('g.graph_leftCols_subtitle'),
         leftSubtitleBounds.height,
         _.reverse(this.options.left_columns_subtitles),
         this.options.left_columns_subtitles_font_family,
@@ -254,17 +250,17 @@ class Heatmap {
       const rightColIndividualWidths = this.layout.getCellMeta(CellNames.RIGHT_COLUMN).widths
 
       let cumulativeWidth = 0
-      rightColIndividualWidths.forEach((rightColIndividualWidth,index) => {
+      rightColIndividualWidths.forEach((rightColIndividualWidth, index) => {
         const bounds = {
           top: rightColsBounds.top,
           left: rightColsBounds.left + cumulativeWidth,
           width: rightColIndividualWidth,
           height: rightColsBounds.height
         }
-        inner.append('svg').classed('graph_rightCols' + index, true).style(cssify(bounds))
+        inner.append('g').classed('graph_rightCols' + index, true).attr('transform', buildTransform(bounds))
 
         insert_columns(
-          el.select('svg.graph_rightCols' + index),
+          el.select('g.graph_rightCols' + index),
           bounds,
           this.options.right_columns[index],
           this.options.right_columns_font_family,
@@ -281,9 +277,9 @@ class Heatmap {
 
     if (this.layout.enabled(CellNames.RIGHT_COLUMN_TITLE)) {
       var rightTitleBounds = this.layout.getCellBounds(CellNames.RIGHT_COLUMN_TITLE)
-      inner.append('svg').classed('graph_rightCols_title', true).style(cssify(rightTitleBounds))
+      inner.append('g').classed('graph_rightCols_title', true).attr('transform', buildTransform(rightTitleBounds))
       insert_column_title(
-        el.select('svg.graph_rightCols_title'),
+        el.select('g.graph_rightCols_title'),
         rightTitleBounds,
         this.options.right_columns_title,
         this.options.right_columns_title_bold,
@@ -298,9 +294,9 @@ class Heatmap {
     if (this.layout.enabled(CellNames.RIGHT_COLUMN_SUBTITLE)) {
       const rightSubtitleBounds = this.layout.getCellBounds(CellNames.RIGHT_COLUMN_SUBTITLE)
       const rightSubtitleWidths = this.layout.getCellMeta(CellNames.RIGHT_COLUMN).widths
-      inner.append('svg').classed('graph_rightCols_subtitle', true).style(cssify(rightSubtitleBounds))
+      inner.append('g').classed('graph_rightCols_subtitle', true).attr('transform', buildTransform(rightSubtitleBounds))
       insert_column_subtitle(
-        el.select('svg.graph_rightCols_subtitle'),
+        el.select('g.graph_rightCols_subtitle'),
         rightSubtitleBounds.height,
         this.options.right_columns_subtitles,
         this.options.right_columns_subtitles_font_family,

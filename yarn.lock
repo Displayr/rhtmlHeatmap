@@ -4247,6 +4247,10 @@ lodash.isarray@^3.0.0:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/lodash.isarray/-/lodash.isarray-3.0.4.tgz#79e4eb88c36a8122af86f844aa9bcd851b5fbb55"
 
+lodash.isnumber@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/lodash.isnumber/-/lodash.isnumber-3.0.3.tgz#3ce76810c5928d03352301ac287317f11c0b1ffc"
+
 lodash.isplainobject@^4.0.4:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz#7c526a52d89b45c45cc690b88163be0497f550cb"
@@ -5744,6 +5748,13 @@ rhtmlBuildUtils@Displayr/rhtmlBuildUtils#3.0.3:
     sinon-chai "^2.9.0"
     stream "0.0.2"
     yargs "^8.0.1"
+
+rhtmlParts@Displayr/rhtmlParts:
+  version "3.0.0"
+  resolved "https://codeload.github.com/Displayr/rhtmlParts/tar.gz/3ab48e1b726090f0554c1c520cf44ca3e4ab667e"
+  dependencies:
+    lodash.isnumber "^3.0.3"
+    lodash.isstring "^4.0.1"
 
 right-align@^0.1.1:
   version "0.1.3"
