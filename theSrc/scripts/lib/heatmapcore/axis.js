@@ -1,7 +1,7 @@
 import d3 from 'd3'
 import wrap_new from './wrap_new'
 
-function title (svg, data, rotated, width, height, opts) {
+function title (svg, title, rotated, width, height, opts) {
   // rotated is y, unrotated is x
 
   const titleContainer = svg.append('g')
@@ -11,7 +11,7 @@ function title (svg, data, rotated, width, height, opts) {
   var fontFam = rotated ? opts.yaxis_title_font_family : opts.xaxis_title_font_family
 
   var this_title = titleContainer.append('text')
-    .text(data)
+    .text(title)
     .attr('x', 0)
     .attr('y', 0)
     .attr('dy', 0)
