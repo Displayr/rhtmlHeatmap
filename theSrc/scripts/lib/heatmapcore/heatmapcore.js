@@ -12,14 +12,17 @@ import wrap_new from './wrap_new'
 import { HeatmapLayout, CellNames } from './layout'
 
 class Heatmap {
-  constructor (selector, data, options, width, height) {
-    var el = d3.select(selector)
+  constructor ({
+    selector,
+    matrix,
+    dendrogramRows,
+    dendrogramColumns,
+    options,
+    width,
+    height}) {
+    const el = d3.select(selector)
     el.classed('rhtmlHeatmap', true)
     el.attr(`rhtmlHeatmap-status`, 'loading')
-
-    // var bbox = el.node().getBoundingClientRect()
-    // console.log('bbox')
-    // console.log(JSON.stringify(bbox, {}, 2))
 
     var controller = new Controller()
 
@@ -27,7 +30,11 @@ class Heatmap {
     var opts = buildConfig(options, width, height)
     this.options = opts
 
-    this.data = this.normalizeData(data)
+    this.matrix = this.normalizeMatrix(matrix)
+    this.dendrogramData = {
+      rows: dendrogramRows,
+      columns: dendrogramColumns
+    }
 
     var inner = el.append('g').classed('inner', true)
     this.inner = inner
@@ -44,9 +51,9 @@ class Heatmap {
     if (this.layout.enabled('TOP_XAXIS')) {
       inner.append('g').classed('axis xaxis', true).attr('transform', buildTransform(xaxisBounds))
 
-      const text_el = el.select('g.xaxis').append('g').selectAll('text').data(this.data.matrix.cols).enter()
+      const text_el = el.select('g.xaxis').append('g').selectAll('text').data(this.matrix.cols).enter()
 
-      const columnWidth = this.layout.getCellBounds(CellNames.COLORMAP).width / this.data.matrix.cols.length
+      const columnWidth = this.layout.getCellBounds(CellNames.COLORMAP).width / this.matrix.cols.length
       const fontSize = this.options.xaxis_font_size
       const fontFam = this.options.xaxis_font_family
       const axisPadding = this.options.axis_padding
@@ -72,16 +79,16 @@ class Heatmap {
         .style('font-size', fontSize)
         // .style('fill', fontColor)
 
-      // axis.labels(el.select('g.xaxis'), this.data.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, this.options.axis_padding, 'bottom', this.options, controller, xaxisBounds, yaxisBounds)
+      // axis.labels(el.select('g.xaxis'), this.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, this.options.axis_padding, 'bottom', this.options, controller, xaxisBounds, yaxisBounds)
     }
 
     if (this.layout.enabled('BOTTOM_XAXIS')) {
       inner.append('g').classed('axis xaxis', true).attr('transform', buildTransform(xaxisBounds))
-      // axis.labels(el.select('g.xaxis'), this.data.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, this.options.axis_padding, this.options.axis_location, this.options, controller, xaxisBounds, yaxisBounds)
+      // axis.labels(el.select('g.xaxis'), this.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, this.options.axis_padding, this.options.axis_location, this.options, controller, xaxisBounds, yaxisBounds)
 
-      const text_el = el.select('g.xaxis').append('g').selectAll('text').data(this.data.matrix.cols).enter()
+      const text_el = el.select('g.xaxis').append('g').selectAll('text').data(this.matrix.cols).enter()
 
-      const columnWidth = this.layout.getCellBounds(CellNames.COLORMAP).width / this.data.matrix.cols.length
+      const columnWidth = this.layout.getCellBounds(CellNames.COLORMAP).width / this.matrix.cols.length
       const fontSize = this.options.xaxis_font_size
       const fontFam = this.options.xaxis_font_family
       const axisPadding = this.options.axis_padding
@@ -109,12 +116,12 @@ class Heatmap {
 
     if (this.layout.enabled('LEFT_YAXIS')) {
       inner.append('g').classed('axis yaxis', true).attr('transform', buildTransform(yaxisBounds))
-      // axis.labels(el.select('g.yaxis'), this.data.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, this.options.axis_padding, this.options.yaxis_location, this.options, controller, xaxisBounds, yaxisBounds)
+      // axis.labels(el.select('g.yaxis'), this.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, this.options.axis_padding, this.options.yaxis_location, this.options, controller, xaxisBounds, yaxisBounds)
 
       insert_columns(
         el.select('g.yaxis'),
         yaxisBounds,
-        this.data.matrix.rows,
+        this.matrix.rows,
         this.options.yaxis_font_family,
         this.options.yaxis_font_size,
         'black',
@@ -126,12 +133,12 @@ class Heatmap {
 
     if (this.layout.enabled('RIGHT_YAXIS')) {
       inner.append('g').classed('axis yaxis', true).attr('transform', buildTransform(yaxisBounds))
-      // axis.labels(el.select('g.yaxis'), this.data.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, this.options.axis_padding, this.options.yaxis_location, this.options, controller, xaxisBounds, yaxisBounds)
+      // axis.labels(el.select('g.yaxis'), this.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, this.options.axis_padding, this.options.yaxis_location, this.options, controller, xaxisBounds, yaxisBounds)
 
       insert_columns(
         el.select('g.yaxis'),
         yaxisBounds,
-        this.data.matrix.rows,
+        this.matrix.rows,
         this.options.yaxis_font_family,
         this.options.yaxis_font_size,
         'black',
@@ -159,20 +166,20 @@ class Heatmap {
     if (this.layout.enabled(CellNames.TOP_DENDROGRAM)) {
       const colDendBounds = this.layout.getCellBounds(CellNames.TOP_DENDROGRAM)
       inner.append('g').classed('dendrogram colDend', true).attr('transform', buildTransform(colDendBounds))
-      dendrogram(el.select('g.colDend'), data.cols, true, colDendBounds.width, colDendBounds.height, this.options.axis_padding, this.options.link_color, controller, this.options.anim_duration)
+      dendrogram(el.select('g.colDend'), this.dendrogramData.columns, true, colDendBounds.width, colDendBounds.height, this.options.axis_padding, this.options.link_color, controller, this.options.anim_duration)
     }
 
     if (this.layout.enabled(CellNames.LEFT_DENDROGRAM)) {
       const rowDendBounds = this.layout.getCellBounds(CellNames.LEFT_DENDROGRAM)
       inner.append('g').classed('dendrogram rowDend', true).attr('transform', buildTransform(rowDendBounds))
-      dendrogram(el.select('g.rowDend'), data.rows, false, rowDendBounds.width, rowDendBounds.height, this.options.axis_padding, this.options.link_color, controller, this.options.anim_duration)
+      dendrogram(el.select('g.rowDend'), this.dendrogramData.rows, false, rowDendBounds.width, rowDendBounds.height, this.options.axis_padding, this.options.link_color, controller, this.options.anim_duration)
     }
 
     if (this.layout.enabled(CellNames.COLORMAP)) {
       let colormapBounds = this.layout.getCellBounds(CellNames.COLORMAP)
       // inner.append('g').classed('colormap', true).attr('transform', buildTransform(colormapBounds))
       inner.append('g').classed('colormap', true).attr('transform', buildTransform(colormapBounds))
-      colormap(el.select('g.colormap'), data.matrix, colormapBounds.width, colormapBounds.height, this.options, controller)
+      colormap(el.select('g.colormap'), this.matrix, colormapBounds.width, colormapBounds.height, this.options, controller)
     }
 
     if (this.layout.enabled(CellNames.COLOR_LEGEND)) {
@@ -502,17 +509,17 @@ class Heatmap {
 
   buildLayout () {
     this.layout = new HeatmapLayout(this.options.width, this.options.height)
-    const {options, data, inner} = this
+    const {options, inner} = this
 
     if (!options.xaxis_hidden) {
-      if (data.cols) { options.xaxis_location = 'bottom' }
+      if (this.dendrogramData.columns) { options.xaxis_location = 'bottom' }
       const xaxisCellName = (options.xaxis_location === 'bottom')
         ? CellNames.BOTTOM_XAXIS
         : CellNames.TOP_XAXIS
 
       const xaxisWidth = axis.label_length(
         inner,
-        data.matrix.cols,
+        this.matrix.cols,
         true,
         options.xaxis_font_size,
         options.xaxis_font_family,
@@ -526,14 +533,14 @@ class Heatmap {
     }
 
     if (!options.yaxis_hidden) {
-      if (data.rows) { options.yaxis_location = 'right' }
+      if (this.dendrogramData.rows) { options.yaxis_location = 'right' }
       const yaxisCellName = (options.yaxis_location === 'right')
         ? CellNames.RIGHT_YAXIS
         : CellNames.LEFT_YAXIS
 
       const yaxisWidth = axis.label_length(
         inner,
-        data.matrix.rows,
+        this.matrix.rows,
         false,
         options.yaxis_font_size,
         options.yaxis_font_family,
@@ -667,12 +674,12 @@ class Heatmap {
       this.layout.setCellHeight(CellNames.RIGHT_COLUMN_SUBTITLE, height)
     }
 
-    if (data.cols) {
+    if (this.dendrogramData.columns) {
       this.layout.enable(CellNames.TOP_DENDROGRAM)
       this.layout.setCellHeight(CellNames.TOP_DENDROGRAM, options.xclust_height || options.height * 0.12)
     }
 
-    if (data.rows) {
+    if (this.dendrogramData.rows) {
       this.layout.enable(CellNames.LEFT_DENDROGRAM)
       this.layout.setCellWidth(CellNames.LEFT_DENDROGRAM, options.yclust_width || options.width * 0.12)
     }
@@ -691,10 +698,10 @@ class Heatmap {
     this.layout.setFillCell(CellNames.COLORMAP)
   }
 
-  normalizeData (data) {
-    if (!data.matrix.cols.length) { data.matrix.cols = [data.matrix.cols] }
-    if (!data.matrix.rows.length) { data.matrix.rows = [data.matrix.rows] }
-    return data
+  normalizeMatrix (matrix) {
+    if (!matrix.cols.length) { matrix.cols = [matrix.cols] }
+    if (!matrix.rows.length) { matrix.rows = [matrix.rows] }
+    return matrix
   }
 
   on (type, listener) {
