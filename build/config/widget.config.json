@@ -10,7 +10,7 @@
     "css": [
       "/style/heatmapcore.css"
     ],
-    "isReadySelector": "div[rhtmlHeatmap-status=ready]",
+    "isReadySelector": "g[rhtmlHeatmap-status=ready]",
     "singleWidgetSnapshotSelector": "#widget-container"
   }
 }

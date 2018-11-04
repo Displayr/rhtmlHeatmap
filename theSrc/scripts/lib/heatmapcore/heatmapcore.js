@@ -316,17 +316,14 @@ class Heatmap {
         typeof (hl.x) === 'number' || typeof (hl.y) === 'number')
     })
 
-    function insert_columns (svg, bounds, data, fontFamily, fontSize, fontColor, align, left_or_right, index) {
-      // bounds is an array of columns, data is an array of data columns
+    function insert_columns (svg, columnBounds, columnNames, fontFamily, fontSize, fontColor, align, left_or_right, index) {
+      // data is an array of data columns
 
-      // WHAT THE HELL TODO fix this and see what breaks
-      var svg = svg.append('g') // eslint-disable-line no-redeclare
-      var thisColData = data
-      var thisBounds = bounds
+      var columnContainer = svg.append('g') // eslint-disable-line no-redeclare
       // set axis options
       var scale = d3.scale.ordinal()
-        .domain(d3.range(0, thisColData.length))
-        .rangeBands([0, thisBounds.height])
+        .domain(d3.range(0, columnNames.length))
+        .rangeBands([0, columnBounds.height])
 
       var axis = d3.svg.axis()
         .scale(scale)
@@ -334,7 +331,7 @@ class Heatmap {
         .outerTickSize(0)
         .innerTickSize(0)
         .tickPadding(0)
-        .tickFormat(function (d, i) { return thisColData[i] })// hack for repeated values
+        .tickFormat(function (d, i) { return columnNames[i] })// hack for repeated values
 
       var lr = 'Left'
       if (left_or_right) {
@@ -347,15 +344,15 @@ class Heatmap {
       }
 
       // Create the actual axis
-      var axisNodes = svg.append('g')
+      var axisNodes = columnContainer.append('g')
         .attr('class', 'axisNodes' + lr + index)
         .attr('transform', function () {
           if (align === 'l') {
             return 'translate(0,0)'
           } else if (align === 'c') {
-            return 'translate(' + thisBounds.width / 2 + ',0)'
+            return 'translate(' + columnBounds.width / 2 + ',0)'
           } else if (align === 'r') {
-            return 'translate(' + (thisBounds.width - opts.axis_padding) + ',0)'
+            return 'translate(' + (columnBounds.width - opts.axis_padding) + ',0)'
           }
         })
         .call(axis)
@@ -370,8 +367,8 @@ class Heatmap {
         .style('fill', fontColor)
         .style('font-family', fontFamily)
 
-      var mouseTargets = svg.append('g')
-        .selectAll('g').data(thisColData)
+      var mouseTargets = columnContainer.append('g')
+        .selectAll('g').data(columnNames)
 
       mouseTargets
         .enter()
@@ -401,7 +398,7 @@ class Heatmap {
 
       function layoutMouseTargets (selection) {
         var _h = scale.rangeBand()
-        var _w = bounds.width
+        var _w = columnBounds.width
         selection
           .attr('transform', function (d, i) {
             var x = 0
@@ -504,7 +501,7 @@ class Heatmap {
   }
 
   buildLayout () {
-    this.layout = new HeatmapLayout()
+    this.layout = new HeatmapLayout(this.options.width, this.options.height)
     const {options, data, inner} = this
 
     if (!options.xaxis_hidden) {
@@ -524,7 +521,7 @@ class Heatmap {
       this.layout.enable(xaxisCellName)
       this.layout.setCellWidth(xaxisCellName, xaxisWidth)
 
-      // NB TODO must fix
+      // NB TODO must not hardcode xaxis width <-> need to be able to calc bounds on angled text content
       this.layout.setCellHeight(xaxisCellName, 60)
     }
 

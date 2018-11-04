@@ -43,7 +43,7 @@ const HeatmapRows = [
 ]
 
 class HeatmapLayout {
-  constructor () {
+  constructor (canvasWidth, canvasHeight) {
     this.cellInfo = _.transform(_.keys(cells), (result, key) => {
       result[key] = {
         name: key,
@@ -54,6 +54,9 @@ class HeatmapLayout {
         meta: {}
       }
     }, {})
+
+    this.canvasWidth = canvasWidth
+    this.canvasHeight = canvasHeight
   }
 
   enable (cell) {
@@ -79,10 +82,9 @@ class HeatmapLayout {
 
   setFillCell (cell) {
     this.throwIfNotValidCell(cell)
+    const existingFillCell = _.find(this.cellInfo, {fill: true}, null)
+    if (existingFillCell) { throw new Error('Can only have one fill cell') }
     this.cellInfo[cell].fill = true
-    // TODO delete this hack later
-    this.cellInfo[cell].width = 100
-    this.cellInfo[cell].height = 100
   }
 
   setCellDimensions (cell, width, height) {
@@ -111,11 +113,6 @@ class HeatmapLayout {
     return this.cellInfo[cell].meta
   }
 
-  // getCellDimensions (cell) {
-  //   this.throwIfNotValidCell(cell)
-  //   return { width: this.cellInfo[cell].width, height: this.cellInfo[cell].height }
-  // }
-
   getRow (row) {
     const match = _.find(HeatmapRows, {name: row})
     if (!match) { throw new Error(`Invalid heatmap row: ${row}`) }
@@ -134,7 +131,7 @@ class HeatmapLayout {
     return _(row.cells)
       .map(cellName => this.cellInfo[cellName])
       .filter({ enabled: true })
-      .map('height') // TODO account for dynamic here
+      .map(cellInfo => (cellInfo.fill) ? this.getHeightOfFillCell(cellInfo.name, rowName) : cellInfo.height)
       .max()
   }
 
@@ -143,8 +140,24 @@ class HeatmapLayout {
     return _(column.cells)
       .map(cellName => this.cellInfo[cellName])
       .filter({ enabled: true })
-      .map('width') // TODO account for dynamic here
+      .map(cellInfo => (cellInfo.fill) ? this.getWidthOfFillCell(cellInfo.name, columnName) : cellInfo.width)
       .max()
+  }
+
+  getWidthOfFillCell (cellName, columnName) {
+    const otherColumns = _.filter(HeatmapColumns, (column) => column.name !== columnName)
+    const allocatedWidth = _(otherColumns)
+      .map(otherColumn => this.getColumnWidth(otherColumn.name))
+      .sum()
+    return this.canvasWidth - allocatedWidth
+  }
+
+  getHeightOfFillCell (cellName, rowName) {
+    const otherRows = _.filter(HeatmapRows, (row) => row.name !== rowName)
+    const allocatedHeight = _(otherRows)
+      .map(otherRow => this.getRowHeight(otherRow.name))
+      .sum()
+    return this.canvasHeight - allocatedHeight
   }
 
   rowEnabled (rowName) {
@@ -180,8 +193,6 @@ class HeatmapLayout {
       .map(rowName => this.getRowHeight(rowName))
       .sum()
 
-    // const width = this.cellInfo[cellName]['width'] || this.getColumnWidth(columnName)
-    // const height = this.cellInfo[cellName]['height'] || this.getRowHeight(rowName)
     const width = this.getColumnWidth(columnName)
     const height = this.getRowHeight(rowName)
 
