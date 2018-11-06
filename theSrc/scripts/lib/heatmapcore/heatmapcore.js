@@ -11,6 +11,7 @@ import axis from './axis'
 import XAxis from './xAxis'
 import YAxis from './yAxis'
 import XTitle from './xTitle'
+import YTitle from './yTitle'
 import wrap_new from './wrap_new'
 import { HeatmapLayout, CellNames } from './layout'
 
@@ -76,14 +77,12 @@ class Heatmap {
       this.components[CellNames.BOTTOM_XAXIS_TITLE].draw(this.layout.getCellBounds(CellNames.BOTTOM_XAXIS_TITLE))
     }
 
+    if (this.layout.enabled(CellNames.LEFT_YAXIS_TITLE)) {
+      this.components[CellNames.LEFT_YAXIS_TITLE].draw(this.layout.getCellBounds(CellNames.LEFT_YAXIS_TITLE))
+    }
 
-    if (this.layout.enabled('YAXIS_TITLE')) {
-      const ytitleBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.RIGHT_YAXIS_TITLE) ? CellNames.RIGHT_YAXIS_TITLE : CellNames.LEFT_YAXIS_TITLE)
-      inner.append('g').classed('ytitle', true).attr('transform', buildTransform(ytitleBounds))
-      console.log('ytitleBounds')
-      console.log(JSON.stringify(ytitleBounds, {}, 2))
-
-      axis.title(el.select('g.ytitle'), this.options.yaxis_title, true, ytitleBounds.width, ytitleBounds.height, this.options)
+    if (this.layout.enabled(CellNames.RIGHT_YAXIS_TITLE)) {
+      this.components[CellNames.RIGHT_YAXIS_TITLE].draw(this.layout.getCellBounds(CellNames.RIGHT_YAXIS_TITLE))
     }
 
     if (this.layout.enabled(CellNames.TOP_DENDROGRAM)) {
@@ -499,25 +498,23 @@ class Heatmap {
     }
 
     if (options.yaxis_title) {
-      const { width, height } = title_footer.computeDimensions(
-        inner,
-        options.yaxis_title,
-        options.yaxis_title_font_family,
-        options.yaxis_title_font_size,
-        options.yaxis_title_font_color,
-        options.width * 0.3, // NB TODO just making numbers up here (need the max yaxis title width here)
-        options.yaxis_title_bold)
-
       const yaxisTitleCellName = this.layout.enabled(CellNames.RIGHT_YAXIS)
         ? CellNames.RIGHT_YAXIS_TITLE
         : CellNames.LEFT_YAXIS_TITLE
 
+      this.components[yaxisTitleCellName] = new YTitle({
+        parentContainer: inner,
+        text: options.yaxis_title,
+        fontFamily: options.yaxis_title_font_family,
+        fontSize: options.yaxis_title_font_size,
+        fontColor: options.yaxis_title_font_color,
+        maxHeight: options.height * 0.7, // NB TODO just making numbers up here (need the max yaxis title height here)
+        bold: options.yaxis_title_bold
+      })
+
+      const dimensions = this.components[yaxisTitleCellName].computePreferredDimensions()
       this.layout.enable(yaxisTitleCellName)
-      // Y axis is rotated, so width / height are swapped
-      this.layout.setCellDimensions(
-        yaxisTitleCellName,
-        height,
-        width)
+      this.layout.setCellDimensions(yaxisTitleCellName, dimensions)
     }
 
     if (options.left_columns) {
