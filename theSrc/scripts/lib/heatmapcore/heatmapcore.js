@@ -8,6 +8,7 @@ import columns from './columns'
 import legend from './legend'
 import title_footer from './title_footer'
 import axis from './axis'
+import XAxis from './xAxis'
 import wrap_new from './wrap_new'
 import { HeatmapLayout, CellNames } from './layout'
 
@@ -29,6 +30,7 @@ class Heatmap {
     // Set option defaults & copy settings
     var opts = buildConfig(options, width, height)
     this.options = opts
+    this.components = {}
 
     this.matrix = this.normalizeMatrix(matrix)
     this.dendrogramData = {
@@ -48,70 +50,12 @@ class Heatmap {
     // TODO NB unpick axis.labels later (its all f*cked)
     const xaxisBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.TOP_XAXIS) ? CellNames.TOP_XAXIS : CellNames.BOTTOM_XAXIS)
     const yaxisBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.LEFT_YAXIS) ? CellNames.LEFT_YAXIS : CellNames.RIGHT_YAXIS)
-    if (this.layout.enabled('TOP_XAXIS')) {
-      inner.append('g').classed('axis xaxis', true).attr('transform', buildTransform(xaxisBounds))
-
-      const text_el = el.select('g.xaxis').append('g').selectAll('text').data(this.matrix.cols).enter()
-
-      const columnWidth = this.layout.getCellBounds(CellNames.COLORMAP).width / this.matrix.cols.length
-      const fontSize = this.options.xaxis_font_size
-      const fontFam = this.options.xaxis_font_family
-      const axisPadding = this.options.axis_padding
-      const containerHeight = xaxisBounds.height
-      // const fontColor = this.options.xaxis_font_color
-
-      text_el.append('g')
-        .attr('transform', function (d, i) {
-          const x = columnWidth * i
-          const translateString = 'translate(' + (x + columnWidth / 2 - fontSize / 2) + ',' + (containerHeight - axisPadding) + ')'
-          console.log(`for xaxis(${i}): ${translateString}`)
-          return translateString
-        })
-        .append('text')
-        .attr('transform', function () {
-          return 'rotate(-45),translate(' + axisPadding + ',' + 0 + ')'
-        })
-        .attr('x', 0)
-        .attr('y', -axisPadding)
-        .text(function (d) { return d })
-        .style('text-anchor', 'start')
-        .style('font-family', fontFam)
-        .style('font-size', fontSize)
-        // .style('fill', fontColor)
-
-      // axis.labels(el.select('g.xaxis'), this.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, this.options.axis_padding, 'bottom', this.options, controller, xaxisBounds, yaxisBounds)
+    if (this.layout.enabled(CellNames.TOP_XAXIS)) {
+      this.components[CellNames.TOP_XAXIS].draw(xaxisBounds)
     }
 
-    if (this.layout.enabled('BOTTOM_XAXIS')) {
-      inner.append('g').classed('axis xaxis', true).attr('transform', buildTransform(xaxisBounds))
-      // axis.labels(el.select('g.xaxis'), this.matrix.cols, true, xaxisBounds.width, xaxisBounds.height, this.options.axis_padding, this.options.axis_location, this.options, controller, xaxisBounds, yaxisBounds)
-
-      const text_el = el.select('g.xaxis').append('g').selectAll('text').data(this.matrix.cols).enter()
-
-      const columnWidth = this.layout.getCellBounds(CellNames.COLORMAP).width / this.matrix.cols.length
-      const fontSize = this.options.xaxis_font_size
-      const fontFam = this.options.xaxis_font_family
-      const axisPadding = this.options.axis_padding
-      // const fontColor = this.options.xaxis_font_color
-
-      text_el.append('g')
-        .attr('transform', function (d, i) {
-          const x = columnWidth * i
-          const translateString = 'translate(' + (x + columnWidth / 2 - fontSize) + ',' + 2 * axisPadding + ')'
-          console.log(`for xaxis(${i}): ${translateString}`)
-          return translateString
-        })
-        .append('text')
-        .attr('transform', function () {
-          return 'rotate(45),translate(' + axisPadding + ',' + 0 + ')'
-        })
-        .attr('x', 0)
-        .attr('y', -axisPadding)
-        .text(function (d) { return d })
-        .style('text-anchor', 'start')
-        .style('font-family', fontFam)
-        .style('font-size', fontSize)
-      // .style('fill', fontColor)
+    if (this.layout.enabled(CellNames.BOTTOM_XAXIS)) {
+      this.components[CellNames.BOTTOM_XAXIS].draw(xaxisBounds)
     }
 
     if (this.layout.enabled('LEFT_YAXIS')) {
@@ -517,19 +461,20 @@ class Heatmap {
         ? CellNames.BOTTOM_XAXIS
         : CellNames.TOP_XAXIS
 
-      const xaxisWidth = axis.label_length(
-        inner,
-        this.matrix.cols,
-        true,
-        options.xaxis_font_size,
-        options.xaxis_font_family,
-        options)
+      this.components[xaxisCellName] = new XAxis({
+        parentContainer: inner,
+        labels: this.matrix.cols,
+        padding: this.options.axis_padding,
+        fontSize: options.xaxis_font_size,
+        fontFamily: options.xaxis_font_family,
+        maxWidth: 0.33 * options.width, // TODO make configurable
+        maxHeight: 0.33 * options.height, // TODO make configurable
+        rotation: (xaxisCellName === CellNames.TOP_XAXIS) ? -45 : 45
+      })
 
+      const dimensions = this.components[xaxisCellName].computePreferredDimensions()
       this.layout.enable(xaxisCellName)
-      this.layout.setCellWidth(xaxisCellName, xaxisWidth)
-
-      // NB TODO must not hardcode xaxis width <-> need to be able to calc bounds on angled text content
-      this.layout.setCellHeight(xaxisCellName, 60)
+      this.layout.setCellDimensions(xaxisCellName, dimensions.width, 60)
     }
 
     if (!options.yaxis_hidden) {

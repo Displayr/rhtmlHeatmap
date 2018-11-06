@@ -87,10 +87,10 @@ class HeatmapLayout {
     this.cellInfo[cell].fill = true
   }
 
-  setCellDimensions (cell, width, height) {
+  setCellDimensions (cell, dimensions, maybeHeight) {
     this.throwIfNotValidCell(cell)
-    this.cellInfo[cell].width = width
-    this.cellInfo[cell].height = height
+    this.cellInfo[cell].width = (typeof dimensions === 'object') ? dimensions.width : dimensions
+    this.cellInfo[cell].height = (typeof dimensions === 'object') ? dimensions.height : maybeHeight
   }
 
   setCellWidth (cell, width) {
