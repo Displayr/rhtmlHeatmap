@@ -10,6 +10,7 @@ import title_footer from './title_footer'
 import axis from './axis'
 import XAxis from './xAxis'
 import YAxis from './yAxis'
+import XTitle from './xTitle'
 import wrap_new from './wrap_new'
 import { HeatmapLayout, CellNames } from './layout'
 
@@ -67,11 +68,14 @@ class Heatmap {
       this.components[CellNames.RIGHT_YAXIS].draw(yaxisBounds)
     }
 
-    if (this.layout.enabled('XAXIS_TITLE')) {
-      const xtitleBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.TOP_XAXIS_TITLE) ? CellNames.TOP_XAXIS_TITLE : CellNames.BOTTOM_XAXIS_TITLE)
-      inner.append('g').classed('xtitle', true).attr('transform', buildTransform(xtitleBounds))
-      axis.title(el.select('g.xtitle'), this.options.xaxis_title, false, xtitleBounds.width, xtitleBounds.height, this.options)
+    if (this.layout.enabled(CellNames.TOP_XAXIS_TITLE)) {
+      this.components[CellNames.TOP_XAXIS_TITLE].draw(this.layout.getCellBounds(CellNames.TOP_XAXIS_TITLE))
     }
+
+    if (this.layout.enabled(CellNames.BOTTOM_XAXIS_TITLE)) {
+      this.components[CellNames.BOTTOM_XAXIS_TITLE].draw(this.layout.getCellBounds(CellNames.BOTTOM_XAXIS_TITLE))
+    }
+
 
     if (this.layout.enabled('YAXIS_TITLE')) {
       const ytitleBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.RIGHT_YAXIS_TITLE) ? CellNames.RIGHT_YAXIS_TITLE : CellNames.LEFT_YAXIS_TITLE)
@@ -474,24 +478,24 @@ class Heatmap {
     }
 
     if (options.xaxis_title) {
-      const { width, height } = title_footer.computeDimensions(
-          inner,
-          options.xaxis_title,
-          options.xaxis_title_font_family,
-          options.xaxis_title_font_size,
-          options.xaxis_title_font_color,
-          options.width * 0.7, // NB TODO just making numbers up here (need the max xaxis title width here)
-          options.xaxis_title_bold)
 
       const xaxisTitleCellName = this.layout.enabled(CellNames.BOTTOM_XAXIS)
         ? CellNames.BOTTOM_XAXIS_TITLE
         : CellNames.TOP_XAXIS_TITLE
 
+      this.components[xaxisTitleCellName] = new XTitle({
+        parentContainer: inner,
+        text: options.xaxis_title,
+        fontFamily: options.xaxis_title_font_family,
+        fontSize: options.xaxis_title_font_size,
+        fontColor: options.xaxis_title_font_color,
+        maxWidth: options.width * 0.7, // NB TODO just making numbers up here (need the max xaxis title width here)
+        bold: options.xaxis_title_bold
+      })
+
+      const dimensions = this.components[xaxisTitleCellName].computePreferredDimensions()
       this.layout.enable(xaxisTitleCellName)
-      this.layout.setCellDimensions(
-        xaxisTitleCellName,
-        width + options.axis_padding * 2,
-        height)
+      this.layout.setCellDimensions(xaxisTitleCellName, dimensions)
     }
 
     if (options.yaxis_title) {

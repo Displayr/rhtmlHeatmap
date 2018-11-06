@@ -1,10 +1,12 @@
+import BaseComponent from './baseComponent'
 import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 import _ from 'lodash'
 import d3 from 'd3'
 
 // TODO preferred dimensions must account for maxes
-class YAxis {
+class YAxis extends BaseComponent{
   constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight}) {
+    super()
     _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight})
   }
 
@@ -14,11 +16,6 @@ class YAxis {
       width: _(labelDimensions).map('width').max() + this.padding,
       height: _(labelDimensions).map('height').sum()
     }
-  }
-
-  // shared by all components
-  buildTransform ({ left, top }) {
-    return `translate(${left},${top})`
   }
 
   draw (bounds) {

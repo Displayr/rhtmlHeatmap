@@ -1,9 +1,11 @@
+import BaseComponent from './baseComponent'
 import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 import _ from 'lodash'
 
 // TODO preferred dimensions must account for maxes
-class XAxis {
+class XAxis extends BaseComponent {
   constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation = -45}) {
+    super()
     _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation})
   }
 
@@ -17,11 +19,6 @@ class XAxis {
 
   rotatingUp () {
     return this.rotation < 0
-  }
-
-  // shared by all components
-  buildTransform ({ left, top }) {
-    return `translate(${left},${top})`
   }
 
   draw (bounds) {
