@@ -1,6 +1,5 @@
 import d3 from 'd3'
 import wrap_new from './wrap_new'
-import { getLabelDimensionsUsingSvgApproximation } from '../labelUtils'
 
 function title (svg, title, rotated, width, height, opts) {
   // rotated is y, unrotated is x

@@ -9,6 +9,7 @@ import legend from './legend'
 import title_footer from './title_footer'
 import axis from './axis'
 import XAxis from './xAxis'
+import YAxis from './yAxis'
 import wrap_new from './wrap_new'
 import { HeatmapLayout, CellNames } from './layout'
 
@@ -58,38 +59,12 @@ class Heatmap {
       this.components[CellNames.BOTTOM_XAXIS].draw(xaxisBounds)
     }
 
-    if (this.layout.enabled('LEFT_YAXIS')) {
-      inner.append('g').classed('axis yaxis', true).attr('transform', buildTransform(yaxisBounds))
-      // axis.labels(el.select('g.yaxis'), this.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, this.options.axis_padding, this.options.yaxis_location, this.options, controller, xaxisBounds, yaxisBounds)
-
-      insert_columns(
-        el.select('g.yaxis'),
-        yaxisBounds,
-        this.matrix.rows,
-        this.options.yaxis_font_family,
-        this.options.yaxis_font_size,
-        'black',
-        'l' /* this.options.left_columns_align[index] */, // TODO account for alignment
-        true,
-        0
-      )
+    if (this.layout.enabled(CellNames.LEFT_YAXIS)) {
+      this.components[CellNames.LEFT_YAXIS].draw(yaxisBounds)
     }
 
-    if (this.layout.enabled('RIGHT_YAXIS')) {
-      inner.append('g').classed('axis yaxis', true).attr('transform', buildTransform(yaxisBounds))
-      // axis.labels(el.select('g.yaxis'), this.matrix.rows, false, yaxisBounds.width, yaxisBounds.height, this.options.axis_padding, this.options.yaxis_location, this.options, controller, xaxisBounds, yaxisBounds)
-
-      insert_columns(
-        el.select('g.yaxis'),
-        yaxisBounds,
-        this.matrix.rows,
-        this.options.yaxis_font_family,
-        this.options.yaxis_font_size,
-        'black',
-        'l' /* this.options.left_columns_align[index] */, // TODO account for alignment
-        true,
-        0
-      )
+    if (this.layout.enabled(CellNames.RIGHT_YAXIS)) {
+      this.components[CellNames.RIGHT_YAXIS].draw(yaxisBounds)
     }
 
     if (this.layout.enabled('XAXIS_TITLE')) {
@@ -474,7 +449,7 @@ class Heatmap {
 
       const dimensions = this.components[xaxisCellName].computePreferredDimensions()
       this.layout.enable(xaxisCellName)
-      this.layout.setCellDimensions(xaxisCellName, dimensions.width, 60)
+      this.layout.setCellDimensions(xaxisCellName, dimensions)
     }
 
     if (!options.yaxis_hidden) {
@@ -483,16 +458,19 @@ class Heatmap {
         ? CellNames.RIGHT_YAXIS
         : CellNames.LEFT_YAXIS
 
-      const yaxisWidth = axis.label_length(
-        inner,
-        this.matrix.rows,
-        false,
-        options.yaxis_font_size,
-        options.yaxis_font_family,
-        options)
+      this.components[yaxisCellName] = new YAxis({
+        parentContainer: inner,
+        labels: this.matrix.rows,
+        padding: this.options.axis_padding,
+        fontSize: options.yaxis_font_size,
+        fontFamily: options.yaxis_font_family,
+        maxWidth: 0.33 * options.width, // TODO make configurable
+        maxHeight: 0.33 * options.height // TODO make configurable
+      })
 
+      const dimensions = this.components[yaxisCellName].computePreferredDimensions()
       this.layout.enable(yaxisCellName)
-      this.layout.setCellWidth(yaxisCellName, yaxisWidth)
+      this.layout.setCellDimensions(yaxisCellName, dimensions)
     }
 
     if (options.xaxis_title) {

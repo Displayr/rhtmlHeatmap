@@ -1,6 +1,3 @@
-import _ from 'lodash'
-import d3 from 'd3'
-
 let uniqueId = 0
 function getUniqueId () { return uniqueId++ }
 function toRadians (degrees) { return degrees * (Math.PI / 180) }

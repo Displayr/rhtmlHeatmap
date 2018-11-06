@@ -1,10 +1,7 @@
 import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 import _ from 'lodash'
-import {CellNames} from "./layout";
 
-// note : top -45
-// note : bottom 45
-
+// TODO preferred dimensions must account for maxes
 class XAxis {
   constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation = -45}) {
     _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation})
