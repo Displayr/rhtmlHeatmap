@@ -5,7 +5,7 @@ import buildConfig from './buildConfig'
 import dendrogram from './dendrogram'
 import colormap from './colormap'
 import columns from './columns'
-import legend from './legend'
+import Legend from './legend'
 import title_footer from './title_footer'
 import axis from './axis'
 import XAxis from './xAxis'
@@ -105,9 +105,7 @@ class Heatmap {
     }
 
     if (this.layout.enabled(CellNames.COLOR_LEGEND)) {
-      var legendBounds = this.layout.getCellBounds(CellNames.COLOR_LEGEND)
-      inner.append('g').classed('legend', true).attr('transform', buildTransform(legendBounds))
-      legend.draw(el.select('g.legend'), this.options.legend_colors, this.options.legend_range, legendBounds, this.options)
+      this.components[CellNames.COLOR_LEGEND].draw(this.layout.getCellBounds(CellNames.COLOR_LEGEND))
     }
 
     if (this.layout.enabled(CellNames.LEFT_COLUMN)) {
@@ -477,7 +475,6 @@ class Heatmap {
     }
 
     if (options.xaxis_title) {
-
       const xaxisTitleCellName = this.layout.enabled(CellNames.BOTTOM_XAXIS)
         ? CellNames.BOTTOM_XAXIS_TITLE
         : CellNames.TOP_XAXIS_TITLE
@@ -609,13 +606,23 @@ class Heatmap {
     }
 
     if (options.legend_colors) {
+      this.components[CellNames.COLOR_LEGEND] = new Legend({
+        parentContainer: inner,
+        colors: options.legend_colors,
+        x_is_factor: options.x_is_factor,
+        range: options.legend_range,
+        digits: options.legend_digits,
+        fontSize: options.legend_font_size,
+        fontFamily: options.legend_font_family,
+        fontColor: options.legend_font_color,
+        leftSpace: options.legend_left_space,
+        barWidth: options.legend_bar_width,
+        xPadding: options.legend_x_padding
+      })
+
+      const dimensions = this.components[CellNames.COLOR_LEGEND].computePreferredDimensions()
       this.layout.enable(CellNames.COLOR_LEGEND)
-      const legendTextWidths = legend.compute_lengths(inner, options)
-      const legendTotalWidth = options.legend_left_space +
-        options.legend_bar_width +
-        options.legend_x_padding * 2 +
-        d3.max(legendTextWidths)
-      this.layout.setCellWidth(CellNames.COLOR_LEGEND, legendTotalWidth)
+      this.layout.setCellDimensions(CellNames.COLOR_LEGEND, dimensions)
     }
 
     this.layout.enable(CellNames.COLORMAP)
