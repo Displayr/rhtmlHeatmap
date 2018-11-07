@@ -1,35 +1,11 @@
-import BaseComponent from './baseComponent'
+import BaseComponent from '../heatmapcore/baseComponent'
 import d3 from 'd3'
 import _ from 'lodash'
 
 class Legend extends BaseComponent {
-  constructor ({
-    parentContainer,
-    colors,
-    x_is_factor,
-    range,
-    digits,
-    fontSize,
-    fontFamily,
-    fontColor,
-    leftSpace,
-    barWidth,
-    xPadding
-   }) {
+  constructor ({parentContainer, colors, x_is_factor, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding}) {
     super()
-    _.assign(this, {
-      parentContainer,
-      colors,
-      x_is_factor,
-      range,
-      digits,
-      fontSize,
-      fontFamily,
-      fontColor,
-      leftSpace,
-      barWidth,
-      xPadding
-    })
+    _.assign(this, {parentContainer, colors, x_is_factor, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding})
   }
 
   computePreferredDimensions () {

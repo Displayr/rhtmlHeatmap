@@ -4,14 +4,14 @@ import Controller from './controller'
 import buildConfig from './buildConfig'
 import dendrogram from './dendrogram'
 import colormap from './colormap'
-import columns from './columns'
-import Legend from './legend'
+import ColumnGroup from '../components/columnGroup'
+import Legend from '../components/legend'
 import title_footer from './title_footer'
 import axis from './axis'
-import XAxis from './xAxis'
-import YAxis from './yAxis'
-import XTitle from './xTitle'
-import YTitle from './yTitle'
+import XAxis from '../components/xAxis'
+import YAxis from '../components/yAxis'
+import XTitle from '../components/xTitle'
+import YTitle from '../components/yTitle'
 import wrap_new from './wrap_new'
 import { HeatmapLayout, CellNames } from './layout'
 
@@ -109,33 +109,7 @@ class Heatmap {
     }
 
     if (this.layout.enabled(CellNames.LEFT_COLUMN)) {
-      const leftColsBounds = this.layout.getCellBounds(CellNames.LEFT_COLUMN)
-      const leftColIndividualWidths = this.layout.getCellMeta(CellNames.LEFT_COLUMN).widths
-
-      let cumulativeWidth = 0
-      leftColIndividualWidths.forEach((leftColIndividualWidth, index) => {
-        const bounds = {
-          top: leftColsBounds.top,
-          left: leftColsBounds.left + cumulativeWidth,
-          width: leftColIndividualWidth,
-          height: leftColsBounds.height
-        }
-        inner.append('g').classed('graph_leftCols' + index, true).attr('transform', buildTransform(bounds))
-
-        insert_columns(
-          el.select('g.graph_leftCols' + index),
-          bounds,
-          this.options.left_columns[index],
-          this.options.left_columns_font_family,
-          this.options.left_columns_font_size,
-          this.options.left_columns_font_color,
-          'l' /* this.options.left_columns_align[index] */, // TODO account for alignment
-          true,
-          index
-        )
-
-        cumulativeWidth += leftColIndividualWidth
-      })
+      this.components[CellNames.LEFT_COLUMN].draw(this.layout.getCellBounds(CellNames.LEFT_COLUMN))
     }
 
     if (this.layout.enabled(CellNames.LEFT_COLUMN_TITLE)) {
@@ -156,7 +130,6 @@ class Heatmap {
 
     if (this.layout.enabled(CellNames.LEFT_COLUMN_SUBTITLE)) {
       const leftSubtitleBounds = this.layout.getCellBounds(CellNames.LEFT_COLUMN_SUBTITLE)
-      const leftSubtitleWidths = this.layout.getCellMeta(CellNames.LEFT_COLUMN).widths
       inner.append('g').classed('graph_leftCols_subtitle', true).attr('transform', buildTransform(leftSubtitleBounds))
 
       insert_column_subtitle(
@@ -166,40 +139,14 @@ class Heatmap {
         this.options.left_columns_subtitles_font_family,
         this.options.left_columns_subtitles_font_size,
         this.options.left_columns_subtitles_font_color,
-        _.reverse(leftSubtitleWidths),
+        _.reverse(this.components[CellNames.LEFT_COLUMN].getColumnWidths()),
         true,
         this.options.axis_padding
       )
     }
 
     if (this.layout.enabled(CellNames.RIGHT_COLUMN)) {
-      const rightColsBounds = this.layout.getCellBounds(CellNames.RIGHT_COLUMN)
-      const rightColIndividualWidths = this.layout.getCellMeta(CellNames.RIGHT_COLUMN).widths
-
-      let cumulativeWidth = 0
-      rightColIndividualWidths.forEach((rightColIndividualWidth, index) => {
-        const bounds = {
-          top: rightColsBounds.top,
-          left: rightColsBounds.left + cumulativeWidth,
-          width: rightColIndividualWidth,
-          height: rightColsBounds.height
-        }
-        inner.append('g').classed('graph_rightCols' + index, true).attr('transform', buildTransform(bounds))
-
-        insert_columns(
-          el.select('g.graph_rightCols' + index),
-          bounds,
-          this.options.right_columns[index],
-          this.options.right_columns_font_family,
-          this.options.right_columns_font_size,
-          this.options.right_columns_font_color,
-          'l' /* this.options.right_columns_align[index] */, // TODO account for alignment,
-          false,
-          index
-        )
-
-        cumulativeWidth += rightColIndividualWidth
-      })
+      this.components[CellNames.LEFT_COLUMN].draw(this.layout.getCellBounds(CellNames.RIGHT_COLUMN))
     }
 
     if (this.layout.enabled(CellNames.RIGHT_COLUMN_TITLE)) {
@@ -220,7 +167,6 @@ class Heatmap {
 
     if (this.layout.enabled(CellNames.RIGHT_COLUMN_SUBTITLE)) {
       const rightSubtitleBounds = this.layout.getCellBounds(CellNames.RIGHT_COLUMN_SUBTITLE)
-      const rightSubtitleWidths = this.layout.getCellMeta(CellNames.RIGHT_COLUMN).widths
       inner.append('g').classed('graph_rightCols_subtitle', true).attr('transform', buildTransform(rightSubtitleBounds))
       insert_column_subtitle(
         el.select('g.graph_rightCols_subtitle'),
@@ -229,7 +175,7 @@ class Heatmap {
         this.options.right_columns_subtitles_font_family,
         this.options.right_columns_subtitles_font_size,
         this.options.right_columns_subtitles_font_color,
-        rightSubtitleWidths,
+        this.components[CellNames.RIGHT_COLUMN].getColumnWidths(),
         false,
         this.options.axis_padding
       )
@@ -515,14 +461,21 @@ class Heatmap {
     }
 
     if (options.left_columns) {
-      this.layout.enable(CellNames.LEFT_COLUMN)
+      this.components[CellNames.LEFT_COLUMN] = new ColumnGroup({
+        parentContainer: inner,
+        groupName: 'left',
+        labelMatrix: options.left_columns,
+        alignments: options.left_columns_align,
+        fontSize: options.left_columns_font_size,
+        fontColor: options.left_columns_font_color,
+        fontFamily: options.left_columns_font_family,
+        padding: options.axis_padding,
+        maxSingleColumnWidth: options.width * 0.2
+      })
 
-      const maxColumnWidth = options.width * 0.2
-      const unboundedColumnWidths = columns.compute_lengths(this.inner, options.left_columns, options)
-      const columnWidths = unboundedColumnWidths.map(unboundedWidth => Math.min(unboundedWidth, maxColumnWidth))
-      const totalWidth = d3.sum(columnWidths) + columnWidths.length * 2 * options.axis_padding
-      this.layout.setCellWidth(CellNames.LEFT_COLUMN, totalWidth)
-      this.layout.addCellMeta(CellNames.LEFT_COLUMN, { widths: columnWidths })
+      const dimensions = this.components[CellNames.LEFT_COLUMN].computePreferredDimensions()
+      this.layout.enable(CellNames.LEFT_COLUMN)
+      this.layout.setCellDimensions(CellNames.LEFT_COLUMN, dimensions)
     }
 
     if (options.left_columns_title) {
@@ -555,14 +508,21 @@ class Heatmap {
     }
 
     if (options.right_columns) {
-      this.layout.enable(CellNames.RIGHT_COLUMN)
+      this.components[CellNames.RIGHT_COLUMN] = new ColumnGroup({
+        parentContainer: inner,
+        groupName: 'right',
+        labelMatrix: options.right_columns,
+        alignments: options.right_columns_align,
+        fontSize: options.right_columns_font_size,
+        fontColor: options.right_columns_font_color,
+        fontFamily: options.right_columns_font_family,
+        padding: options.axis_padding,
+        maxSingleColumnWidth: options.width * 0.2
+      })
 
-      const maxColumnWidth = options.width * 0.2
-      const unboundedColumnWidths = columns.compute_lengths(this.inner, options.right_columns, options)
-      const columnWidths = unboundedColumnWidths.map(unboundedWidth => Math.min(unboundedWidth, maxColumnWidth))
-      const totalWidth = d3.sum(columnWidths) + columnWidths.length * 2 * options.axis_padding
-      this.layout.setCellWidth(CellNames.RIGHT_COLUMN, totalWidth)
-      this.layout.addCellMeta(CellNames.RIGHT_COLUMN, { widths: columnWidths })
+      const dimensions = this.components[CellNames.RIGHT_COLUMN].computePreferredDimensions()
+      this.layout.enable(CellNames.RIGHT_COLUMN)
+      this.layout.setCellDimensions(CellNames.RIGHT_COLUMN, dimensions)
     }
 
     if (options.right_columns_title) {
