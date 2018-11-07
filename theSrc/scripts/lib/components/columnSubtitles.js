@@ -3,16 +3,20 @@ import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 import _ from 'lodash'
 
 // TODO preferred dimensions must account for maxes
-class XAxis extends BaseComponent {
-  constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation = -45}) {
+class ColumnSubtitles extends BaseComponent {
+  constructor ({parentContainer, name, labels, fontSize, fontColor, fontFamily, padding, rotation = -45}) {
     super()
-    _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation})
+    _.assign(this, {parentContainer, name, labels, fontSize, fontColor, fontFamily, padding, rotation})
+  }
+
+  setColumnWidths (widths) {
+    this.columnWidths = widths
   }
 
   computePreferredDimensions () {
     const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily, this.rotation))
     return {
-      width: _(labelDimensions).map('width').sum(),
+      width: 0, // NB accept column width
       height: _(labelDimensions).map('height').max() + this.padding
     }
   }
@@ -22,17 +26,23 @@ class XAxis extends BaseComponent {
   }
 
   draw (bounds) {
-    // TODO clean up this D3 sequence
-    this.parentContainer.append('g').classed('axis xaxis', true).attr('transform', this.buildTransform(bounds))
-    const xaxisLabelContainers = this.parentContainer.select('g.xaxis').append('g').selectAll('text').data(this.labels).enter()
+    const container = this.parentContainer
+      .append('g')
+      .classed(`column-subtitles ${this.name}`, true)
+      .attr('transform', this.buildTransform(bounds))
+      .selectAll('g')
+      .data(this.labels)
+      .enter()
 
     const yOffsetCorrectionForRotation = (this.rotatingUp())
       ? bounds.height - this.padding
       : this.padding * 2 // TODO this is hacky
 
-    const columnWidth = bounds.width / this.labels.length
-    xaxisLabelContainers.append('g')
-      .attr('transform', (d, i) => `translate(${columnWidth * i + columnWidth / 2 - this.fontSize / 2},${yOffsetCorrectionForRotation})`)
+    container.append('g')
+      .attr('transform', (d, i) => {
+        const previousColumnsWidth = _(this.columnWidths.slice(0, i)).sum()
+        return `translate(${previousColumnsWidth + this.columnWidths[i] / 2 - this.fontSize / 2},${yOffsetCorrectionForRotation})`
+      })
       .append('text')
       .attr('transform', `rotate(${this.rotation}),translate(${this.padding},0)`)
       .attr('x', 0)
@@ -41,7 +51,8 @@ class XAxis extends BaseComponent {
       .style('text-anchor', 'start')
       .style('font-family', this.fontFamily)
       .style('font-size', this.fontSize)
+      .style('fill', this.fontColor)
   }
 }
 
-module.exports = XAxis
+module.exports = ColumnSubtitles

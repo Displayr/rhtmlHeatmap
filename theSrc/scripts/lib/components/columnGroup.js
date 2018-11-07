@@ -51,7 +51,8 @@ class ColumnGroup extends BaseComponent {
       const columnLabels = this.labelMatrix[columnIndex]
 
       const columnContainer = this.parentContainer.append('g')
-        .classed(`column-${this.groupName}-${columnIndex}`, true)
+        .classed(`column-${columnIndex}`, true)
+        .classed(this.groupName, true)
         .attr('transform', this.buildTransform(columnBounds))
 
       const scale = d3.scale.ordinal()

@@ -19,6 +19,7 @@ class YAxis extends BaseComponent{
   }
 
   draw (bounds) {
+    // TODO clean up this D3 sequence
     this.parentContainer.append('g').classed('axis yaxis', true).attr('transform', this.buildTransform(bounds))
     const axisContainer = this.parentContainer.select('g.yaxis').append('g')
 
