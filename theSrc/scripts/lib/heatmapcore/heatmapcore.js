@@ -6,6 +6,7 @@ import dendrogram from './dendrogram'
 import colormap from './colormap'
 import ColumnGroup from '../components/columnGroup'
 import ColumnSubtitles from '../components/columnSubtitles'
+import ColumnTitle from '../components/columnTitle'
 import Legend from '../components/legend'
 import title_footer from './title_footer'
 import axis from './axis'
@@ -114,19 +115,7 @@ class Heatmap {
     }
 
     if (this.layout.enabled(CellNames.LEFT_COLUMN_TITLE)) {
-      var leftTitleBounds = this.layout.getCellBounds(CellNames.LEFT_COLUMN_TITLE)
-      inner.append('g').classed('graph_leftCols_title', true).attr('transform', buildTransform(leftTitleBounds))
-      insert_column_title(
-        el.select('g.graph_leftCols_title'),
-        leftTitleBounds,
-        this.options.left_columns_title,
-        this.options.left_columns_title_bold,
-        this.options.left_columns_title_font_family,
-        this.options.left_columns_title_font_size,
-        this.options.left_columns_title_font_color,
-        this.options.left_columns_total_width,
-        true
-      )
+      this.components[CellNames.LEFT_COLUMN_TITLE].draw(this.layout.getCellBounds(CellNames.LEFT_COLUMN_TITLE))
     }
 
     if (this.layout.enabled(CellNames.LEFT_COLUMN_SUBTITLE)) {
@@ -139,19 +128,7 @@ class Heatmap {
     }
 
     if (this.layout.enabled(CellNames.RIGHT_COLUMN_TITLE)) {
-      var rightTitleBounds = this.layout.getCellBounds(CellNames.RIGHT_COLUMN_TITLE)
-      inner.append('g').classed('graph_rightCols_title', true).attr('transform', buildTransform(rightTitleBounds))
-      insert_column_title(
-        el.select('g.graph_rightCols_title'),
-        rightTitleBounds,
-        this.options.right_columns_title,
-        this.options.right_columns_title_bold,
-        this.options.right_columns_title_font_family,
-        this.options.right_columns_title_font_size,
-        this.options.right_columns_title_font_color,
-        this.options.right_columns_total_width,
-        true
-      )
+      this.components[CellNames.RIGHT_COLUMN_TITLE].draw(this.layout.getCellBounds(CellNames.RIGHT_COLUMN_TITLE))
     }
 
     if (this.layout.enabled(CellNames.RIGHT_COLUMN_SUBTITLE)) {
@@ -323,18 +300,20 @@ class Heatmap {
     }
 
     if (options.left_columns_title) {
+      this.components[CellNames.LEFT_COLUMN_TITLE] = new ColumnTitle({
+        parentContainer: inner,
+        text: options.left_columns_title,
+        fontFamily: options.left_columns_title_font_family,
+        fontSize: options.left_columns_title_font_size,
+        fontColor: options.left_columns_title_font_color,
+        maxWidth: options.width * 0.33, // TODO needs fixin
+        bold: options.left_columns_title_bold,
+        padding: options.axis_padding
+      })
+
+      const dimensions = this.components[CellNames.LEFT_COLUMN_TITLE].computePreferredDimensions()
       this.layout.enable(CellNames.LEFT_COLUMN_TITLE)
-      const { width, height } = title_footer.computeDimensions(
-          inner,
-          options.left_columns_title,
-          options.left_columns_title_font_family,
-          options.left_columns_title_font_size,
-          options.left_columns_title_font_color,
-          options.left_columns_total_width,
-          options.left_columns_title_bold)
-      this.layout.setCellDimensions(CellNames.LEFT_COLUMN_TITLE,
-        width + options.axis_padding * 2,
-        height)
+      this.layout.setCellDimensions(CellNames.LEFT_COLUMN_TITLE, dimensions)
     }
 
     if (options.left_columns_subtitles) {
@@ -372,19 +351,20 @@ class Heatmap {
     }
 
     if (options.right_columns_title) {
+      this.components[CellNames.RIGHT_COLUMN_TITLE] = new ColumnTitle({
+        parentContainer: inner,
+        text: options.right_columns_title,
+        fontFamily: options.right_columns_title_font_family,
+        fontSize: options.right_columns_title_font_size,
+        fontColor: options.right_columns_title_font_color,
+        maxWidth: options.width * 0.33, // TODO needs fixin
+        bold: options.right_columns_title_bold,
+        padding: options.axis_padding
+      })
+
+      const dimensions = this.components[CellNames.RIGHT_COLUMN_TITLE].computePreferredDimensions()
       this.layout.enable(CellNames.RIGHT_COLUMN_TITLE)
-      const { width, height } = title_footer.computeDimensions(
-        inner,
-        options.right_columns_title,
-        options.right_columns_title_font_family,
-        options.right_columns_title_font_size,
-        options.right_columns_title_font_color,
-        options.right_columns_total_width,
-        options.right_columns_title_bold)
-      this.layout.setCellDimensions(
-        CellNames.RIGHT_COLUMN_TITLE,
-        width + options.axis_padding * 2,
-        height)
+      this.layout.setCellDimensions(CellNames.RIGHT_COLUMN_TITLE, dimensions)
     }
 
     if (options.right_columns_subtitles) {
