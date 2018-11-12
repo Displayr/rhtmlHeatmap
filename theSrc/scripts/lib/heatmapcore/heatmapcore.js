@@ -2,12 +2,11 @@ import _ from 'lodash'
 import d3 from 'd3'
 import Controller from './controller'
 import buildConfig from './buildConfig'
-import dendrogram from './dendrogram'
-import colormap from './colormap'
 import ColumnGroup from '../components/columnGroup'
 import ColumnSubtitles from '../components/columnSubtitles'
 import ColumnTitle from '../components/columnTitle'
 import Colormap from '../components/colormap'
+import Dendrogram from '../components/dendrogram'
 import Legend from '../components/legend'
 import XAxis from '../components/xAxis'
 import YAxis from '../components/yAxis'
@@ -48,10 +47,6 @@ class Heatmap {
 
     this.buildLayout()
 
-    function buildTransform ({ left, top }) {
-      return `translate(${left},${top})`
-    }
-
     if (this.layout.enabled(CellNames.TOP_XAXIS)) {
       this.components[CellNames.TOP_XAXIS].draw(this.layout.getCellBounds(CellNames.TOP_XAXIS))
     }
@@ -86,15 +81,11 @@ class Heatmap {
     }
 
     if (this.layout.enabled(CellNames.TOP_DENDROGRAM)) {
-      const colDendBounds = this.layout.getCellBounds(CellNames.TOP_DENDROGRAM)
-      inner.append('g').classed('dendrogram colDend', true).attr('transform', buildTransform(colDendBounds))
-      dendrogram(el.select('g.colDend'), this.dendrogramData.columns, true, colDendBounds.width, colDendBounds.height, this.options.axis_padding, this.options.link_color, controller, this.options.anim_duration)
+      this.components[CellNames.TOP_DENDROGRAM].draw(this.layout.getCellBounds(CellNames.TOP_DENDROGRAM))
     }
 
     if (this.layout.enabled(CellNames.LEFT_DENDROGRAM)) {
-      const rowDendBounds = this.layout.getCellBounds(CellNames.LEFT_DENDROGRAM)
-      inner.append('g').classed('dendrogram rowDend', true).attr('transform', buildTransform(rowDendBounds))
-      dendrogram(el.select('g.rowDend'), this.dendrogramData.rows, false, rowDendBounds.width, rowDendBounds.height, this.options.axis_padding, this.options.link_color, controller, this.options.anim_duration)
+      this.components[CellNames.LEFT_DENDROGRAM].draw(this.layout.getCellBounds(CellNames.LEFT_DENDROGRAM))
     }
 
     if (this.layout.enabled(CellNames.COLORMAP)) {
@@ -138,30 +129,7 @@ class Heatmap {
       inner.classed('highlighting',
         typeof (hl.x) === 'number' || typeof (hl.y) === 'number')
     })
-
-    function insert_column_title (svg, bounds, title, titleBold, fontFam, fontSize, fontCol, colWidth) {
-      const text_el = svg.append('g')
-
-      text_el.append('g')
-        .attr('transform', function () {
-          return 'translate(0,' + fontSize + ')'
-        })
-        .append('text')
-        .attr('transform', function () {
-          return 'translate(0,0)'
-        })
-        .attr('x', bounds.width / 2)
-        .attr('y', 0)
-        .attr('dy', 0)
-        .text(title)
-        .style('text-anchor', 'middle')
-        .attr('font-weight', titleBold ? 'bold' : 'normal')
-        .style('font-family', fontFam)
-        .style('font-size', fontSize)
-        .style('fill', fontCol)
-        .call(wrap_new, colWidth)
-    }
-
+    
     var dispatcher = d3.dispatch('hover', 'click')
     this.dispatcher = dispatcher
 
@@ -379,13 +347,37 @@ class Heatmap {
     }
 
     if (this.dendrogramData.columns) {
+      this.components[CellNames.TOP_DENDROGRAM] = new Dendrogram({
+        parentContainer: inner,
+        data: this.dendrogramData.columns,
+        type: CellNames.TOP_DENDROGRAM,
+        padding: this.options.axis_padding,
+        height: options.xclust_height || options.height * 0.12,
+        linkColor: this.options.link_color,
+        controller: this.controller,
+        animDuration: this.options.anim_duration
+      })
+
+      const dimensions = this.components[CellNames.TOP_DENDROGRAM].computePreferredDimensions()
       this.layout.enable(CellNames.TOP_DENDROGRAM)
-      this.layout.setCellHeight(CellNames.TOP_DENDROGRAM, options.xclust_height || options.height * 0.12)
+      this.layout.setCellDimensions(CellNames.TOP_DENDROGRAM, dimensions)
     }
 
     if (this.dendrogramData.rows) {
+      this.components[CellNames.LEFT_DENDROGRAM] = new Dendrogram({
+        parentContainer: inner,
+        data: this.dendrogramData.rows,
+        type: CellNames.LEFT_DENDROGRAM,
+        padding: this.options.axis_padding,
+        width: options.yclust_width || options.width * 0.12,
+        linkColor: this.options.link_color,
+        controller: this.controller,
+        animDuration: this.options.anim_duration
+      })
+
+      const dimensions = this.components[CellNames.LEFT_DENDROGRAM].computePreferredDimensions()
       this.layout.enable(CellNames.LEFT_DENDROGRAM)
-      this.layout.setCellWidth(CellNames.LEFT_DENDROGRAM, options.yclust_width || options.width * 0.12)
+      this.layout.setCellDimensions(CellNames.LEFT_DENDROGRAM, dimensions)
     }
 
     if (options.legend_colors) {

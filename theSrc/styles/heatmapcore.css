@@ -47,11 +47,7 @@ body.theme-dark {
   fill-opacity: 0.15;
   stroke-width: 1px;
 }
-.colDend {
-  position: absolute;
-  overflow: hidden;
-}
-.rowDend {
+.dendrogram {
   position: absolute;
   overflow: hidden;
 }
