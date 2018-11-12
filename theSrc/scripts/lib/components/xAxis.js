@@ -12,7 +12,7 @@ class XAxis extends BaseComponent {
   computePreferredDimensions () {
     const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily, this.rotation))
     return {
-      width: _(labelDimensions).map('width').sum(),
+      width: 0, //NB xaxis width takes what is given, and does not force width on the chart
       height: _(labelDimensions).map('height').max() + this.padding
     }
   }
