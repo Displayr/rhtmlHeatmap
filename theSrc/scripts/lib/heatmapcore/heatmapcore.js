@@ -7,9 +7,8 @@ import colormap from './colormap'
 import ColumnGroup from '../components/columnGroup'
 import ColumnSubtitles from '../components/columnSubtitles'
 import ColumnTitle from '../components/columnTitle'
+import Colormap from '../components/colormap'
 import Legend from '../components/legend'
-import title_footer from './title_footer'
-import axis from './axis'
 import XAxis from '../components/xAxis'
 import YAxis from '../components/yAxis'
 import XTitle from '../components/xTitle'
@@ -30,7 +29,8 @@ class Heatmap {
     el.classed('rhtmlHeatmap', true)
     el.attr(`rhtmlHeatmap-status`, 'loading')
 
-    var controller = new Controller()
+    let controller = new Controller()
+    this.controller = controller
 
     // Set option defaults & copy settings
     var opts = buildConfig(options, width, height)
@@ -52,23 +52,21 @@ class Heatmap {
       return `translate(${left},${top})`
     }
 
-    // TODO NB unpick axis.labels later (its all f*cked)
-    const xaxisBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.TOP_XAXIS) ? CellNames.TOP_XAXIS : CellNames.BOTTOM_XAXIS)
-    const yaxisBounds = this.layout.getCellBounds(this.layout.enabled(CellNames.LEFT_YAXIS) ? CellNames.LEFT_YAXIS : CellNames.RIGHT_YAXIS)
     if (this.layout.enabled(CellNames.TOP_XAXIS)) {
-      this.components[CellNames.TOP_XAXIS].draw(xaxisBounds)
+      this.components[CellNames.TOP_XAXIS].draw(this.layout.getCellBounds(CellNames.TOP_XAXIS))
     }
 
     if (this.layout.enabled(CellNames.BOTTOM_XAXIS)) {
-      this.components[CellNames.BOTTOM_XAXIS].draw(xaxisBounds)
+
+      this.components[CellNames.BOTTOM_XAXIS].draw(this.layout.getCellBounds(CellNames.BOTTOM_XAXIS))
     }
 
     if (this.layout.enabled(CellNames.LEFT_YAXIS)) {
-      this.components[CellNames.LEFT_YAXIS].draw(yaxisBounds)
+      this.components[CellNames.LEFT_YAXIS].draw(this.layout.getCellBounds(CellNames.LEFT_YAXIS))
     }
 
     if (this.layout.enabled(CellNames.RIGHT_YAXIS)) {
-      this.components[CellNames.RIGHT_YAXIS].draw(yaxisBounds)
+      this.components[CellNames.RIGHT_YAXIS].draw(this.layout.getCellBounds(CellNames.RIGHT_YAXIS))
     }
 
     if (this.layout.enabled(CellNames.TOP_XAXIS_TITLE)) {
@@ -100,10 +98,7 @@ class Heatmap {
     }
 
     if (this.layout.enabled(CellNames.COLORMAP)) {
-      let colormapBounds = this.layout.getCellBounds(CellNames.COLORMAP)
-      // inner.append('g').classed('colormap', true).attr('transform', buildTransform(colormapBounds))
-      inner.append('g').classed('colormap', true).attr('transform', buildTransform(colormapBounds))
-      colormap(el.select('g.colormap'), this.matrix, colormapBounds.width, colormapBounds.height, this.options, controller)
+      this.components[CellNames.COLORMAP].draw(this.layout.getCellBounds(CellNames.COLORMAP))
     }
 
     if (this.layout.enabled(CellNames.COLOR_LEGEND)) {
@@ -413,6 +408,22 @@ class Heatmap {
       this.layout.setCellDimensions(CellNames.COLOR_LEGEND, dimensions)
     }
 
+    this.components[CellNames.COLORMAP] = new Colormap({
+      parentContainer: inner,
+      matrix: this.matrix,
+      yaxisTitle: options.yaxis_title,
+      xaxisTitle: options.xaxis_title,
+      extraTooltipInfo: options.extra_tooltip_info,
+      tipFontSize: options.tip_font_size,
+      tipFontFamily: options.tip_font_family,
+      cellFontSize: options.cell_font_size,
+      cellFontFamily: options.cell_font_family, // NB this should be family
+      brushColor: options.brush_color,
+      animDuration: options.anim_duration,
+      showGrid: options.show_grid,
+      shownoteInCell: options.shownote_in_cell,
+      controller: this.controller
+    })
     this.layout.enable(CellNames.COLORMAP)
     this.layout.setFillCell(CellNames.COLORMAP)
   }
