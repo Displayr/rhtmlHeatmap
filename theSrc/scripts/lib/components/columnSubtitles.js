@@ -1,4 +1,4 @@
-import BaseComponent from '../heatmapcore/baseComponent'
+import BaseComponent from './baseComponent'
 import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 import _ from 'lodash'
 

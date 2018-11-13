@@ -1,4 +1,4 @@
-import BaseComponent from '../heatmapcore/baseComponent'
+import BaseComponent from './baseComponent'
 import _ from 'lodash'
 import wrap_new from '../heatmapcore/wrap_new'
 

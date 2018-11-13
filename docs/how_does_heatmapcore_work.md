@@ -14,7 +14,7 @@ entry point is the exported `heatmap(selector, data, options)` function.
 
 A Controller instance is created that exposes several functions:
 
-* hilight
+* highlight
 * datapoint_hover
 * transform
 * on (d3 dispatcher)
@@ -34,7 +34,7 @@ line 1068 - 1344
   * begin to create svg areas and append to DOM
   
 line 1346 - 1527
-  * hilighting code some interaction between y axis and columns
+  * highlighting code some interaction between y axis and columns
   
   
 Glossary of Terms / Sections

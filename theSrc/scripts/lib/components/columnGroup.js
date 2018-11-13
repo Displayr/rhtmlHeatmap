@@ -1,4 +1,4 @@
-import BaseComponent from '../heatmapcore/baseComponent'
+import BaseComponent from './baseComponent'
 import _ from 'lodash'
 import d3 from "d3";
 
@@ -49,48 +49,53 @@ class ColumnGroup extends BaseComponent {
       cumulativeWidth += individualWidth
 
       const columnLabels = this.labelMatrix[columnIndex]
+      const rowHeight = columnBounds.height / columnLabels.length
 
       const columnContainer = this.parentContainer.append('g')
         .classed(`column-${columnIndex}`, true)
         .classed(this.groupName, true)
         .attr('transform', this.buildTransform(columnBounds))
 
-      const scale = d3.scale.ordinal()
-        .domain(d3.range(0, columnLabels.length))
-        .rangeBands([0, columnBounds.height])
-
-      const axis = d3.svg.axis()
-        .scale(scale)
-        .orient('left')
-        .outerTickSize(0)
-        .innerTickSize(0)
-        .tickPadding(0)
-        .tickFormat(function (d, i) { return columnLabels[i] })// hack for repeated values
-
-      const axisOffsets = {
-        l: 'translate(0,0)',
-        c: 'translate(' + columnBounds.width / 2 + ',0)',
-        r: 'translate(' + (columnBounds.width - this.padding) + ',0)'
-      }
+      // TODO handle l,c,r alignment
+      // const axisOffsets = {
+      //   l: 'translate(0,0)',
+      //   c: 'translate(' + columnBounds.width / 2 + ',0)',
+      //   r: 'translate(' + (columnBounds.width - this.padding) + ',0)'
+      // }
 
       const textAnchor = {
         l: 'start',
         c: 'middle',
         r: 'end'
       }
-      // Create the actual axis
-      const axisNodes = columnContainer.append('g')
-        .attr('class', 'axisNodes')
-        .attr('transform', axisOffsets[this.alignments[columnIndex]] || axisOffsets['l'])
-        .call(axis)
 
-      axisNodes.selectAll('text')
-        .attr('class', 'coltick')
+      const cells = columnContainer.selectAll('g')
+        .data(columnLabels)
+        .enter()
+        .append('g')
+        .attr('transform', (d, i) => `translate(0,${rowHeight * i})`)
+
+      cells.append('text')
         .style('opacity', 1)
         .style('font-size', this.fontSize)
         .style('fill', this.fontColor)
         .style('font-family', this.fontFamily)
+        .attr('y', rowHeight / 2)
+        .attr('dominant-baseline', 'middle')
         .style('text-anchor', textAnchor[this.alignments[columnIndex]] || textAnchor['l'])
+        .text(d => d)
+
+      cells.append('rect')
+        .classed('click-rect', true)
+        .attr('width', columnBounds.width)
+        .attr('height', rowHeight)
+        .attr('fill', 'transparent')
+        .attr('stroke', 'none')
+        .on('click', (d, i) => {
+          console.log('rect click')
+          this.controller.columnCellClick(i)
+          d3.event.stopPropagation()
+        })
     })
   }
 }

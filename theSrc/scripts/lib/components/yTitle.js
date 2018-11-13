@@ -1,4 +1,4 @@
-import BaseComponent from '../heatmapcore/baseComponent'
+import BaseComponent from './baseComponent'
 import _ from 'lodash'
 
 // TODO preferred dimensions must account for maxes

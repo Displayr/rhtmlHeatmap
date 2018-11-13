@@ -42,10 +42,14 @@ class Heatmap {
       columns: dendrogramColumns
     }
 
+    // rename to this.container
     var inner = el.append('g').classed('inner', true)
     this.inner = inner
 
     this.buildLayout()
+
+    // TODO should add a baseComponent .addController. If component knows its name, then it can register itself too !
+    this.wireupController()
 
     if (this.layout.enabled(CellNames.TOP_XAXIS)) {
       this.components[CellNames.TOP_XAXIS].draw(this.layout.getCellBounds(CellNames.TOP_XAXIS))
@@ -122,14 +126,7 @@ class Heatmap {
       this.components[CellNames.RIGHT_COLUMN_SUBTITLE].draw(this.layout.getCellBounds(CellNames.RIGHT_COLUMN_SUBTITLE))
     }
 
-    inner.on('click', function () {
-      controller.highlight(null, null)
-    })
-    controller.on('highlight.inner', function (hl) {
-      inner.classed('highlighting',
-        typeof (hl.x) === 'number' || typeof (hl.y) === 'number')
-    })
-    
+    // TODO  delete this
     var dispatcher = d3.dispatch('hover', 'click')
     this.dispatcher = dispatcher
 
@@ -155,6 +152,13 @@ class Heatmap {
     }
 
     el.attr(`rhtmlHeatmap-status`, 'ready')
+  }
+
+  wireupController () {
+    _(this.components).each(component => component.setController(this.controller))
+
+    this.controller.addColorMap(this.components[CellNames.COLORMAP])
+    this.controller.addOuter(this.inner)
   }
 
   buildLayout () {
@@ -354,7 +358,6 @@ class Heatmap {
         padding: this.options.axis_padding,
         height: options.xclust_height || options.height * 0.12,
         linkColor: this.options.link_color,
-        controller: this.controller,
         animDuration: this.options.anim_duration
       })
 
@@ -371,7 +374,6 @@ class Heatmap {
         padding: this.options.axis_padding,
         width: options.yclust_width || options.width * 0.12,
         linkColor: this.options.link_color,
-        controller: this.controller,
         animDuration: this.options.anim_duration
       })
 

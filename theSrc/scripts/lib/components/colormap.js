@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import BaseComponent from '../heatmapcore/baseComponent'
+import BaseComponent from './baseComponent'
 import d3 from 'd3'
 const d3Tip = require('d3-tip')
 d3Tip(d3)
@@ -43,7 +43,7 @@ class Colormap extends BaseComponent {
   draw (bounds) {
     const { width, height } = bounds
 
-    const container = this.parentContainer
+    this.container = this.parentContainer
       .append('g')
       .classed(`colormap`, true)
       .attr('transform', this.buildTransform(bounds))
@@ -52,7 +52,7 @@ class Colormap extends BaseComponent {
     if (this.matrix.length === 0) { return function () {} }
 
     if (!this.showGrid) {
-      container.style('shape-rendering', 'crispEdges')
+      this.container.style('shape-rendering', 'crispEdges')
     }
 
     var cols = this.matrix.dim[1]
@@ -65,14 +65,18 @@ class Colormap extends BaseComponent {
     var old_x = d3.scale.linear().domain([0, cols]).range([0, width])
     var old_y = d3.scale.linear().domain([0, rows]).range([0, height])
 
-    var rect = container.selectAll('rect').data(merged)
+    var rect = this.container.selectAll('rect').data(merged)
+
+    // TODO add these to merged ! although on zoom this may change ?
+    const rowFrom = (i) => Math.floor(i / cols)
+    const colFrom = (i) => i % cols
     rect.enter().append('rect')
       .classed('datapt', true)
-      .attr('data-index', function (d, i) { return `${Math.floor(i / cols)}x${i % cols}` })
-      .attr('data-row', function (d, i) { return Math.floor(i / cols) })
-      .attr('data-column', function (d, i) { return i % cols })
-      .property('colIndex', function (d, i) { return i % cols })
-      .property('rowIndex', function (d, i) { return Math.floor(i / cols) })
+      .attr('data-index', function (d, i) { return `${rowFrom(i)}x${colFrom(i)}` })
+      .attr('data-row', function (d, i) { return rowFrom(i) })
+      .attr('data-column', function (d, i) { return colFrom(i) })
+      .property('colIndex', function (d, i) { return colFrom(i) })
+      .property('rowIndex', function (d, i) { return rowFrom(i) })
       .property('value', function (d, i) { return d.label })
       .attr('fill', function (d) {
         if (d.hide) {
@@ -80,6 +84,7 @@ class Colormap extends BaseComponent {
         }
         return d.color
       })
+      .on('click', (d, i) => this.controller.colormapCellClick(rowFrom(i), colFrom(i)))
     rect.exit().remove()
     rect.append('title')
       .text(function (d, i) { return d.label })
@@ -155,7 +160,7 @@ class Colormap extends BaseComponent {
     }
 
     if (this.shownoteInCell) {
-      var cellnote_incell = container.selectAll('text').data(merged)
+      var cellnote_incell = this.container.selectAll('text').data(merged)
       cellnote_incell.enter().append('text')
         .text(function (d) {
           return d.cellnote_in_cell
@@ -196,6 +201,20 @@ class Colormap extends BaseComponent {
           .style('font-size', new_ft_size)
       }
     })
+  }
+
+  updateHighlights ({ rowIndex = null, columnIndex = null } = {}) {
+    // TODO clean up all this recalculation stuff
+    var cols = this.matrix.dim[1]
+    const rowFrom = (i) => Math.floor(i / cols)
+    const colFrom = (i) => i % cols
+    this.container.selectAll('rect')
+      .classed('highlight', function (d, i) {
+        const row = rowFrom(i)
+        const col = colFrom(i)
+        const highlight = (row === rowIndex) || (col === columnIndex)
+        return highlight
+      })
   }
 }
 

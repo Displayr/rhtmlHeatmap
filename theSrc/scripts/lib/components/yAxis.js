@@ -1,13 +1,13 @@
-import BaseComponent from '../heatmapcore/baseComponent'
-import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 import _ from 'lodash'
 import d3 from 'd3'
+import BaseComponent from './baseComponent'
+import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 
 // TODO preferred dimensions must account for maxes
 class YAxis extends BaseComponent{
-  constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight}) {
+  constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller}) {
     super()
-    _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight})
+    _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller})
   }
 
   computePreferredDimensions () {
@@ -19,9 +19,7 @@ class YAxis extends BaseComponent{
   }
 
   draw (bounds) {
-    // TODO clean up this D3 sequence
-    this.parentContainer.append('g').classed('axis yaxis', true).attr('transform', this.buildTransform(bounds))
-    const axisContainer = this.parentContainer.select('g.yaxis').append('g')
+    const container = this.parentContainer.append('g').classed('axis yaxis', true).attr('transform', this.buildTransform(bounds))
 
     // set axis options
     const scale = d3.scale.ordinal()
@@ -37,7 +35,7 @@ class YAxis extends BaseComponent{
       .tickFormat((d, i) => this.labels[i]) // hack for repeated values
 
     // Create the actual axis
-    const axisNodes = axisContainer.append('g')
+    const axisNodes = container.append('g')
       .call(axis)
 
     axisNodes.selectAll('text')
@@ -45,6 +43,12 @@ class YAxis extends BaseComponent{
       .style('opacity', 1)
       .style('font-size', this.fontSize)
       .style('font-family', this.fontFamily)
+
+    axisNodes.selectAll('.tick')
+      .on('click', (d) => {
+        this.controller.yaxisClick(d)
+        d3.event.stopPropagation()
+      })
   }
 }
 

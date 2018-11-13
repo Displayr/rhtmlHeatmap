@@ -1,4 +1,4 @@
-import BaseComponent from '../heatmapcore/baseComponent'
+import BaseComponent from './baseComponent'
 import { CellNames } from '../heatmapcore/layout'
 import d3 from 'd3'
 import _ from 'lodash';

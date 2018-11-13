@@ -8,6 +8,10 @@ class BaseComponent {
     return `translate(${left},${top})`
   }
 
+  setController (controller) {
+    this.controller = controller
+  }
+
   draw (bounds) {
     throw new Error('must be defined by subclass')
   }
