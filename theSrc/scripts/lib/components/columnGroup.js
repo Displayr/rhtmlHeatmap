@@ -4,12 +4,12 @@ import d3 from "d3";
 
 
 class ColumnGroup extends BaseComponent {
-  constructor ({parentContainer, groupName, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth }) {
+  constructor ({parentContainer, groupName, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth}) {
     super()
-    _.assign(this, {parentContainer, groupName, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth })
+    _.assign(this, {parentContainer, groupName, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth})
   }
 
-  getColumnWidths() {
+  getColumnWidths () {
     return this.columnWidths
   }
 

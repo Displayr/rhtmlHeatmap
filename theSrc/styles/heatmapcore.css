@@ -34,7 +34,7 @@ body.theme-dark {
   font-size: 15px;
   font-family: sans-serif;
 }
-.rhtmlHeatmap .axis rect {
+.rhtmlHeatmap .click-rect {
   cursor: pointer;
 }
 .inner {

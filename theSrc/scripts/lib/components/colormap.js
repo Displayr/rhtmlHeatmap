@@ -176,31 +176,71 @@ class Colormap extends BaseComponent {
       new_ft_size = draw_text(cellnote_incell, null, null, this.cellFontSize, this.cellFontFamily)
     }
 
-    this.controller.on('transform.colormap', function (_) {
-      x.range([_.translate[0], width * _.scale[0] + _.translate[0]])
-      y.range([_.translate[1], height * _.scale[1] + _.translate[1]])
-      draw(rect.transition().duration(this.animDuration).ease('linear'))
+    // const brushStyle = {fill: this.brushColor, stroke: this.brushColor}
+    // const brush = d3.svg.brush()
+    //   .x(x)
+    //   .y(y)
+    //   .clamp([true, true])
+    //   .on('brush', function () {
+    //     console.log('brush')
+    //     var extent = brush.extent()
+    //     extent[0][0] = Math.round(extent[0][0])
+    //     extent[0][1] = Math.round(extent[0][1])
+    //     extent[1][0] = Math.round(extent[1][0])
+    //     extent[1][1] = Math.round(extent[1][1])
+    //     d3.select(this).call(brush.extent(extent))
+    //   })
+    //   .on('brushend', function () {
+    //     console.log('brushend')
+    //     if (brush.empty()) {
+    //       this.controller.transform({
+    //         scale: [1, 1],
+    //         translate: [0, 0],
+    //         extent: [[0, 0], [cols, rows]]
+    //       })
+    //     } else {
+    //       this.controller.transform()
+    //       var ex = brush.extent()
+    //       var scale = [
+    //         cols / (ex[1][0] - ex[0][0]),
+    //         rows / (ex[1][1] - ex[0][1])
+    //       ]
+    //       var translate = [
+    //         ex[0][0] * (width / cols) * scale[0] * -1,
+    //         ex[0][1] * (height / rows) * scale[1] * -1
+    //       ]
+    //       this.controller.transform({scale: scale, translate: translate, extent: ex})
+    //     }
+    //     brush.clear()
+    //     d3.select(this).call(brush).select('.brush .extent')
+    //       .style(brushStyle)
+    //   })
 
-      if (this.shownoteInCell) {
-        new_ft_size = draw_text(cellnote_incell, null, null, this.cellFontSize, this.cellFontFamily)
-        draw_text(cellnote_incell, old_x, old_y, this.cellFontSize, this.cellFontFamily)
-
-        old_x.range([_.translate[0], width * _.scale[0] + _.translate[0]])
-        old_y.range([_.translate[1], height * _.scale[1] + _.translate[1]])
-
-        cellnote_incell
-          .transition()
-          .duration(this.animDuration)
-          .ease('linear')
-          .attr('x', function (d, i) {
-            return x(i % cols) + ((x(1) - x(0)) - spacing) / 2
-          })
-          .attr('y', function (d, i) {
-            return y(Math.floor(i / cols)) + ((y(1) - y(0)) - spacing) / 2
-          })
-          .style('font-size', new_ft_size)
-      }
-    })
+    // this.controller.on('transform.colormap', function (_) {
+    //   x.range([_.translate[0], width * _.scale[0] + _.translate[0]])
+    //   y.range([_.translate[1], height * _.scale[1] + _.translate[1]])
+    //   draw(rect.transition().duration(this.animDuration).ease('linear'))
+    //
+    //   if (this.shownoteInCell) {
+    //     new_ft_size = draw_text(cellnote_incell, null, null, this.cellFontSize, this.cellFontFamily)
+    //     draw_text(cellnote_incell, old_x, old_y, this.cellFontSize, this.cellFontFamily)
+    //
+    //     old_x.range([_.translate[0], width * _.scale[0] + _.translate[0]])
+    //     old_y.range([_.translate[1], height * _.scale[1] + _.translate[1]])
+    //
+    //     cellnote_incell
+    //       .transition()
+    //       .duration(this.animDuration)
+    //       .ease('linear')
+    //       .attr('x', function (d, i) {
+    //         return x(i % cols) + ((x(1) - x(0)) - spacing) / 2
+    //       })
+    //       .attr('y', function (d, i) {
+    //         return y(Math.floor(i / cols)) + ((y(1) - y(0)) - spacing) / 2
+    //       })
+    //       .style('font-size', new_ft_size)
+    //   }
+    // })
   }
 
   updateHighlights ({ rowIndex = null, columnIndex = null } = {}) {

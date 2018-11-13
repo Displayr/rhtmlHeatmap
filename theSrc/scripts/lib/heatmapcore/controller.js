@@ -113,6 +113,7 @@ class Controller {
   }
 
   colormapCellClick (rowIndex, columnIndex) {
+    console.log(`colormapCellClick(${rowIndex}, ${columnIndex})`)
     if (this.isAnythingHighlighted()) {
       this.clearHighlightedColumn()
       this.clearHighlightedRow()
