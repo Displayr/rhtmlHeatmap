@@ -3,6 +3,8 @@ import d3 from 'd3'
 import BaseComponent from './baseComponent'
 import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 
+const DEBUG = false
+
 // TODO preferred dimensions must account for maxes
 class XAxis extends BaseComponent {
   constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation = -45, controller}) {
@@ -24,27 +26,42 @@ class XAxis extends BaseComponent {
 
   draw (bounds) {
     const container = this.parentContainer.append('g').classed('axis xaxis', true).attr('transform', this.buildTransform(bounds))
-    const xaxisLabelContainers = container.append('g').selectAll('text').data(this.labels).enter()
 
     const yOffsetCorrectionForRotation = (this.rotatingUp())
       ? bounds.height - this.padding
       : this.padding * 2 // TODO this is hacky
-
     const columnWidth = bounds.width / this.labels.length
-    xaxisLabelContainers.append('g')
-      .attr('transform', (d, i) => `translate(${columnWidth * i + columnWidth / 2 - this.fontSize / 2},${yOffsetCorrectionForRotation})`)
-      .append('text')
+
+    const cells = container.selectAll('g')
+      .data(this.labels)
+      .enter()
+      .append('g')
+      .attr('transform', (d, i) => `translate(${columnWidth * i},0)`)
+
+    cells.append('rect')
+      .classed('click-rect', true)
+      .attr('width', columnWidth)
+      .attr('height', bounds.height)
+      .attr('fill', 'transparent')
+      .attr('stroke', (DEBUG) ? 'lightgrey' : 'transparent')
       .on('click', (d, i) => {
+        console.log('rect click')
         this.controller.xaxisClick(i)
         d3.event.stopPropagation()
       })
-      .attr('transform', `rotate(${this.rotation}),translate(${this.padding},0)`)
+
+    cells.append('text')
+      .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${yOffsetCorrectionForRotation}),rotate(${this.rotation}),translate(${this.padding},0)`)
       .attr('x', 0)
       .attr('y', -this.padding)
       .text(d => d)
       .style('text-anchor', 'start')
       .style('font-family', this.fontFamily)
       .style('font-size', this.fontSize)
+      .on('click', (d, i) => {
+        this.controller.xaxisClick(i)
+        d3.event.stopPropagation()
+      })
   }
 }
 

@@ -90,7 +90,7 @@ class ColumnGroup extends BaseComponent {
         .attr('width', columnBounds.width)
         .attr('height', rowHeight)
         .attr('fill', 'transparent')
-        .attr('stroke', 'none')
+        .attr('stroke', 'transparent')
         .on('click', (d, i) => {
           console.log('rect click')
           this.controller.columnCellClick(i)

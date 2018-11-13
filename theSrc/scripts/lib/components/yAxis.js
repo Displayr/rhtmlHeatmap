@@ -43,7 +43,7 @@ class YAxis extends BaseComponent{
       .attr('width', bounds.width)
       .attr('height', rowHeight)
       .attr('fill', 'transparent')
-      .attr('stroke', 'none')
+      .attr('stroke', 'transparent')
       .on('click', (d, i) => {
         this.controller.yaxisClick(i)
         d3.event.stopPropagation()
