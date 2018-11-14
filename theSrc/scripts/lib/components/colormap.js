@@ -51,8 +51,12 @@ class Colormap extends BaseComponent {
 
     this.container = this.parentContainer
       .append('g')
-      .classed(`colormap`, true)
+      .classed(`colormap-transform`, true)
       .attr('transform', this.buildTransform(bounds))
+      .append('svg')
+      .classed(`colormap`, true)
+      .attr('width', bounds.width)
+      .attr('height', bounds.height)
 
     // Check for no data
     if (this.matrix.length === 0) { return function () {} }
