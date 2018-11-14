@@ -33,6 +33,7 @@ class Controller {
   addOuter (outer) {
     this.outer = outer
     this.outer.on('click', () => {
+      console.log('outer anything clicked')
       if (this.isAnythingHighlighted()) {
         this.clearHighlightedColumn()
         this.clearHighlightedRow()
@@ -119,6 +120,16 @@ class Controller {
       this.clearHighlightedRow()
       this.updateHighlights()
     }
+  }
+
+  colormapDragReset ({scale, translate, extent}) {
+    console.log('colormapDragReset')
+    this.colormap.updateZoom({scale, translate, extent})
+  }
+
+  colormapDragSelection ({scale, translate, extent}) {
+    console.log('colormapDragSelection')
+    this.colormap.updateZoom({scale, translate, extent})
   }
 }
 

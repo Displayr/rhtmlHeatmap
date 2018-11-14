@@ -58,10 +58,10 @@ body.theme-dark {
 .theme-dark text {
   fill: #E2E2E2;
 }
-.highlighting .colormap .datapt {
+.highlighting .colormap .data-cell {
   opacity: 0.2;
 }
-.highlighting .colormap .datapt.highlight {
+.highlighting .colormap .data-cell.highlight {
   opacity: 1;
 }
 
