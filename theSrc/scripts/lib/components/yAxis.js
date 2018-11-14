@@ -50,9 +50,9 @@ class YAxis extends BaseComponent {
       })
   }
 
-  updateHighlights ({ rowIndex = null, columnIndex = null } = {}) {
+  updateHighlights ({ row = null } = {}) {
     this.textSelection
-      .classed('highlight', (d, i) => (rowIndex === i))
+      .classed('highlight', (d, i) => (row === i))
   }
 }
 

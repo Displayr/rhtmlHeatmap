@@ -208,18 +208,13 @@ class Colormap extends BaseComponent {
     }
   }
 
-  updateHighlights ({ rowIndex = null, columnIndex = null } = {}) {
+  updateHighlights ({ row = null, column = null } = {}) {
     // TODO clean up all this recalculation stuff
     var cols = this.matrix.dim[1]
     const rowFrom = (i) => Math.floor(i / cols)
     const colFrom = (i) => i % cols
     this.container.selectAll('rect')
-      .classed('highlight', function (d, i) {
-        const row = rowFrom(i)
-        const col = colFrom(i)
-        const highlight = (row === rowIndex) || (col === columnIndex)
-        return highlight
-      })
+      .classed('highlight', (d, i) => (rowFrom(i) === row) || (colFrom(i) === column))
   }
 
   sizeCellSelection (rect) {

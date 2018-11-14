@@ -59,8 +59,10 @@ class Controller {
     })
   }
 
-  isRowHighlighted (index) {
-    return this.state.highlighted.row === parseInt(index)
+  isRowHighlighted (index = null) {
+    return (_.isNull(index))
+      ? !_.isNull(this.state.highlighted.row)
+      : this.state.highlighted.row === parseInt(index)
   }
 
   highlightRow (index) {
@@ -71,8 +73,10 @@ class Controller {
     this.state.highlighted.row = null
   }
 
-  isColumnHighlighted (index) {
-    return this.state.highlighted.column === parseInt(index)
+  isColumnHighlighted (index = null) {
+    return (_.isNull(index))
+      ? !_.isNull(this.state.highlighted.column)
+      : this.state.highlighted.column === parseInt(index)
   }
 
   highlightColumn (index) {
@@ -88,27 +92,14 @@ class Controller {
   }
 
   updateHighlights () {
-    if (this.colormap) {
-      this.colormap.updateHighlights({
-        rowIndex: this.state.highlighted.row,
-        columnIndex: this.state.highlighted.column
-      })
-    }
-    if (this.xaxis) {
-      this.xaxis.updateHighlights({
-        rowIndex: this.state.highlighted.row,
-        columnIndex: this.state.highlighted.column
-      })
-    }
-    if (this.yaxis) {
-      this.yaxis.updateHighlights({
-        rowIndex: this.state.highlighted.row,
-        columnIndex: this.state.highlighted.column
-      })
-    }
+    if (this.colormap) { this.colormap.updateHighlights(this.state.highlighted) }
+    if (this.xaxis) { this.xaxis.updateHighlights(this.state.highlighted) }
+    if (this.yaxis) { this.yaxis.updateHighlights(this.state.highlighted) }
     // TODO clean this up
     if (this.outer) {
       this.outer.classed('highlighting', this.isAnythingHighlighted())
+      this.outer.classed('row-highlighting', this.isRowHighlighted())
+      this.outer.classed('column-highlighting', this.isColumnHighlighted())
     }
   }
 
@@ -154,11 +145,13 @@ class Controller {
   colormapDragReset ({scale, translate, extent}) {
     console.log('colormapDragReset')
     if (this.colormap) { this.colormap.updateZoom({scale, translate, extent}) }
+    if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent}) }
   }
 
   colormapDragSelection ({scale, translate, extent}) {
     console.log('colormapDragSelection')
     if (this.colormap) { this.colormap.updateZoom({scale, translate, extent}) }
+    if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent}) }
   }
 }
 
