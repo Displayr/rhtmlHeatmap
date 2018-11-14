@@ -95,6 +95,8 @@ class Controller {
     if (this.colormap) { this.colormap.updateHighlights(this.state.highlighted) }
     if (this.xaxis) { this.xaxis.updateHighlights(this.state.highlighted) }
     if (this.yaxis) { this.yaxis.updateHighlights(this.state.highlighted) }
+    if (this.leftColumn) { this.leftColumn.updateHighlights(this.state.highlighted) }
+    if (this.rightColumn) { this.rightColumn.updateHighlights(this.state.highlighted) }
     // TODO clean this up
     if (this.outer) {
       this.outer.classed('highlighting', this.isAnythingHighlighted())

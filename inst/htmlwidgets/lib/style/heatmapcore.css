@@ -79,6 +79,12 @@ body.theme-dark {
 .rhtmlHeatmap .row-highlighting .yaxis .axis-text.highlight {
   opacity: 1;
 }
+.rhtmlHeatmap .row-highlighting .column-text {
+  opacity: 0.4;
+}
+.rhtmlHeatmap .row-highlighting .column-text.highlight {
+  opacity: 1;
+}
 .rhtmlHeatmap .column-highlighting .xaxis .axis-text {
   opacity: 0.4;
 }

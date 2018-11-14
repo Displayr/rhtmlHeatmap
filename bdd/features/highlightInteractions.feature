@@ -11,9 +11,3 @@ Feature: Highlight Interactions
     When I click row 2 name
     Then Sleep 700 milliseconds
     Then the "zoom_interaction_minimal_3x3_unhighlight_row_2" snapshot matches the baseline
-
-# TODO add coverage
-# when i click anywhere it unhighlights
-# same tests for column highlighting
-# I can highlight a column and a row at same time
-# when i click a different row/column the focus changes

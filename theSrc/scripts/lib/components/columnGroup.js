@@ -38,6 +38,7 @@ class ColumnGroup extends BaseComponent {
 
   draw (columnGroupBounds) {
     let cumulativeWidth = 0
+    this.textSelections = []
     this.columnWidths.forEach((individualWidth, columnIndex) => {
       const columnBounds = {
         top: columnGroupBounds.top,
@@ -74,8 +75,8 @@ class ColumnGroup extends BaseComponent {
         .append('g')
         .attr('transform', (d, i) => `translate(0,${rowHeight * i})`)
 
-      cells.append('text')
-        .style('opacity', 1)
+      const textSelection = cells.append('text')
+        .classed('column-text', true)
         .style('font-size', this.fontSize)
         .style('fill', this.fontColor)
         .style('font-family', this.fontFamily)
@@ -83,6 +84,7 @@ class ColumnGroup extends BaseComponent {
         .attr('dominant-baseline', 'middle')
         .style('text-anchor', textAnchor[this.alignments[columnIndex]] || textAnchor['l'])
         .text(d => d)
+      this.textSelections.push(textSelection)
 
       cells.append('rect')
         .classed('click-rect', true)
@@ -95,6 +97,13 @@ class ColumnGroup extends BaseComponent {
           this.controller.columnCellClick(i)
           d3.event.stopPropagation()
         })
+    })
+  }
+
+  updateHighlights ({ row = null } = {}) {
+    this.textSelections.forEach(textSelection => {
+      textSelection
+        .classed('highlight', (d, i) => (row === i))
     })
   }
 }
