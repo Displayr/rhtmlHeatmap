@@ -4,72 +4,12 @@ body.theme-dark {
 .link {
   fill: none;
 }
-.theme-dark .link {
-}
-
-.rhtmlHeatmap {
-  position: relative;
-  overflow: hidden;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-.rhtmlHeatmap .domain {
-  fill: none;
-  stroke: none;
-}
-.rhtmlHeatmap .axis {
-  overflow: hidden;
-}
-.rhtmlHeatmap .axis line {
-  fill: none;
-  stroke: #AAA;
-  stroke-width: 1px;
-  shape-rendering: crispEdges;
-}
-.rhtmlHeatmap .axis text, .rhtmlHeatmap-tip{
-  font-size: 15px;
-  font-family: sans-serif;
-}
-.rhtmlHeatmap .click-rect {
-  cursor: pointer;
-}
-.inner {
-  position: relative;
-}
-.rhtmlHeatmap text {
-  cursor: default;
-}
-.rhtmlHeatmap .brush .extent{
-  fill-opacity: 0.15;
-  stroke-width: 1px;
-}
-.dendrogram {
-  position: absolute;
-  overflow: hidden;
-}
-.colormap {
-  position: absolute;
-  overflow: hidden;
-}
 .theme-dark text {
   fill: #E2E2E2;
 }
-.highlighting .data-cell {
-  opacity: 0.2;
-}
-.highlighting .data-cell.highlight {
-  opacity: 1;
-}
-
-.highlighting .axis g.tick.faded {
-  opacity: 0.4 !important;
-}
-
 .rhtmlHeatmap-tip {
+  font-size: 15px;
+  font-family: sans-serif;
   white-space: nowrap;
   background-color: #444;
   padding: 6px 12px;
@@ -84,17 +24,58 @@ body.theme-dark {
   border-collapse: separate;
   border-spacing: 2px;
 }
-.rhtmlHeatmap-tip-table th, .rhtmlHeatmap-tip-table td {
+.rhtmlHeatmap-tip-table th,
+.rhtmlHeatmap-tip-table td {
   padding: 0 1px;
   color: white;
 }
-.xtitle {
-  position: absolute;
+.rhtmlHeatmap {
+  position: relative;
   overflow: hidden;
-  font-family: sans-serif;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
-.ytitle {
+.rhtmlHeatmap .inner {
+  position: relative;
+}
+.rhtmlHeatmap .domain {
+  fill: none;
+  stroke: none;
+}
+.rhtmlHeatmap .click-rect,
+.rhtmlHeatmap .axis-text {
+  cursor: pointer;
+}
+.rhtmlHeatmap .axis {
+  overflow: hidden;
+}
+.rhtmlHeatmap .axis line {
+  fill: none;
+  stroke: #AAA;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+.rhtmlHeatmap .brush .extent {
+  fill-opacity: 0.15;
+  stroke-width: 1px;
+}
+.rhtmlHeatmap .dendrogram {
   position: absolute;
   overflow: hidden;
-  font-family: sans-serif;
+}
+.rhtmlHeatmap .highlighting .data-cell {
+  opacity: 0.2;
+}
+.rhtmlHeatmap .highlighting .data-cell.highlight {
+  opacity: 1;
+}
+.rhtmlHeatmap .highlighting .axis-text {
+  opacity: 0.4;
+}
+.rhtmlHeatmap .highlighting .axis-text.highlight {
+  opacity: 1;
 }

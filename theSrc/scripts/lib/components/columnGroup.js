@@ -1,7 +1,6 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
-import d3 from "d3";
-
+import d3 from 'd3'
 
 class ColumnGroup extends BaseComponent {
   constructor ({parentContainer, groupName, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth}) {

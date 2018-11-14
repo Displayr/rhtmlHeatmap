@@ -4,7 +4,7 @@ import BaseComponent from './baseComponent'
 import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 
 // TODO preferred dimensions must account for maxes
-class YAxis extends BaseComponent{
+class YAxis extends BaseComponent {
   constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller}) {
     super()
     _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller})
@@ -28,8 +28,8 @@ class YAxis extends BaseComponent{
       .append('g')
       .attr('transform', (d, i) => `translate(0,${rowHeight * i})`)
 
-    cells.append('text')
-      .style('opacity', 1)
+    this.textSelection = cells.append('text')
+      .classed('axis-text', true)
       .style('font-size', this.fontSize)
       .style('fill', this.fontColor)
       .style('font-family', this.fontFamily)
@@ -48,6 +48,11 @@ class YAxis extends BaseComponent{
         this.controller.yaxisClick(i)
         d3.event.stopPropagation()
       })
+  }
+
+  updateHighlights ({ rowIndex = null, columnIndex = null } = {}) {
+    this.textSelection
+      .classed('highlight', (d, i) => (rowIndex === i))
   }
 }
 

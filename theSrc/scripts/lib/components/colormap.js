@@ -5,7 +5,7 @@ const d3Tip = require('d3-tip')
 d3Tip(d3)
 
 class Colormap extends BaseComponent {
-  constructor({
+  constructor ({
     parentContainer,
     matrix,
     yaxisTitle,
@@ -176,11 +176,10 @@ class Colormap extends BaseComponent {
           .style(brushStyle)
       })
 
-    var brushG = this.container.append('g')
+    this.container.append('g')
       .attr('class', 'brush')
       .call(brush)
       .call(brush.event)
-
   }
 
   updateZoom ({ scale, translate, extent }) {
@@ -249,8 +248,6 @@ class Colormap extends BaseComponent {
     console.log(`orig cellFontSize: ${cellFontSize}`)
     console.log(`orig ft_size: ${ft_size}`)
 
-    const rowFrom = (i) => Math.floor(i / this.counts.column)
-    const colFrom = (i) => i % this.counts.column
     selection
       .attr('x', (d, i) => x_scale(i % this.counts.column) + (box_w) / 2)
       .attr('y', (d, i) => y_scale(Math.floor(i / this.counts.column)) + (box_h) / 2)

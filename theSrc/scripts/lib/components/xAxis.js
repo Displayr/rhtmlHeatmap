@@ -50,7 +50,8 @@ class XAxis extends BaseComponent {
         d3.event.stopPropagation()
       })
 
-    cells.append('text')
+    this.textSelection = cells.append('text')
+      .classed('axis-text', true)
       .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${yOffsetCorrectionForRotation}),rotate(${this.rotation}),translate(${this.padding},0)`)
       .attr('x', 0)
       .attr('y', -this.padding)
@@ -62,6 +63,11 @@ class XAxis extends BaseComponent {
         this.controller.xaxisClick(i)
         d3.event.stopPropagation()
       })
+  }
+
+  updateHighlights ({ rowIndex = null, columnIndex = null } = {}) {
+    this.textSelection
+      .classed('highlight', (d, i) => (columnIndex === i))
   }
 }
 

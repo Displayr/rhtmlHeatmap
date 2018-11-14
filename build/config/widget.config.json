@@ -8,7 +8,7 @@
     "includeDimensionsOnWidgetDiv": true,
     "default_border": true,
     "css": [
-      "/style/heatmapcore.css"
+      "/styles/heatmapcore.css"
     ],
     "isReadySelector": "g[rhtmlHeatmap-status=ready]",
     "singleWidgetSnapshotSelector": "#widget-container"

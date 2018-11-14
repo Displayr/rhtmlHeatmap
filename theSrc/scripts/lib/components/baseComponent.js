@@ -1,5 +1,4 @@
 class BaseComponent {
-
   computePreferredDimensions () {
     return { width: 0, height: 0 }
   }

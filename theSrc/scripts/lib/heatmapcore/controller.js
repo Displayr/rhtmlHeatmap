@@ -1,4 +1,15 @@
 import _ from 'lodash'
+import { CellNames } from './layout'
+
+const {
+  LEFT_COLUMN,
+  RIGHT_COLUMN,
+  TOP_XAXIS,
+  BOTTOM_XAXIS,
+  LEFT_YAXIS,
+  RIGHT_YAXIS,
+  COLORMAP
+} = CellNames
 
 class Controller {
   constructor () {
@@ -10,24 +21,30 @@ class Controller {
     }
   }
 
+  get colormap () { return this.components[COLORMAP] }
+  get xaxis () { return this.components[TOP_XAXIS] || this.components[BOTTOM_XAXIS] }
+  get yaxis () { return this.components[LEFT_YAXIS] || this.components[RIGHT_YAXIS] }
+  get leftColumn () { return this.components[LEFT_COLUMN] }
+  get rightColumn () { return this.components[RIGHT_COLUMN] }
+
   highlight (x, y) {
-    console.log('DEPRECATED: controller.highlight')
+    console.warn('DEPRECATED: controller.highlight')
   }
 
   datapoint_hover (_) { // eslint-disable-line camelcase
-    console.log('DEPRECATED: controller.datapoint_hover')
+    console.warn('DEPRECATED: controller.datapoint_hover')
   }
 
   on (evt, callback) {
-    console.log('DEPRECATED: controller.on')
+    console.warn('DEPRECATED: controller.on')
   }
 
   transform (_) {
-    console.log('DEPRECATED: controller.tranform')
+    console.warn('DEPRECATED: controller.tranform')
   }
 
-  addColorMap (colormap) {
-    this.colormap = colormap
+  addComponents (components) {
+    this.components = components
   }
 
   addOuter (outer) {
@@ -50,7 +67,7 @@ class Controller {
     this.state.highlighted.row = parseInt(index)
   }
 
-  clearHighlightedRow (index) {
+  clearHighlightedRow () {
     this.state.highlighted.row = null
   }
 
@@ -62,7 +79,7 @@ class Controller {
     this.state.highlighted.column = parseInt(index)
   }
 
-  clearHighlightedColumn (index) {
+  clearHighlightedColumn () {
     this.state.highlighted.column = null
   }
 
@@ -74,7 +91,19 @@ class Controller {
     if (this.colormap) {
       this.colormap.updateHighlights({
         rowIndex: this.state.highlighted.row,
-        columnIndex: this.state.highlighted.column,
+        columnIndex: this.state.highlighted.column
+      })
+    }
+    if (this.xaxis) {
+      this.xaxis.updateHighlights({
+        rowIndex: this.state.highlighted.row,
+        columnIndex: this.state.highlighted.column
+      })
+    }
+    if (this.yaxis) {
+      this.yaxis.updateHighlights({
+        rowIndex: this.state.highlighted.row,
+        columnIndex: this.state.highlighted.column
       })
     }
     // TODO clean this up
@@ -124,12 +153,12 @@ class Controller {
 
   colormapDragReset ({scale, translate, extent}) {
     console.log('colormapDragReset')
-    this.colormap.updateZoom({scale, translate, extent})
+    if (this.colormap) { this.colormap.updateZoom({scale, translate, extent}) }
   }
 
   colormapDragSelection ({scale, translate, extent}) {
     console.log('colormapDragSelection')
-    this.colormap.updateZoom({scale, translate, extent})
+    if (this.colormap) { this.colormap.updateZoom({scale, translate, extent}) }
   }
 }
 

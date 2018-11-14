@@ -1,7 +1,7 @@
 import BaseComponent from './baseComponent'
 import { CellNames } from '../heatmapcore/layout'
 import d3 from 'd3'
-import _ from 'lodash';
+import _ from 'lodash'
 
 class Dendrogram extends BaseComponent {
   constructor ({parentContainer, data, padding, width, height, type, linkColor, controller, animDuration}) {

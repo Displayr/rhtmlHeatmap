@@ -12,7 +12,6 @@ import XAxis from '../components/xAxis'
 import YAxis from '../components/yAxis'
 import XTitle from '../components/xTitle'
 import YTitle from '../components/yTitle'
-import wrap_new from './wrap_new'
 import { HeatmapLayout, CellNames } from './layout'
 
 class Heatmap {
@@ -43,7 +42,9 @@ class Heatmap {
     }
 
     // rename to this.container
-    var inner = el.append('g').classed('inner', true)
+    var inner = el.append('g')
+      .classed('inner', true)
+      .style({ position: 'relative' })
     this.inner = inner
 
     this.buildLayout()
@@ -56,7 +57,6 @@ class Heatmap {
     }
 
     if (this.layout.enabled(CellNames.BOTTOM_XAXIS)) {
-
       this.components[CellNames.BOTTOM_XAXIS].draw(this.layout.getCellBounds(CellNames.BOTTOM_XAXIS))
     }
 
@@ -157,7 +157,7 @@ class Heatmap {
   wireupController () {
     _(this.components).each(component => component.setController(this.controller))
 
-    this.controller.addColorMap(this.components[CellNames.COLORMAP])
+    this.controller.addComponents(this.components)
     this.controller.addOuter(this.inner)
   }
 
