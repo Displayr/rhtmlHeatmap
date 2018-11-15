@@ -32,13 +32,13 @@ class XAxis extends BaseComponent {
     const container = this.parentContainer.append('g').classed('axis xaxis', true).attr('transform', this.buildTransform(bounds))
     const columnWidth = bounds.width / this.labels.length
 
-    this.cellsSelection = container.selectAll('g')
+    this.cellSelection = container.selectAll('g')
       .data(this.labels)
       .enter()
       .append('g')
       .attr('transform', (d, i) => `translate(${columnWidth * i},0)`)
 
-    this.rectSelection = this.cellsSelection.append('rect')
+    this.rectSelection = this.cellSelection.append('rect')
       .classed('click-rect', true)
       .attr('width', columnWidth)
       .attr('height', bounds.height)
@@ -50,7 +50,7 @@ class XAxis extends BaseComponent {
         d3.event.stopPropagation()
       })
 
-    this.textSelection = this.cellsSelection.append('text')
+    this.textSelection = this.cellSelection.append('text')
       .classed('axis-text', true)
       .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation}),translate(${this.padding},0)`)
       .attr('x', 0)
@@ -69,7 +69,7 @@ class XAxis extends BaseComponent {
     this.textSelection
       .classed('highlight', (d, i) => (column === i))
   }
-  
+
 // Example call, upon selecting row [0,0]: column [1,2]
 // {
 //   "scale": [ 2, 7 ],
@@ -105,7 +105,7 @@ class XAxis extends BaseComponent {
     const newCellWidth = this.bounds.width / inFocusExtent
     const newStartingPoint = -1 * numberCellsToLeftOutOfFocus * newCellWidth
 
-    this.cellsSelection
+    this.cellSelection
       .attr('transform', (d, i) => `translate(${newStartingPoint + newCellWidth * i},0)`)
 
     this.rectSelection
@@ -118,7 +118,7 @@ class XAxis extends BaseComponent {
 
   resetZoom () {
     const columnWidth = this.bounds.width / this.labels.length
-    this.cellsSelection
+    this.cellSelection
       .attr('transform', (d, i) => `translate(${columnWidth * i},0)`)
 
     this.rectSelection

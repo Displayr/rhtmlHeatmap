@@ -148,6 +148,7 @@ class Controller {
     console.log('colormapDragReset')
     if (this.colormap) { this.colormap.updateZoom({scale, translate, extent, zoom: false }) }
     if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent, zoom: false}) }
+    if (this.yaxis) { this.yaxis.updateZoom({scale, translate, extent, zoom: false}) }
 
     if (this.outer) {
       this.outer.classed('zoomed', false)
@@ -158,6 +159,7 @@ class Controller {
     console.log('colormapDragSelection')
     if (this.colormap) { this.colormap.updateZoom({scale, translate, extent, zoom: true}) }
     if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent, zoom: true}) }
+    if (this.yaxis) { this.yaxis.updateZoom({scale, translate, extent, zoom: true}) }
 
     if (this.outer) {
       this.outer.classed('zoomed', true)

@@ -8,6 +8,9 @@ class YAxis extends BaseComponent {
   constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller}) {
     super()
     _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller})
+
+    // to deal with superflous zoom calls at beginning of render
+    this.amIZoomed = false
   }
 
   computePreferredDimensions () {
@@ -19,26 +22,17 @@ class YAxis extends BaseComponent {
   }
 
   draw (bounds) {
+    this.bounds = bounds
     const container = this.parentContainer.append('g').classed('axis yaxis', true).attr('transform', this.buildTransform(bounds))
     const rowHeight = bounds.height / this.labels.length
 
-    const cells = container.selectAll('g')
+    this.cellSelection = container.selectAll('g')
       .data(this.labels)
       .enter()
       .append('g')
       .attr('transform', (d, i) => `translate(0,${rowHeight * i})`)
 
-    this.textSelection = cells.append('text')
-      .classed('axis-text', true)
-      .style('font-size', this.fontSize)
-      .style('fill', this.fontColor)
-      .style('font-family', this.fontFamily)
-      .attr('y', rowHeight / 2)
-      .attr('dominant-baseline', 'middle')
-      .style('text-anchor', 'start')
-      .text(d => d)
-
-    cells.append('rect')
+    this.rectSelection = this.cellSelection.append('rect')
       .classed('click-rect', true)
       .attr('width', bounds.width)
       .attr('height', rowHeight)
@@ -48,11 +42,68 @@ class YAxis extends BaseComponent {
         this.controller.yaxisClick(i)
         d3.event.stopPropagation()
       })
+
+    this.textSelection = this.cellSelection.append('text')
+      .classed('axis-text', true)
+      .style('font-size', this.fontSize)
+      .style('fill', this.fontColor)
+      .style('font-family', this.fontFamily)
+      .attr('y', rowHeight / 2)
+      .attr('dominant-baseline', 'middle')
+      .style('text-anchor', 'start')
+      .text(d => d)
   }
 
   updateHighlights ({ row = null } = {}) {
     this.textSelection
       .classed('highlight', (d, i) => (row === i))
+  }
+
+  // TODO better field for 'zoom'
+  updateZoom ({ scale, translate, extent, zoom }) {
+    if (!zoom && !this.amIZoomed) {
+      return
+    }
+    if (zoom && this.amIZoomed) {
+      return
+    }
+    this.amIZoomed = zoom
+    if (this.amIZoomed) {
+      return this.applyZoom({scale, translate, extent})
+    } else {
+      return this.resetZoom()
+    }
+  }
+
+  applyZoom ({scale, translate, extent}) {
+    const rowsInZoom = _.range(extent[0][1], extent[1][1])
+    const inFocusExtent = rowsInZoom.length
+    const numberCellsAboveOutOfFocus = extent[0][0]
+    const newCellHeight = this.bounds.height / inFocusExtent
+    const newStartingPoint = -1 * numberCellsAboveOutOfFocus * newCellHeight
+
+    this.cellSelection
+      .attr('transform', (d, i) => `translate(0,${newStartingPoint + newCellHeight * i})`)
+
+    this.rectSelection
+      .attr('height', newCellHeight)
+
+    this.textSelection
+      .attr('y', newCellHeight / 2)
+      .classed('in-zoom', (d, i) => _.includes(rowsInZoom, i))
+  }
+
+  resetZoom () {
+    const rowHeight = this.bounds.height / this.labels.length
+    this.cellSelection
+      .attr('transform', (d, i) => `translate(0,${rowHeight * i})`)
+
+    this.rectSelection
+      .attr('height', rowHeight)
+
+    this.textSelection
+      .attr('y', rowHeight / 2)
+      .classed('in-zoom', false)
   }
 }
 
