@@ -91,3 +91,9 @@ body.theme-dark {
 .rhtmlHeatmap .column-highlighting .xaxis .axis-text.highlight {
   opacity: 1;
 }
+.rhtmlHeatmap .zoomed .xaxis .axis-text {
+  opacity: 0;
+}
+.rhtmlHeatmap .zoomed .xaxis .axis-text.in-zoom {
+  opacity: 1;
+}

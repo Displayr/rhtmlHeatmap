@@ -10,6 +10,9 @@ class XAxis extends BaseComponent {
   constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation = -45, controller}) {
     super()
     _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation, controller})
+
+    // to deal with superflous zoom calls at beginning of render
+    this.amIZoomed = false
   }
 
   computePreferredDimensions () {
@@ -25,20 +28,17 @@ class XAxis extends BaseComponent {
   }
 
   draw (bounds) {
+    this.bounds = bounds
     const container = this.parentContainer.append('g').classed('axis xaxis', true).attr('transform', this.buildTransform(bounds))
-
-    const yOffsetCorrectionForRotation = (this.rotatingUp())
-      ? bounds.height - this.padding
-      : this.padding * 2 // TODO this is hacky
     const columnWidth = bounds.width / this.labels.length
 
-    const cells = container.selectAll('g')
+    this.cellsSelection = container.selectAll('g')
       .data(this.labels)
       .enter()
       .append('g')
       .attr('transform', (d, i) => `translate(${columnWidth * i},0)`)
 
-    cells.append('rect')
+    this.rectSelection = this.cellsSelection.append('rect')
       .classed('click-rect', true)
       .attr('width', columnWidth)
       .attr('height', bounds.height)
@@ -50,9 +50,9 @@ class XAxis extends BaseComponent {
         d3.event.stopPropagation()
       })
 
-    this.textSelection = cells.append('text')
+    this.textSelection = this.cellsSelection.append('text')
       .classed('axis-text', true)
-      .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${yOffsetCorrectionForRotation}),rotate(${this.rotation}),translate(${this.padding},0)`)
+      .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation}),translate(${this.padding},0)`)
       .attr('x', 0)
       .attr('y', -this.padding)
       .text(d => d)
@@ -69,10 +69,64 @@ class XAxis extends BaseComponent {
     this.textSelection
       .classed('highlight', (d, i) => (column === i))
   }
+  
+// Example call, upon selecting row [0,0]: column [1,2]
+// {
+//   "scale": [ 2, 7 ],
+//   "translate": [ -450.1803455352783, 0 ],
+//   "extent": [ [ 1, 0 ], [ 3, 1 ] ]
+// }
+  // TODO better field for 'zoom'
+  updateZoom ({ scale, translate, extent, zoom }) {
+    if (!zoom && !this.amIZoomed) {
+      return
+    }
+    if (zoom && this.amIZoomed) {
+      return
+    }
+    this.amIZoomed = zoom
+    if (this.amIZoomed) {
+      return this.applyZoom({scale, translate, extent})
+    } else {
+      return this.resetZoom()
+    }
+  }
 
-  updateZoom ({ scale, translate, extent }) {
-    console.log('{ scale, translate, extent }')
-    console.log(JSON.stringify({ scale, translate, extent }, {}, 2))
+  yOffsetCorrectionForRotation () {
+    return (this.rotatingUp())
+      ? this.bounds.height - this.padding
+      : this.padding * 2 // TODO this is hacky
+  }
+
+  applyZoom ({scale, translate, extent}) {
+    const columnsInZoom = _.range(extent[0][0], extent[1][0])
+    const inFocusExtent = columnsInZoom.length
+    const numberCellsToLeftOutOfFocus = extent[0][0]
+    const newCellWidth = this.bounds.width / inFocusExtent
+    const newStartingPoint = -1 * numberCellsToLeftOutOfFocus * newCellWidth
+
+    this.cellsSelection
+      .attr('transform', (d, i) => `translate(${newStartingPoint + newCellWidth * i},0)`)
+
+    this.rectSelection
+      .attr('width', newCellWidth)
+
+    this.textSelection
+      .attr('transform', `translate(${newCellWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation}),translate(${this.padding},0)`)
+      .classed('in-zoom', (d, i) => _.includes(columnsInZoom, i))
+  }
+
+  resetZoom () {
+    const columnWidth = this.bounds.width / this.labels.length
+    this.cellsSelection
+      .attr('transform', (d, i) => `translate(${columnWidth * i},0)`)
+
+    this.rectSelection
+      .attr('width', columnWidth)
+
+    this.textSelection
+      .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation}),translate(${this.padding},0)`)
+      .classed('in-zoom', false)
   }
 }
 
