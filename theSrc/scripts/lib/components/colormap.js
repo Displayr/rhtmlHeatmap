@@ -396,7 +396,7 @@ function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extr
       </tr>
       <tr>
         <th style="${commonStyleWithAlign}">Value</th>
-        <td style="${commonStyle}>${htmlEscape(d.label)}</td>
+        <td style="${commonStyle}">${htmlEscape(d.label)}</td>
       </tr>
       ${extraInfoHtml}
     </table>`
