@@ -59,7 +59,7 @@ class Legend extends BaseComponent {
 
     const totalWidth = this.leftSpace +
       this.barWidth +
-      this.xPadding * 2 +
+      this.xPadding +
       d3.max(text_widths)
 
     dummySvg.remove()
@@ -67,21 +67,21 @@ class Legend extends BaseComponent {
   }
 
   draw (bounds) {
-    const boundsPaddingX = 4 + this.leftSpace
     const boundsPaddingY = 20
     const rectWidth = this.barWidth
     const rectHeight = (bounds.height - boundsPaddingY * 2) / this.colors.length
 
     const container = this.parentContainer.append('g').classed('legend', true).attr('transform', this.buildTransform(bounds))
-    const legendAxisG = container.append('g').attr('transform', `translate(${boundsPaddingX},${boundsPaddingY})`)
+    const legendBars = container.append('g').classed('legendBars', true).attr('transform', `translate(${this.leftSpace},${boundsPaddingY})`)
+    const legendLabels = container.append('g').classed('legendLabels', true).attr('transform', `translate(${this.leftSpace + rectWidth + this.xPadding},${boundsPaddingY})`)
 
-    legendAxisG.selectAll('rect')
+    legendBars.selectAll('rect')
       .data(this.colors)
       .enter()
       .append('rect')
       .attr('width', rectWidth)
       .attr('height', rectHeight)
-      .attr('transform', (d, i) => `translate(${boundsPaddingX},${rectHeight * i + boundsPaddingY})`)
+      .attr('transform', (d, i) => `translate(0,${rectHeight * i})`)
       .style('fill', (d) => d)
       .style('stroke', (d) => d)
       .style('stroke-width', '1px')
@@ -98,8 +98,9 @@ class Legend extends BaseComponent {
       .tickSize(0)
       .tickFormat(this.legend_format)
 
-    legendAxisG.call(legendAxis)
-    legendAxisG.selectAll('text')
+    legendLabels.call(legendAxis)
+    legendLabels.selectAll('text')
+      .attr('x', 0)
       .style('font-size', this.fontSize + 'px')
       .style('font-family', this.fontFamily)
       .style('fill', this.fontColor)
