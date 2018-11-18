@@ -65,14 +65,9 @@ class Colormap extends BaseComponent {
       this.container.style('shape-rendering', 'crispEdges')
     }
 
-    var cols = this.matrix.dim[1]
-    var rows = this.matrix.dim[0]
-    this.counts = {
-      row: this.matrix.dim[0],
-      column: this.matrix.dim[1]
-    }
-
-    var merged = this.matrix.merged
+    const cols = this.counts.column
+    const rows = this.counts.row
+    const merged = this.matrix.merged
 
     // TODO must finish rename
     this.scales = {
@@ -176,10 +171,103 @@ class Colormap extends BaseComponent {
           .style(brushStyle)
       })
 
-    this.container.append('g')
+    this.brushSelection = this.container.append('g')
       .attr('class', 'brush')
       .call(brush)
       .call(brush.event)
+
+    const tipContentGenerator = makeTipContentGenerator({
+      rowNames: this.matrix.rows,
+      columnNames: this.matrix.cols,
+      numCols: this.matrix.cols.length,
+      yaxisTitle: this.yaxisTitle,
+      xaxisTitle: this.xaxisTitle,
+      extraTooltipInfo: this.extraTooltipInfo,
+      fontSize: this.tipFontSize,
+      fontFamily: this.tipFontFamily
+    })
+
+    this.tip = d3Tip()
+      .attr('class', 'rhtmlHeatmap-tip')
+      .html(tipContentGenerator)
+      .direction('se')
+      .style('position', 'fixed')
+
+    this.cellSelection.call(this.tip)
+
+    this.brushSelection.select('rect.background')
+      .on('mouseenter', () => {
+        console.log(`mouseenter`)
+        this.showToolTip()
+      })
+      .on('mousemove', () => {
+        console.log(`mousemove`)
+        this.showToolTip()
+      })
+      .on('mouseleave', () => {
+        this.tip.hide()
+      })
+  }
+
+  showToolTip () {
+    var e = d3.event
+    var offsetX = d3.event.offsetX
+    var offsetY = d3.event.offsetY
+    if (typeof (offsetX) === 'undefined') {
+      // Firefox 38 and earlier
+      var target = e.target || e.srcElement
+      var rect = target.getBoundingClientRect()
+      offsetX = e.clientX - rect.left
+      offsetY = e.clientY - rect.top
+    }
+
+    var col = Math.floor(this.scales.x.invert(offsetX))
+    var row = Math.floor(this.scales.y.invert(offsetY))
+    if (this.matrix.merged[row * this.counts.column + col].hide) {
+      return
+    }
+    var label = this.matrix.merged[row * this.counts.column + col].label
+    var this_tip = this.tip.show({col: col, row: row, label: label}).style({
+      top: d3.event.clientY + 10 + 'px',
+      left: d3.event.clientX + 10 + 'px',
+      opacity: 0.9
+    })
+
+    // height of the tip
+    var tipHeight = parseFloat(this_tip.style('height'))
+    // width of the tip
+    var tipWidth = parseFloat(this_tip.style('width'))
+    var mouseTop = d3.event.clientY
+    var mouseLeft = d3.event.clientX
+
+    var tipLeft = parseFloat(this_tip.style('left'))
+    var tipTop = parseFloat(this_tip.style('top'))
+
+    if (tipLeft + tipWidth > this.bounds.width) {
+      // right edge out of bound
+      if (mouseLeft - tipWidth - 10 < 0) {
+        // left edge out of bound if adjusted
+        if (Math.abs(mouseLeft - tipWidth - 10) > Math.abs(this.bounds.width - tipLeft - tipWidth)) {
+          this_tip.style('left', tipLeft + 'px')
+        } else {
+          this_tip.style('left', mouseLeft - tipWidth - 10 + 'px')
+        }
+      } else {
+        this_tip.style('left', mouseLeft - tipWidth - 10 + 'px')
+      }
+    }
+
+    if (tipTop + tipHeight > this.bounds.height) {
+      if (mouseTop - tipHeight - 10 < 0) {
+        if (Math.abs(mouseTop - tipHeight - 10) > Math.abs(this.bounds.height - tipTop - tipHeight)) {
+          this_tip.style('top', tipTop + 'px')
+        } else {
+          this_tip.style('top', mouseTop - tipHeight - 10 + 'px')
+        }
+      } else {
+        this_tip.style('top', mouseTop - tipHeight - 10 + 'px')
+      }
+    }
   }
 
   updateZoom ({ scale, translate, extent }) {
@@ -188,8 +276,6 @@ class Colormap extends BaseComponent {
     this.sizeCellSelection(this.cellSelection.transition().duration(this.animDuration).ease('linear'))
 
     if (this.shownoteInCell) {
-      // this.placeTextSelection(this.cellNoteSelection, this.cellFontSize, this.cellFontFamily)
-
       this.scales.x.range([translate[0], this.bounds.width * scale[0] + translate[0]])
       this.scales.y.range([translate[1], this.bounds.height * scale[1] + translate[1]])
 
@@ -210,7 +296,7 @@ class Colormap extends BaseComponent {
 
   updateHighlights ({ row = null, column = null } = {}) {
     // TODO clean up all this recalculation stuff
-    var cols = this.matrix.dim[1]
+    var cols = this.counts.column
     const rowFrom = (i) => Math.floor(i / cols)
     const colFrom = (i) => i % cols
     this.container.selectAll('rect')
@@ -274,3 +360,45 @@ class Colormap extends BaseComponent {
 }
 
 module.exports = Colormap
+
+function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extraTooltipInfo, yaxisTitle, xaxisTitle, fontSize, fontFamily }) {
+
+  function htmlEscape (str) {
+    return (str + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  }
+
+  const commonStyleWithAlign = `text-align:right;font-size:${fontSize}px;font-family:${fontFamily};color:white`
+  const commonStyle = `font-size:${fontSize}px;font-family:${fontFamily};color:white`
+
+  return (d, i) => {
+    var rowTitle = yaxisTitle || 'Row'
+    var colTitle = xaxisTitle || 'Column'
+    let extraInfoHtml = ''
+//     if (extraTooltipInfo) {
+//       extraInfoHtml = _.map(extraTooltipInfo, (value, key) => {
+//         return `
+// <tr>
+//   <th style="${commonStyleWithAlign}">${key}</th>
+//   <td style="${commonStyle}">${htmlEscape(value[d.row * numCols + d.col])}</td>
+// </tr>`
+//       })
+//     }
+
+
+    return `<table class="rhtmlHeatmap-tip-table">
+      <tr>
+        <th style="${commonStyleWithAlign}">${rowTitle}</th>
+        <td style="${commonStyle}">${htmlEscape(rowNames[d.row])}</td>
+      </tr>
+      <tr>
+        <th style="${commonStyleWithAlign}">${colTitle}</th>
+        <td style="${commonStyle}">${htmlEscape(columnNames[d.col])}</td>
+      </tr>
+      <tr>
+        <th style="${commonStyleWithAlign}">Value</th>
+        <td style="${commonStyle}>${htmlEscape(d.label)}</td>
+      </tr>
+      ${extraInfoHtml}
+    </table>`
+  }
+}
