@@ -1,6 +1,7 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
 import d3 from 'd3'
+import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils';
 
 class ColumnGroup extends BaseComponent {
   constructor ({parentContainer, groupName, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth}) {
@@ -14,26 +15,16 @@ class ColumnGroup extends BaseComponent {
 
   computePreferredDimensions () {
     this.columnWidths = this.labelMatrix.map(columnLabels => {
-      const textWidths = []
-
-      const dummy_g = this.parentContainer.append('g')
-      dummy_g
-        .selectAll('.dummy_column')
-        .data(columnLabels)
-        .enter()
-        .append('text')
-        .text(function (d) { return d })
-        .style('font-family', this.fontFamily)
-        .style('font-size', this.fontSize)
-        .each(function (d, i) { textWidths.push(this.getComputedTextLength()) })
-
-      dummy_g.remove()
-      return _.min([this.maxSingleColumnWidth, _.max(textWidths)])
+      const maxTextWidth = _(columnLabels)
+        .map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily))
+        .map('width')
+        .max()
+      return _.min([this.maxSingleColumnWidth, maxTextWidth])
     })
-    console.log('this.columnWidths')
-    console.log(JSON.stringify(this.columnWidths, {}, 2))
-
-    return { width: _.sum(this.columnWidths), height: 0 } // accept what height we are given
+    return {
+      width: _.sum(this.columnWidths) + (2 * this.padding) * this.labelMatrix.length - 1,
+      height: 0 // accept what height we are given
+    }
   }
 
   draw (columnGroupBounds) {
@@ -46,7 +37,7 @@ class ColumnGroup extends BaseComponent {
         width: individualWidth,
         height: columnGroupBounds.height
       }
-      cumulativeWidth += individualWidth
+      cumulativeWidth += individualWidth + (2 * this.padding)
 
       const columnLabels = this.labelMatrix[columnIndex]
       const rowHeight = columnBounds.height / columnLabels.length
@@ -69,6 +60,12 @@ class ColumnGroup extends BaseComponent {
         r: 'end'
       }
 
+      const xOffset = {
+        l: 0,
+        c: columnBounds.width / 2,
+        r: columnBounds.width
+      }
+
       const cells = columnContainer.selectAll('g')
         .data(columnLabels)
         .enter()
@@ -81,6 +78,7 @@ class ColumnGroup extends BaseComponent {
         .style('fill', this.fontColor)
         .style('font-family', this.fontFamily)
         .attr('y', rowHeight / 2)
+        .attr('x', xOffset[this.alignments[columnIndex]] || xOffset['l'])
         .attr('dominant-baseline', 'middle')
         .style('text-anchor', textAnchor[this.alignments[columnIndex]] || textAnchor['l'])
         .text(d => d)

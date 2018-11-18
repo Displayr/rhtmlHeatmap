@@ -46,7 +46,6 @@ class ColumnSubtitles extends BaseComponent {
       .append('text')
       .attr('transform', `rotate(${this.rotation}),translate(${this.padding},0)`)
       .attr('x', 0)
-      .attr('y', -this.padding)
       .text(d => d)
       .style('text-anchor', 'start')
       .style('font-family', this.fontFamily)
