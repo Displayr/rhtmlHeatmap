@@ -2,12 +2,13 @@ import _ from 'lodash'
 import d3 from 'd3'
 import BaseComponent from './baseComponent'
 import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
+import { CellNames } from '../heatmapcore/layout'
 
 // TODO preferred dimensions must account for maxes
 class YAxis extends BaseComponent {
-  constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller}) {
+  constructor ({parentContainer, placement, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller}) {
     super()
-    _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller})
+    _.assign(this, {parentContainer, placement, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller})
 
     // to deal with superflous zoom calls at beginning of render
     this.amIZoomed = false
@@ -48,10 +49,11 @@ class YAxis extends BaseComponent {
       .style('font-size', this.fontSize)
       .style('fill', this.fontColor)
       .style('font-family', this.fontFamily)
-      .attr('x', this.padding)
+      .attr('width', bounds.width)
+      .attr('x', (this.placement === CellNames.LEFT_YAXIS) ? bounds.width - this.padding : this.padding)
       .attr('y', rowHeight / 2)
       .attr('dominant-baseline', 'middle')
-      .style('text-anchor', 'start')
+      .style('text-anchor', (this.placement === CellNames.LEFT_YAXIS) ? 'end' : 'start')
       .text(d => d)
   }
 

@@ -195,6 +195,7 @@ class Heatmap {
 
       this.components[yaxisCellName] = new YAxis({
         parentContainer: inner,
+        placement: yaxisCellName,
         labels: this.matrix.rows,
         padding: this.options.axis_padding,
         fontSize: options.yaxis_font_size,
