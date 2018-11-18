@@ -359,8 +359,6 @@ class Colormap extends BaseComponent {
   }
 }
 
-module.exports = Colormap
-
 function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extraTooltipInfo, yaxisTitle, xaxisTitle, fontSize, fontFamily }) {
 
   function htmlEscape (str) {
@@ -402,3 +400,5 @@ function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extr
     </table>`
   }
 }
+
+module.exports = Colormap

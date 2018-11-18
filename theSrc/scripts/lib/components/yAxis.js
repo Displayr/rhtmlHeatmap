@@ -55,6 +55,10 @@ class YAxis extends BaseComponent {
       .attr('dominant-baseline', 'middle')
       .style('text-anchor', (this.placement === CellNames.LEFT_YAXIS) ? 'end' : 'start')
       .text(d => d)
+      .on('click', (d, i) => {
+        this.controller.yaxisClick(i)
+        d3.event.stopPropagation()
+      })
   }
 
   updateHighlights ({ row = null } = {}) {
@@ -81,7 +85,7 @@ class YAxis extends BaseComponent {
   applyZoom ({scale, translate, extent}) {
     const rowsInZoom = _.range(extent[0][1], extent[1][1])
     const inFocusExtent = rowsInZoom.length
-    const numberCellsAboveOutOfFocus = extent[0][0]
+    const numberCellsAboveOutOfFocus = extent[0][1]
     const newCellHeight = this.bounds.height / inFocusExtent
     const newStartingPoint = -1 * numberCellsAboveOutOfFocus * newCellHeight
 
