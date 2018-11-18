@@ -48,6 +48,7 @@ class YAxis extends BaseComponent {
       .style('font-size', this.fontSize)
       .style('fill', this.fontColor)
       .style('font-family', this.fontFamily)
+      .attr('x', this.padding)
       .attr('y', rowHeight / 2)
       .attr('dominant-baseline', 'middle')
       .style('text-anchor', 'start')
