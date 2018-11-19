@@ -146,7 +146,7 @@ class Controller {
 
   colormapDragReset ({scale, translate, extent}) {
     console.log('colormapDragReset')
-    if (this.colormap) { this.colormap.updateZoom({scale, translate, extent, zoom: false }) }
+    if (this.colormap) { this.colormap.updateZoom({scale, translate, extent, zoom: false}) }
     if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent, zoom: false}) }
     if (this.yaxis) { this.yaxis.updateZoom({scale, translate, extent, zoom: false}) }
 

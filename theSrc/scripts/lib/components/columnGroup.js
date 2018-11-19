@@ -1,7 +1,7 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
 import d3 from 'd3'
-import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils';
+import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 
 class ColumnGroup extends BaseComponent {
   constructor ({parentContainer, groupName, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth}) {

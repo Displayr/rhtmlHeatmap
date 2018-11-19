@@ -360,7 +360,6 @@ class Colormap extends BaseComponent {
 }
 
 function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extraTooltipInfo, yaxisTitle, xaxisTitle, fontSize, fontFamily }) {
-
   function htmlEscape (str) {
     return (str + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   }
@@ -381,7 +380,6 @@ function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extr
 // </tr>`
 //       })
 //     }
-
 
     return `<table class="rhtmlHeatmap-tip-table">
       <tr>
