@@ -7,9 +7,9 @@ const DEBUG = false
 
 // TODO preferred dimensions must account for maxes
 class XAxis extends BaseComponent {
-  constructor ({parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation = -45, controller}) {
+  constructor ({parentContainer, labels, fontSize, fontFamily, maxWidth, maxHeight, rotation = -45, controller}) {
     super()
-    _.assign(this, {parentContainer, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, rotation, controller})
+    _.assign(this, {parentContainer, labels, fontSize, fontFamily, maxWidth, maxHeight, rotation, controller})
 
     // to deal with superflous zoom calls at beginning of render
     this.amIZoomed = false
@@ -19,7 +19,7 @@ class XAxis extends BaseComponent {
     const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily, this.rotation))
     return {
       width: 0, // NB xaxis width takes what is given, and does not force width on the chart
-      height: _(labelDimensions).map('height').max() + this.padding
+      height: _(labelDimensions).map('height').max()
     }
   }
 
@@ -52,9 +52,8 @@ class XAxis extends BaseComponent {
 
     this.textSelection = this.cellSelection.append('text')
       .classed('axis-text', true)
-      .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation}),translate(${this.padding},0)`)
+      .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation})`)
       .attr('x', 0)
-      .attr('y', -this.padding)
       .text(d => d)
       .style('text-anchor', 'start')
       .style('font-family', this.fontFamily)
@@ -94,8 +93,8 @@ class XAxis extends BaseComponent {
 
   yOffsetCorrectionForRotation () {
     return (this.rotatingUp())
-      ? this.bounds.height - this.padding
-      : this.padding * 2 // TODO this is hacky
+      ? this.bounds.height
+      : 12 // TODO this is hacky
   }
 
   applyZoom ({scale, translate, extent}) {
@@ -112,7 +111,7 @@ class XAxis extends BaseComponent {
       .attr('width', newCellWidth)
 
     this.textSelection
-      .attr('transform', `translate(${newCellWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation}),translate(${this.padding},0)`)
+      .attr('transform', `translate(${newCellWidth / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation})`)
       .classed('in-zoom', (d, i) => _.includes(columnsInZoom, i))
   }
 
@@ -125,7 +124,7 @@ class XAxis extends BaseComponent {
       .attr('width', columnWidth)
 
     this.textSelection
-      .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation}),translate(${this.padding},0)`)
+      .attr('transform', `translate(${columnWidth / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation})`)
       .classed('in-zoom', false)
   }
 }

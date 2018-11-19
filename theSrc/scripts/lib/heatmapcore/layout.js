@@ -43,7 +43,7 @@ const HeatmapRows = [
 ]
 
 class HeatmapLayout {
-  constructor (canvasWidth, canvasHeight) {
+  constructor (canvasWidth, canvasHeight, padding = 0) {
     this.cellInfo = _.transform(_.keys(cells), (result, key) => {
       result[key] = {
         name: key,
@@ -57,6 +57,8 @@ class HeatmapLayout {
 
     this.canvasWidth = canvasWidth
     this.canvasHeight = canvasHeight
+    this.padding = padding
+    this.outerPadding = 2
   }
 
   enable (cell) {
@@ -148,7 +150,7 @@ class HeatmapLayout {
     const otherColumns = _.filter(HeatmapColumns, (column) => column.name !== columnName)
     const allocatedWidth = _(otherColumns)
       .map(otherColumn => this.getColumnWidth(otherColumn.name))
-      .sum()
+      .sum() + (otherColumns.length - 1) * this.padding + 2 * this.outerPadding
     return this.canvasWidth - allocatedWidth
   }
 
@@ -156,7 +158,7 @@ class HeatmapLayout {
     const otherRows = _.filter(HeatmapRows, (row) => row.name !== rowName)
     const allocatedHeight = _(otherRows)
       .map(otherRow => this.getRowHeight(otherRow.name))
-      .sum()
+      .sum() + (otherRows.length - 1) * this.padding + 2 * this.outerPadding
     return this.canvasHeight - allocatedHeight
   }
 
@@ -180,17 +182,15 @@ class HeatmapLayout {
     this.throwIfNotEnabled(cellName)
     const rowName = this.findRowFromCell(cellName)
     const columnName = this.findColumnFromCell(cellName)
-    const rowsAbove = this.getRowsBeforeRow(rowName)
-    const columnsBefore = this.getColumnsBeforeColumn(columnName)
+    const rowsAbove = this.getEnabledRowsBeforeRow(rowName)
+    const columnsBefore = this.getEnabledColumnsBeforeColumn(columnName)
 
-    let left = _(columnsBefore)
-      .filter(columnName => this.columnEnabled(columnName))
-      .map(columnName => this.getColumnWidth(columnName))
+    let left = this.outerPadding + _(columnsBefore)
+      .map(columnName => this.getColumnWidth(columnName) + this.padding)
       .sum()
 
-    let top = _(rowsAbove)
-      .filter(rowName => this.rowEnabled(rowName))
-      .map(rowName => this.getRowHeight(rowName))
+    let top = this.outerPadding + _(rowsAbove)
+      .map(rowName => this.getRowHeight(rowName) + this.padding)
       .sum()
 
     const width = this.getColumnWidth(columnName)
@@ -209,7 +209,7 @@ class HeatmapLayout {
     throw new Error(`Invalid cell name ${cellName} : not in any columns`)
   }
 
-  getRowsBeforeRow (rowName) {
+  getEnabledRowsBeforeRow (rowName) {
     let foundRowName = false
     return _(HeatmapRows)
       .filter(({name}) => {
@@ -217,10 +217,11 @@ class HeatmapLayout {
         return !foundRowName
       })
       .map('name')
+      .filter(rowName => this.rowEnabled(rowName))
       .value()
   }
 
-  getColumnsBeforeColumn (columnName) {
+  getEnabledColumnsBeforeColumn (columnName) {
     let foundColumnName = false
     return _(HeatmapColumns)
       .filter(({name}) => {
@@ -228,6 +229,7 @@ class HeatmapLayout {
         return !foundColumnName
       })
       .map('name')
+      .filter(columnName => this.columnEnabled(columnName))
       .value()
   }
 

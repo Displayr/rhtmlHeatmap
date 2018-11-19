@@ -4,9 +4,9 @@ import d3 from 'd3'
 import _ from 'lodash'
 
 class Dendrogram extends BaseComponent {
-  constructor ({parentContainer, data, padding, width, height, type, linkColor, controller, animDuration}) {
+  constructor ({parentContainer, data, width, height, type, linkColor, controller, animDuration}) {
     super()
-    _.assign(this, {parentContainer, data, padding, width, height, type, linkColor, controller, animDuration})
+    _.assign(this, {parentContainer, data, width, height, type, linkColor, controller, animDuration})
   }
 
   computePreferredDimensions () {
@@ -16,7 +16,7 @@ class Dendrogram extends BaseComponent {
   draw (bounds) {
     const container = this.parentContainer.append('g').classed('dendrogram', true).attr('transform', this.buildTransform(bounds))
 
-    const { data, padding, linkColor, controller, animDuration } = this
+    const { data, linkColor, controller, animDuration } = this
     const { width, height } = bounds
 
     const rotated = (this.type === CellNames.TOP_DENDROGRAM)
@@ -24,7 +24,7 @@ class Dendrogram extends BaseComponent {
 
     const x = d3.scale.linear()
       .domain([data.height, 0])
-      .range([topLineWidth / 2, width - padding])
+      .range([topLineWidth / 2, width])
     const y = d3.scale.linear()
       .domain([0, height])
       .range([0, height])
@@ -36,7 +36,7 @@ class Dendrogram extends BaseComponent {
     let transform = 'translate(1,0)'
     if (rotated) {
       // Flip dendrogram vertically
-      x.range([topLineWidth / 2, -height + padding + 2])
+      x.range([topLineWidth / 2, -height + 2])
       // Rotate
       transform = 'rotate(-90) translate(-2,0)'
     }

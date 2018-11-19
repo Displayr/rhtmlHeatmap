@@ -17,7 +17,7 @@ class ColumnSubtitles extends BaseComponent {
     const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily, this.rotation))
     return {
       width: 0, // NB accept column width
-      height: _(labelDimensions).map('height').max() + this.padding
+      height: _(labelDimensions).map('height').max()
     }
   }
 
@@ -35,16 +35,16 @@ class ColumnSubtitles extends BaseComponent {
       .enter()
 
     const yOffsetCorrectionForRotation = (this.rotatingUp())
-      ? bounds.height - this.padding
-      : this.padding * 2 // TODO this is hacky
+      ? bounds.height
+      : 12 // TODO this is hacky
 
     container.append('g')
       .attr('transform', (d, i) => {
-        const previousColumnsWidth = _(this.columnWidths.slice(0, i)).sum()
-        return `translate(${previousColumnsWidth + this.columnWidths[i] / 2 - this.fontSize / 2},${yOffsetCorrectionForRotation})`
+        const previousColumnsWidth = _(this.columnWidths.slice(0, i)).sum() + i * this.padding
+        return `translate(${previousColumnsWidth + this.columnWidths[i] / 2},${yOffsetCorrectionForRotation})`
       })
       .append('text')
-      .attr('transform', `rotate(${this.rotation}),translate(${this.padding},0)`)
+      .attr('transform', `rotate(${this.rotation})`)
       .attr('x', 0)
       .text(d => d)
       .style('text-anchor', 'start')

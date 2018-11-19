@@ -22,7 +22,7 @@ class ColumnGroup extends BaseComponent {
       return _.min([this.maxSingleColumnWidth, maxTextWidth])
     })
     return {
-      width: _.sum(this.columnWidths) + (2 * this.padding) * this.labelMatrix.length - 1,
+      width: _.sum(this.columnWidths) + this.padding * this.labelMatrix.length - 1,
       height: 0 // accept what height we are given
     }
   }
@@ -37,7 +37,7 @@ class ColumnGroup extends BaseComponent {
         width: individualWidth,
         height: columnGroupBounds.height
       }
-      cumulativeWidth += individualWidth + (2 * this.padding)
+      cumulativeWidth += individualWidth + this.padding
 
       const columnLabels = this.labelMatrix[columnIndex]
       const rowHeight = columnBounds.height / columnLabels.length
@@ -46,13 +46,6 @@ class ColumnGroup extends BaseComponent {
         .classed(`column-${columnIndex}`, true)
         .classed(this.groupName, true)
         .attr('transform', this.buildTransform(columnBounds))
-
-      // TODO handle l,c,r alignment
-      // const axisOffsets = {
-      //   l: 'translate(0,0)',
-      //   c: 'translate(' + columnBounds.width / 2 + ',0)',
-      //   r: 'translate(' + (columnBounds.width - this.padding) + ',0)'
-      // }
 
       const textAnchor = {
         l: 'start',

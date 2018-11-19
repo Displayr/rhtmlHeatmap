@@ -3,11 +3,10 @@ import _ from 'lodash'
 import wrap_new from '../heatmapcore/wrap_new'
 
 // TODO preferred dimensions must account for maxes
-// TODO combine with other title classes
 class XAxis extends BaseComponent {
-  constructor ({parentContainer, text, name, padding, fontSize, fontFamily, fontColor, bold, maxWidth}) {
+  constructor ({parentContainer, text, name, fontSize, fontFamily, fontColor, bold, maxWidth}) {
     super()
-    _.assign(this, {parentContainer, text, name, padding, fontSize, fontFamily, fontColor, bold, maxWidth})
+    _.assign(this, {parentContainer, text, name, fontSize, fontFamily, fontColor, bold, maxWidth})
   }
 
   computePreferredDimensions () {
@@ -29,7 +28,7 @@ class XAxis extends BaseComponent {
 
     var bbox = text_el.node().getBBox()
     dummySvg.remove()
-    return {width: bbox.width + 2 * this.padding, height: bbox.height}
+    return {width: bbox.width, height: bbox.height}
   }
 
   draw (bounds) {

@@ -162,7 +162,7 @@ class Heatmap {
   }
 
   buildLayout () {
-    this.layout = new HeatmapLayout(this.options.width, this.options.height)
+    this.layout = new HeatmapLayout(this.options.width, this.options.height, this.options.padding)
     const {options, inner} = this
 
     if (!options.xaxis_hidden) {
@@ -174,7 +174,6 @@ class Heatmap {
       this.components[xaxisCellName] = new XAxis({
         parentContainer: inner,
         labels: this.matrix.cols,
-        padding: this.options.axis_padding,
         fontSize: options.xaxis_font_size,
         fontFamily: options.xaxis_font_family,
         maxWidth: 0.33 * options.width, // TODO make configurable
@@ -197,7 +196,6 @@ class Heatmap {
         parentContainer: inner,
         placement: yaxisCellName,
         labels: this.matrix.rows,
-        padding: this.options.axis_padding,
         fontSize: options.yaxis_font_size,
         fontFamily: options.yaxis_font_family,
         maxWidth: 0.33 * options.width, // TODO make configurable
@@ -275,8 +273,7 @@ class Heatmap {
         fontSize: options.left_columns_title_font_size,
         fontColor: options.left_columns_title_font_color,
         maxWidth: options.width * 0.33, // TODO needs fixin
-        bold: options.left_columns_title_bold,
-        padding: options.axis_padding
+        bold: options.left_columns_title_bold
       })
 
       const dimensions = this.components[CellNames.LEFT_COLUMN_TITLE].computePreferredDimensions()
@@ -326,8 +323,7 @@ class Heatmap {
         fontSize: options.right_columns_title_font_size,
         fontColor: options.right_columns_title_font_color,
         maxWidth: options.width * 0.33, // TODO needs fixin
-        bold: options.right_columns_title_bold,
-        padding: options.axis_padding
+        bold: options.right_columns_title_bold
       })
 
       const dimensions = this.components[CellNames.RIGHT_COLUMN_TITLE].computePreferredDimensions()
@@ -356,7 +352,6 @@ class Heatmap {
         parentContainer: inner,
         data: this.dendrogramData.columns,
         type: CellNames.TOP_DENDROGRAM,
-        padding: this.options.axis_padding,
         height: options.xclust_height || options.height * 0.12,
         linkColor: this.options.link_color,
         animDuration: this.options.anim_duration
@@ -372,7 +367,6 @@ class Heatmap {
         parentContainer: inner,
         data: this.dendrogramData.rows,
         type: CellNames.LEFT_DENDROGRAM,
-        padding: this.options.axis_padding,
         width: options.yclust_width || options.width * 0.12,
         linkColor: this.options.link_color,
         animDuration: this.options.anim_duration
@@ -424,8 +418,8 @@ class Heatmap {
   }
 
   normalizeMatrix (matrix) {
-    if (!matrix.cols.length) { matrix.cols = [matrix.cols] }
-    if (!matrix.rows.length) { matrix.rows = [matrix.rows] }
+    if (!_.isArray(matrix.cols)) { matrix.cols = [matrix.cols] }
+    if (!_.isArray(matrix.rows)) { matrix.rows = [matrix.rows] }
     return matrix
   }
 

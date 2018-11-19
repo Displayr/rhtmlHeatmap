@@ -6,9 +6,9 @@ import { CellNames } from '../heatmapcore/layout'
 
 // TODO preferred dimensions must account for maxes
 class YAxis extends BaseComponent {
-  constructor ({parentContainer, placement, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller}) {
+  constructor ({parentContainer, placement, labels, fontSize, fontFamily, maxWidth, maxHeight, controller}) {
     super()
-    _.assign(this, {parentContainer, placement, labels, fontSize, fontFamily, padding, maxWidth, maxHeight, controller})
+    _.assign(this, {parentContainer, placement, labels, fontSize, fontFamily, maxWidth, maxHeight, controller})
 
     // to deal with superflous zoom calls at beginning of render
     this.amIZoomed = false
@@ -17,7 +17,7 @@ class YAxis extends BaseComponent {
   computePreferredDimensions () {
     const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily))
     return {
-      width: _(labelDimensions).map('width').max() + this.padding,
+      width: _(labelDimensions).map('width').max(),
       height: 0 // NB take what is provided
     }
   }
@@ -50,7 +50,7 @@ class YAxis extends BaseComponent {
       .style('fill', this.fontColor)
       .style('font-family', this.fontFamily)
       .attr('width', bounds.width)
-      .attr('x', (this.placement === CellNames.LEFT_YAXIS) ? bounds.width - this.padding : this.padding)
+      .attr('x', (this.placement === CellNames.LEFT_YAXIS) ? bounds.width : 0)
       .attr('y', rowHeight / 2)
       .attr('dominant-baseline', 'middle')
       .style('text-anchor', (this.placement === CellNames.LEFT_YAXIS) ? 'end' : 'start')

@@ -5,8 +5,6 @@ const defaultConfig = {
   axis_padding: 6,
   brush_color: '#0000FF',
   cell_font_size: 15,
-  col_element_map: { '*': '*' },
-  col_element_names: ['*'],
   extra_tooltip_info: null,
   footer_margin_X: 10,
   footer_margin_Y: 5,
@@ -41,16 +39,12 @@ const defaultConfig = {
   xaxis_offset: 20,
   xaxis_title: null,
   xaxis_title_font_size: 15,
-  xlabs_mod: [],
-  xlabs_raw: [],
   yaxis_font_size: 15,
   yaxis_hidden: false,
   yaxis_location: null,
   yaxis_offset: 20,
   yaxis_title: null,
-  yaxis_title_font_size: 15,
-  ylabs_mod: [],
-  ylabs_raw: []
+  yaxis_title_font_size: 15
 }
 
 function buildConfig (userConfig, width, height) {
@@ -66,6 +60,8 @@ function buildConfig (userConfig, width, height) {
   config.footer_width = config.width - config.footer_margin_X * 2
 
   config.table_style = !!((config.left_columns || config.right_columns))
+
+  config.padding = config.axis_padding
 
   if (!config.left_columns_subtitles) {
     // NB this seems really odd
