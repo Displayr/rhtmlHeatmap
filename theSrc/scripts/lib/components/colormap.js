@@ -221,27 +221,26 @@ class Colormap extends BaseComponent {
       offsetY = e.clientY - rect.top
     }
 
-    var col = Math.floor(this.scales.x.invert(offsetX))
-    var row = Math.floor(this.scales.y.invert(offsetY))
+    const col = Math.floor(this.scales.x.invert(offsetX - this.bounds.left))
+    const row = Math.floor(this.scales.y.invert(offsetY - this.bounds.top))
+    const label = this.matrix.merged[row * this.counts.column + col].label
+
     if (this.matrix.merged[row * this.counts.column + col].hide) {
       return
     }
-    var label = this.matrix.merged[row * this.counts.column + col].label
-    var this_tip = this.tip.show({col: col, row: row, label: label}).style({
+    var this_tip = this.tip.show({col, row, label}).style({
       top: d3.event.clientY + 10 + 'px',
       left: d3.event.clientX + 10 + 'px',
       opacity: 0.9
     })
 
-    // height of the tip
     var tipHeight = parseFloat(this_tip.style('height'))
-    // width of the tip
     var tipWidth = parseFloat(this_tip.style('width'))
-    var mouseTop = d3.event.clientY
-    var mouseLeft = d3.event.clientX
-
     var tipLeft = parseFloat(this_tip.style('left'))
     var tipTop = parseFloat(this_tip.style('top'))
+
+    var mouseTop = d3.event.clientY
+    var mouseLeft = d3.event.clientX
 
     if (tipLeft + tipWidth > this.bounds.width) {
       // right edge out of bound

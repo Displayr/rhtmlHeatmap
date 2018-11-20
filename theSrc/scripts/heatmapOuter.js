@@ -162,6 +162,13 @@ function processImageData ({imgData, width, height, matrix, shownote_in_cell}) {
     var hide = 0
     var color = 'rgba(' + [r, g, b, a / 255].join(',') + ')'
     if (matrix.cells_to_hide[i] !== 0) {
+      console.log('HIDE')
+      console.log('HIDE')
+      console.log('HIDE')
+      console.log('HIDE')
+      console.log('HIDE')
+      console.log('HIDE')
+      console.log('HIDE')
       hide = 1
       cellnoteColor = 'transparent'
     } else {
