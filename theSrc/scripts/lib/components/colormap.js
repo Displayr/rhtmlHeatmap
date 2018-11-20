@@ -137,17 +137,26 @@ class Colormap extends BaseComponent {
       .y(this.scales.y)
       .clamp([true, true])
       .on('brush', function () {
-        console.log('brush')
-        // this rounding produces a snap to grid effect, the selection is always in increments of complete cells
-        var extent = brush.extent()
-        extent[0][0] = Math.round(extent[0][0])
-        extent[0][1] = Math.round(extent[0][1])
-        extent[1][0] = Math.round(extent[1][0])
-        extent[1][1] = Math.round(extent[1][1])
-        d3.select(this).call(brush.extent(extent))
+        const extent = brush.extent()
+
+        // the rounding produces a snap to grid effect, the selection is always in increments of complete cells
+        // once the sensitivity has been exceeded, ensure there is a delta of at least one so at least one square has been selected
+
+        const roundedExtent = [[0, 0], [0, 0]]
+        const sensitivity = 0.03
+
+        if (Math.abs(extent[0][0] - extent[1][0]) > sensitivity) {
+          roundedExtent[0][0] = Math.floor(extent[0][0])
+          roundedExtent[1][0] = Math.ceil(extent[1][0])
+        }
+        if (Math.abs(extent[0][1] - extent[1][1]) > sensitivity) {
+          roundedExtent[0][1] = Math.floor(extent[0][1])
+          roundedExtent[1][1] = Math.ceil(extent[1][1])
+        }
+
+        d3.select(this).call(brush.extent(roundedExtent))
       })
       .on('brushend', function () {
-        console.log('brushend')
         if (brush.empty()) {
           controller.colormapDragReset({
             scale: [1, 1],
@@ -196,17 +205,9 @@ class Colormap extends BaseComponent {
     this.cellSelection.call(this.tip)
 
     this.brushSelection.select('rect.background')
-      .on('mouseenter', () => {
-        console.log(`mouseenter`)
-        this.showToolTip()
-      })
-      .on('mousemove', () => {
-        console.log(`mousemove`)
-        this.showToolTip()
-      })
-      .on('mouseleave', () => {
-        this.tip.hide()
-      })
+      .on('mouseenter', () => { this.showToolTip() })
+      .on('mousemove', () => { this.showToolTip() })
+      .on('mouseleave', () => { this.tip.hide() })
   }
 
   showToolTip () {
