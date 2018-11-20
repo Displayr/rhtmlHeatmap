@@ -82,6 +82,12 @@ class HeatmapLayout {
     return this.cellInfo[cell].enabled
   }
 
+  isRightmost (cell) {
+    const columnName = this.findColumnFromCell(cell)
+    const enabledColumnsToRight = this.getEnabledColumnsAfterColumn(columnName)
+    return enabledColumnsToRight.length === 0
+  }
+
   setFillCell (cell) {
     this.throwIfNotValidCell(cell)
     const existingFillCell = _.find(this.cellInfo, {fill: true}, null)
@@ -89,30 +95,11 @@ class HeatmapLayout {
     this.cellInfo[cell].fill = true
   }
 
-  setCellDimensions (cell, dimensions, maybeHeight) {
+  setPreferredDimensions (cell, dimensions) {
     this.throwIfNotValidCell(cell)
-    this.cellInfo[cell].width = (typeof dimensions === 'object') ? dimensions.width : dimensions
-    this.cellInfo[cell].height = (typeof dimensions === 'object') ? dimensions.height : maybeHeight
-  }
-
-  setCellWidth (cell, width) {
-    this.throwIfNotValidCell(cell)
-    this.cellInfo[cell].width = width
-  }
-
-  setCellHeight (cell, height) {
-    this.throwIfNotValidCell(cell)
-    this.cellInfo[cell].height = height
-  }
-
-  addCellMeta (cell, meta) {
-    this.throwIfNotValidCell(cell)
-    this.cellInfo[cell].meta = _.merge(this.cellInfo[cell].meta, meta)
-  }
-
-  getCellMeta (cell) {
-    this.throwIfNotValidCell(cell)
-    return this.cellInfo[cell].meta
+    this.cellInfo[cell].width = dimensions.width
+    this.cellInfo[cell].height = dimensions.height
+    this.cellInfo[cell].conditional = (_.has(dimensions, 'conditional')) ? dimensions.conditional : null
   }
 
   getRow (row) {
@@ -142,7 +129,7 @@ class HeatmapLayout {
     return _(column.cells)
       .map(cellName => this.cellInfo[cellName])
       .filter({ enabled: true })
-      .map(cellInfo => (cellInfo.fill) ? this.getWidthOfFillCell(cellInfo.name, columnName) : cellInfo.width)
+      .map(cellInfo => (cellInfo.fill) ? this.getWidthOfFillCell(cellInfo.name, columnName) : this.getWidthOfFixedCell(cellInfo.name))
       .max()
   }
 
@@ -160,6 +147,13 @@ class HeatmapLayout {
       .map(otherRow => this.getRowHeight(otherRow.name))
       .sum() + (otherRows.length - 1) * this.padding + 2 * this.outerPadding
     return this.canvasHeight - allocatedHeight
+  }
+
+  getWidthOfFixedCell (cellName) {
+    const cellInfo = this.cellInfo[cellName]
+    return (_.has(cellInfo, 'conditional.rightmost') && this.isRightmost(cellName))
+      ? cellInfo.conditional.rightmost
+      : this.cellInfo[cellName].width
   }
 
   rowEnabled (rowName) {
@@ -227,6 +221,18 @@ class HeatmapLayout {
       .filter(({name}) => {
         if (name === columnName) { foundColumnName = true }
         return !foundColumnName
+      })
+      .map('name')
+      .filter(columnName => this.columnEnabled(columnName))
+      .value()
+  }
+
+  getEnabledColumnsAfterColumn (columnName) {
+    let foundColumnName = false
+    return _(HeatmapColumns)
+      .filter(({name}) => {
+        if (name === columnName) { foundColumnName = true }
+        return foundColumnName && name !== columnName
       })
       .map('name')
       .filter(columnName => this.columnEnabled(columnName))

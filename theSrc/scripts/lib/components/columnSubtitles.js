@@ -1,6 +1,7 @@
 import BaseComponent from './baseComponent'
 import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 import _ from 'lodash'
+import {CellNames} from '../heatmapcore/layout'
 
 // TODO preferred dimensions must account for maxes
 class ColumnSubtitles extends BaseComponent {
@@ -15,10 +16,25 @@ class ColumnSubtitles extends BaseComponent {
 
   computePreferredDimensions () {
     const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily, this.rotation))
-    return {
+
+    const preferredDimensions = {
       width: 0, // NB accept column width
       height: _(labelDimensions).map('height').max()
     }
+
+    if (this.name === CellNames.RIGHT_COLUMN_SUBTITLE) {
+      const rightmostLabelWidth = _.last(labelDimensions).width
+      const rightmostColumnWidth = _.last(this.columnWidths)
+
+      const currentColumnGroupWidth = _.sum(this.columnWidths) + (this.columnWidths.length - 1) * this.padding
+      const extraConditionalWidthOnRightSide = Math.max(0, rightmostLabelWidth - 0.5 * rightmostColumnWidth)
+
+      preferredDimensions.conditional = {
+        rightmost: currentColumnGroupWidth + extraConditionalWidthOnRightSide // if Im furthest on the right i need an extra pixels to account for labels pushing outside of SVG
+      }
+    }
+
+    return preferredDimensions
   }
 
   rotatingUp () {

@@ -124,6 +124,7 @@ class Heatmap {
     if (this.layout.enabled(CellNames.RIGHT_COLUMN_SUBTITLE)) {
       this.components[CellNames.RIGHT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
       this.components[CellNames.RIGHT_COLUMN_SUBTITLE].draw(this.layout.getCellBounds(CellNames.RIGHT_COLUMN_SUBTITLE))
+      console.log(`RIGHT_COLUMN_SUBTITLE rightmost: ${this.layout.isRightmost(CellNames.RIGHT_COLUMN_SUBTITLE)}`)
     }
 
     // TODO  delete this
@@ -183,7 +184,7 @@ class Heatmap {
 
       const dimensions = this.components[xaxisCellName].computePreferredDimensions()
       this.layout.enable(xaxisCellName)
-      this.layout.setCellDimensions(xaxisCellName, dimensions)
+      this.layout.setPreferredDimensions(xaxisCellName, dimensions)
     }
 
     if (!options.yaxis_hidden) {
@@ -204,7 +205,7 @@ class Heatmap {
 
       const dimensions = this.components[yaxisCellName].computePreferredDimensions()
       this.layout.enable(yaxisCellName)
-      this.layout.setCellDimensions(yaxisCellName, dimensions)
+      this.layout.setPreferredDimensions(yaxisCellName, dimensions)
     }
 
     if (options.xaxis_title) {
@@ -224,7 +225,7 @@ class Heatmap {
 
       const dimensions = this.components[xaxisTitleCellName].computePreferredDimensions()
       this.layout.enable(xaxisTitleCellName)
-      this.layout.setCellDimensions(xaxisTitleCellName, dimensions)
+      this.layout.setPreferredDimensions(xaxisTitleCellName, dimensions)
     }
 
     if (options.yaxis_title) {
@@ -244,7 +245,7 @@ class Heatmap {
 
       const dimensions = this.components[yaxisTitleCellName].computePreferredDimensions()
       this.layout.enable(yaxisTitleCellName)
-      this.layout.setCellDimensions(yaxisTitleCellName, dimensions)
+      this.layout.setPreferredDimensions(yaxisTitleCellName, dimensions)
     }
 
     if (options.left_columns) {
@@ -262,7 +263,7 @@ class Heatmap {
 
       const dimensions = this.components[CellNames.LEFT_COLUMN].computePreferredDimensions()
       this.layout.enable(CellNames.LEFT_COLUMN)
-      this.layout.setCellDimensions(CellNames.LEFT_COLUMN, dimensions)
+      this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN, dimensions)
     }
 
     if (options.left_columns_title) {
@@ -278,13 +279,13 @@ class Heatmap {
 
       const dimensions = this.components[CellNames.LEFT_COLUMN_TITLE].computePreferredDimensions()
       this.layout.enable(CellNames.LEFT_COLUMN_TITLE)
-      this.layout.setCellDimensions(CellNames.LEFT_COLUMN_TITLE, dimensions)
+      this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN_TITLE, dimensions)
     }
 
     if (options.left_columns_subtitles) {
       this.components[CellNames.LEFT_COLUMN_SUBTITLE] = new ColumnSubtitles({
         parentContainer: inner,
-        name: 'left',
+        name: CellNames.LEFT_COLUMN_SUBTITLE,
         labels: _.reverse(options.left_columns_subtitles),
         fontSize: options.left_columns_subtitles_font_size,
         fontFamily: options.left_columns_subtitles_font_family,
@@ -294,7 +295,7 @@ class Heatmap {
 
       const dimensions = this.components[CellNames.LEFT_COLUMN_SUBTITLE].computePreferredDimensions()
       this.layout.enable(CellNames.LEFT_COLUMN_SUBTITLE)
-      this.layout.setCellDimensions(CellNames.LEFT_COLUMN_SUBTITLE, dimensions)
+      this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN_SUBTITLE, dimensions)
     }
 
     if (options.right_columns) {
@@ -312,7 +313,7 @@ class Heatmap {
 
       const dimensions = this.components[CellNames.RIGHT_COLUMN].computePreferredDimensions()
       this.layout.enable(CellNames.RIGHT_COLUMN)
-      this.layout.setCellDimensions(CellNames.RIGHT_COLUMN, dimensions)
+      this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN, dimensions)
     }
 
     if (options.right_columns_title) {
@@ -328,13 +329,13 @@ class Heatmap {
 
       const dimensions = this.components[CellNames.RIGHT_COLUMN_TITLE].computePreferredDimensions()
       this.layout.enable(CellNames.RIGHT_COLUMN_TITLE)
-      this.layout.setCellDimensions(CellNames.RIGHT_COLUMN_TITLE, dimensions)
+      this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN_TITLE, dimensions)
     }
 
     if (options.right_columns_subtitles) {
       this.components[CellNames.RIGHT_COLUMN_SUBTITLE] = new ColumnSubtitles({
         parentContainer: inner,
-        name: 'right',
+        name: CellNames.RIGHT_COLUMN_SUBTITLE,
         labels: options.right_columns_subtitles,
         fontSize: options.right_columns_subtitles_font_size,
         fontFamily: options.right_columns_subtitles_font_family,
@@ -342,9 +343,10 @@ class Heatmap {
         padding: this.options.axis_padding
       })
 
+      this.components[CellNames.RIGHT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
       const dimensions = this.components[CellNames.RIGHT_COLUMN_SUBTITLE].computePreferredDimensions()
       this.layout.enable(CellNames.RIGHT_COLUMN_SUBTITLE)
-      this.layout.setCellDimensions(CellNames.RIGHT_COLUMN_SUBTITLE, dimensions)
+      this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN_SUBTITLE, dimensions)
     }
 
     if (this.dendrogramData.columns) {
@@ -359,7 +361,7 @@ class Heatmap {
 
       const dimensions = this.components[CellNames.TOP_DENDROGRAM].computePreferredDimensions()
       this.layout.enable(CellNames.TOP_DENDROGRAM)
-      this.layout.setCellDimensions(CellNames.TOP_DENDROGRAM, dimensions)
+      this.layout.setPreferredDimensions(CellNames.TOP_DENDROGRAM, dimensions)
     }
 
     if (this.dendrogramData.rows) {
@@ -374,7 +376,7 @@ class Heatmap {
 
       const dimensions = this.components[CellNames.LEFT_DENDROGRAM].computePreferredDimensions()
       this.layout.enable(CellNames.LEFT_DENDROGRAM)
-      this.layout.setCellDimensions(CellNames.LEFT_DENDROGRAM, dimensions)
+      this.layout.setPreferredDimensions(CellNames.LEFT_DENDROGRAM, dimensions)
     }
 
     if (options.legend_colors) {
@@ -394,7 +396,7 @@ class Heatmap {
 
       const dimensions = this.components[CellNames.COLOR_LEGEND].computePreferredDimensions()
       this.layout.enable(CellNames.COLOR_LEGEND)
-      this.layout.setCellDimensions(CellNames.COLOR_LEGEND, dimensions)
+      this.layout.setPreferredDimensions(CellNames.COLOR_LEGEND, dimensions)
     }
 
     this.components[CellNames.COLORMAP] = new Colormap({

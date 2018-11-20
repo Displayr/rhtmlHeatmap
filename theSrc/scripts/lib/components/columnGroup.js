@@ -4,7 +4,7 @@ import d3 from 'd3'
 import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
 
 class ColumnGroup extends BaseComponent {
-  constructor ({parentContainer, groupName, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth}) {
+  constructor ({parentContainer, groupName, labelMatrix = [[]], alignments = [], fontSize, fontColor, fontFamily, padding = 0, maxSingleColumnWidth}) {
     super()
     _.assign(this, {parentContainer, groupName, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth})
   }

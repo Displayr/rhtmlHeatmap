@@ -49,6 +49,9 @@ const defaultConfig = {
 
 function buildConfig (userConfig, width, height) {
   const config = _.merge({}, defaultConfig, userConfig, { width, height })
+
+  // NB some the following adjustments correct issues in the callee (which we cannot control)
+
   config.legend_bar_width = (config.legend_width - config.legend_x_padding * 2) / 2
 
   config.title_margin_bottom = config.subtitle ? 5 : 10
@@ -72,6 +75,9 @@ function buildConfig (userConfig, width, height) {
     // NB this seems really odd
     config.right_columns_title = undefined
   }
+
+  if (_.isNull(config.left_columns_align)) { config.left_columns_align = [] }
+  if (_.isNull(config.right_columns_align)) { config.right_columns_align = [] }
 
   return config
 }
