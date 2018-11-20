@@ -14,9 +14,17 @@ class Dendrogram extends BaseComponent {
   }
 
   draw (bounds) {
-    const container = this.parentContainer.append('g').classed('dendrogram', true).attr('transform', this.buildTransform(bounds))
+    this.bounds = bounds
+    const container = this.parentContainer
+      .append('g')
+      .classed('dendrogram-container', true)
+      .attr('transform', this.buildTransform(bounds))
+      .append('svg')
+      .classed('dendrogram', true)
+      .attr('width', bounds.width)
+      .attr('height', bounds.height)
 
-    const { data, linkColor, controller, animDuration } = this
+    const { data, linkColor } = this
     const { width, height } = bounds
 
     const rotated = (this.type === CellNames.TOP_DENDROGRAM)
@@ -28,6 +36,8 @@ class Dendrogram extends BaseComponent {
     const y = d3.scale.linear()
       .domain([0, height])
       .range([0, height])
+
+    this.scales = {x, y}
 
     const cluster = d3.layout.cluster()
       .separation(function (a, b) { return 1 })
@@ -62,8 +72,8 @@ class Dendrogram extends BaseComponent {
       }
     })
 
-    const lines = dendrG.selectAll('polyline').data(links1)
-    lines
+    this.lines = dendrG.selectAll('polyline').data(links1)
+    this.lines
       .enter().append('polyline')
       .attr('class', 'link')
       .attr('stroke', function (d, i) {
@@ -103,25 +113,26 @@ class Dendrogram extends BaseComponent {
         return pattern.join(',')
       })
 
-    function draw (selection) {
-      function elbow (d, i) {
-        return x(d.source.y) + ',' + y(d.source.x) + ' ' +
-          x(d.source.y) + ',' + y(d.target.x) + ' ' +
-          x(d.target.y) + ',' + y(d.target.x)
-      }
+    this._draw(this.lines)
+  }
 
-      selection
-        .attr('points', elbow)
+  _draw (selection) {
+    const elbow = (d, i) => {
+      return this.scales.x(d.source.y) + ',' + this.scales.y(d.source.x) + ' ' +
+        this.scales.x(d.source.y) + ',' + this.scales.y(d.target.x) + ' ' +
+        this.scales.x(d.target.y) + ',' + this.scales.y(d.target.x)
     }
 
-    controller.on('transform.dendr-' + (rotated ? 'x' : 'y'), function (_) {
-      const scaleBy = _.scale[rotated ? 0 : 1]
-      const translateBy = _.translate[rotated ? 0 : 1]
-      y.range([translateBy, height * scaleBy + translateBy])
-      draw(lines.transition().duration(animDuration).ease('linear'))
-    })
+    selection
+      .attr('points', elbow)
+  }
 
-    draw(lines)
+  updateZoom ({ scale, translate }) {
+    const rotated = (this.type === CellNames.TOP_DENDROGRAM)
+    const scaleBy = scale[rotated ? 0 : 1]
+    const translateBy = translate[rotated ? 0 : 1]
+    this.scales.y.range([translateBy, this.bounds.height * scaleBy + translateBy])
+    this._draw(this.lines.transition().duration(this.animDuration).ease('linear'))
   }
 }
 

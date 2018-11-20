@@ -8,7 +8,9 @@ const {
   BOTTOM_XAXIS,
   LEFT_YAXIS,
   RIGHT_YAXIS,
-  COLORMAP
+  COLORMAP,
+  TOP_DENDROGRAM,
+  LEFT_DENDROGRAM
 } = CellNames
 
 class Controller {
@@ -26,6 +28,8 @@ class Controller {
   get yaxis () { return this.components[LEFT_YAXIS] || this.components[RIGHT_YAXIS] }
   get leftColumn () { return this.components[LEFT_COLUMN] }
   get rightColumn () { return this.components[RIGHT_COLUMN] }
+  get top_dendrogram () { return this.components[TOP_DENDROGRAM] }
+  get left_dendrogram () { return this.components[LEFT_DENDROGRAM] }
 
   addComponents (components) {
     this.components = components
@@ -133,6 +137,8 @@ class Controller {
     if (this.colormap) { this.colormap.updateZoom({scale, translate, extent, zoom: false}) }
     if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent, zoom: false}) }
     if (this.yaxis) { this.yaxis.updateZoom({scale, translate, extent, zoom: false}) }
+    if (this.left_dendrogram) { this.left_dendrogram.updateZoom({scale, translate, extent, zoom: false}) }
+    if (this.top_dendrogram) { this.top_dendrogram.updateZoom({scale, translate, extent, zoom: false}) }
 
     if (this.outer) {
       this.outer.classed('zoomed', false)
@@ -144,6 +150,8 @@ class Controller {
     if (this.colormap) { this.colormap.updateZoom({scale, translate, extent, zoom: true}) }
     if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent, zoom: true}) }
     if (this.yaxis) { this.yaxis.updateZoom({scale, translate, extent, zoom: true}) }
+    if (this.left_dendrogram) { this.left_dendrogram.updateZoom({scale, translate, extent, zoom: true}) }
+    if (this.top_dendrogram) { this.top_dendrogram.updateZoom({scale, translate, extent, zoom: true}) }
 
     if (this.outer) {
       this.outer.classed('zoomed', true)
