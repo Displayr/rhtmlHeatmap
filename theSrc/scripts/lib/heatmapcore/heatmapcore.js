@@ -169,6 +169,7 @@ class Heatmap {
         labels: this.matrix.cols,
         fontSize: options.xaxis_font_size,
         fontFamily: options.xaxis_font_family,
+        fontColor: options.xaxis_font_color,
         maxWidth: 0.33 * options.width, // TODO make configurable
         maxHeight: 0.33 * options.height, // TODO make configurable
         rotation: (xaxisCellName === CellNames.TOP_XAXIS) ? -45 : 45
@@ -191,6 +192,7 @@ class Heatmap {
         labels: this.matrix.rows,
         fontSize: options.yaxis_font_size,
         fontFamily: options.yaxis_font_family,
+        fontColor: options.yaxis_font_color,
         maxWidth: 0.33 * options.width, // TODO make configurable
         maxHeight: 0.33 * options.height // TODO make configurable
       })
@@ -415,11 +417,6 @@ class Heatmap {
     if (!_.isArray(matrix.cols)) { matrix.cols = [matrix.cols] }
     if (!_.isArray(matrix.rows)) { matrix.rows = [matrix.rows] }
     return matrix
-  }
-
-  on (type, listener) {
-    this.dispatcher.on(type, listener)
-    return this
   }
 }
 

@@ -7,9 +7,9 @@ const DEBUG = false
 
 // TODO preferred dimensions must account for maxes
 class XAxis extends BaseComponent {
-  constructor ({parentContainer, labels, fontSize, fontFamily, maxWidth, maxHeight, rotation = -45, controller}) {
+  constructor ({parentContainer, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, rotation = -45, controller}) {
     super()
-    _.assign(this, {parentContainer, labels, fontSize, fontFamily, maxWidth, maxHeight, rotation, controller})
+    _.assign(this, {parentContainer, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, rotation, controller})
 
     // to deal with superflous zoom calls at beginning of render
     this.amIZoomed = false
@@ -58,6 +58,7 @@ class XAxis extends BaseComponent {
       .style('text-anchor', 'start')
       .style('font-family', this.fontFamily)
       .style('font-size', this.fontSize)
+      .style('fill', this.fontColor)
       .on('click', (d, i) => {
         this.controller.xaxisClick(i)
         d3.event.stopPropagation()
