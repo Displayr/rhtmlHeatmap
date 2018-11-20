@@ -127,14 +127,6 @@ class Heatmap {
       console.log(`RIGHT_COLUMN_SUBTITLE rightmost: ${this.layout.isRightmost(CellNames.RIGHT_COLUMN_SUBTITLE)}`)
     }
 
-    // TODO  delete this
-    var dispatcher = d3.dispatch('hover', 'click')
-    this.dispatcher = dispatcher
-
-    controller.on('datapoint_hover', function (_) {
-      dispatcher.hover({data: _})
-    })
-
     // TODO audit if these are ever used once we have interaction regression in place
     function on_col_label_mouseenter (e) { // eslint-disable-line no-unused-vars
       controller.highlight(+d3.select(this).attr('index'), null)

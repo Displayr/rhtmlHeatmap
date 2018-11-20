@@ -27,22 +27,6 @@ class Controller {
   get leftColumn () { return this.components[LEFT_COLUMN] }
   get rightColumn () { return this.components[RIGHT_COLUMN] }
 
-  highlight (x, y) {
-    console.warn('DEPRECATED: controller.highlight')
-  }
-
-  datapoint_hover (_) { // eslint-disable-line camelcase
-    console.warn('DEPRECATED: controller.datapoint_hover')
-  }
-
-  on (evt, callback) {
-    console.warn('DEPRECATED: controller.on')
-  }
-
-  transform (_) {
-    console.warn('DEPRECATED: controller.tranform')
-  }
-
   addComponents (components) {
     this.components = components
   }
