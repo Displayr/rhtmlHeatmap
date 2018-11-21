@@ -3,9 +3,9 @@ import d3 from 'd3'
 import _ from 'lodash'
 
 class Legend extends BaseComponent {
-  constructor ({parentContainer, colors, x_is_factor, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding}) {
+  constructor ({parentContainer, colors, x_is_factor, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat}) {
     super()
-    _.assign(this, {parentContainer, colors, x_is_factor, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding})
+    _.assign(this, {parentContainer, colors, x_is_factor, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat})
   }
 
   computePreferredDimensions () {
@@ -45,6 +45,10 @@ class Legend extends BaseComponent {
         }
         this.legend_format = d3.format(',.' + legend_dig + 'f')
       }
+    }
+    // http://bl.ocks.org/zanarmstrong/05c1e95bf7aa16c4768e <-- figure out how d3.format works
+    if (this.labelFormat) {
+      this.legend_format = d3.format(',.1%')
     }
 
     legendAxis.tickFormat(this.legend_format)

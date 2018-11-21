@@ -271,7 +271,8 @@ class Heatmap {
         fontColor: options.legend_font_color,
         leftSpace: options.legend_left_space,
         barWidth: options.legend_bar_width,
-        xPadding: options.legend_x_padding
+        xPadding: options.legend_x_padding,
+        labelFormat: options.legend_label_format
       })
 
       const dimensions = this.components[CellNames.COLOR_LEGEND].computePreferredDimensions()
