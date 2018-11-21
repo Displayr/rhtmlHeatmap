@@ -1,30 +1,40 @@
 import _ from 'lodash'
 import d3 from 'd3'
 import BaseComponent from './baseComponent'
-import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
+import {getLabelDimensionsUsingSvgApproximation, splitIntoLines} from '../labelUtils'
 
 const DEBUG = false
 
 // TODO preferred dimensions must account for maxes
+// TODO NB we only handle wrapping when rotation = 0
 class XAxis extends BaseComponent {
-  constructor ({parentContainer, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, rotation = -45, controller}) {
+  constructor ({parentContainer, labels, fontSize, fontFamily, fontColor, rotation = -45, controller, maxLines}) {
     super()
-    _.assign(this, {parentContainer, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, rotation, controller})
+    _.assign(this, {parentContainer, labels, fontSize, fontFamily, fontColor, rotation, controller, maxLines})
 
     // to deal with superflous zoom calls at beginning of render
     this.amIZoomed = false
+    this.innerLinePadding = 1
   }
 
-  computePreferredDimensions () {
-    const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily, this.rotation))
+  computePreferredDimensions (estimatedColumnWidth) {
+    let labelDimensions = null
+    if (this.rotation === 0) {
+      labelDimensions = this.labels.map(text => {
+        const lines = splitIntoLines(this.parentContainer, text, estimatedColumnWidth, this.fontSize, this.fontFamily, this.maxLines)
+        const lineDimensions = lines.map(line => getLabelDimensionsUsingSvgApproximation(this.parentContainer, line, this.fontSize, this.fontFamily, this.rotation))
+        return {
+          width: _(lineDimensions).map('width').max(),
+          height: _(lineDimensions).map('height').sum() + (lines.length - 1) * this.innerLinePadding
+        }
+      })
+    } else {
+      labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily, this.rotation))
+    }
     return {
       width: 0, // NB xaxis width takes what is given, and does not force width on the chart
       height: _(labelDimensions).map('height').max()
     }
-  }
-
-  rotatingUp () {
-    return this.rotation < 0
   }
 
   draw (bounds) {
@@ -50,19 +60,53 @@ class XAxis extends BaseComponent {
         d3.event.stopPropagation()
       })
 
-    this.textSelection = this.cellSelection.append('text')
-      .classed('axis-text', true)
-      .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation})`)
-      .attr('x', 0)
-      .text(d => d)
-      .style('text-anchor', 'start')
-      .style('font-family', this.fontFamily)
-      .style('font-size', this.fontSize)
-      .style('fill', this.fontColor)
-      .on('click', (d, i) => {
-        this.controller.xaxisClick(i)
-        d3.event.stopPropagation()
-      })
+    // NB we only handle wrapping when rotation = 0
+    const { fontFamily, fontSize, parentContainer, maxLines, innerLinePadding } = this
+    if (this.rotation === 0) {
+      this.textSelection = this.cellSelection.append('text')
+        .classed('axis-text', true)
+        .attr('transform', `translate(${columnWidth / 2}, 0)`)
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('dy', 0)
+        .style('text-anchor', 'middle')
+        .style('dominant-baseline', 'text-before-edge')
+        .style('font-family', this.fontFamily)
+        .style('font-size', this.fontSize)
+        .style('fill', this.fontColor)
+        .on('click', (d, i) => {
+          this.controller.xaxisClick(i)
+          d3.event.stopPropagation()
+        })
+        .each(function (d) {
+          const lines = splitIntoLines(parentContainer, d, columnWidth, fontSize, fontFamily, maxLines)
+          const textGroup = d3.select(this)
+          _(lines).each((lineText, i) => {
+            textGroup.append('tspan')
+              .attr('x', 0)
+              .attr('y', i * (fontSize + innerLinePadding))
+              .style('font-size', function (d) { return fontSize })
+              .style('font-family', function (d) { return fontFamily })
+              .style('dominant-baseline', 'text-before-edge')
+              .text(lineText)
+          })
+        })
+    } else {
+      this.textSelection = this.cellSelection.append('text')
+        .classed('axis-text', true)
+        .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation})`)
+        .attr('x', 0)
+        .text(d => d)
+        .style('text-anchor', 'start')
+        .style('font-family', this.fontFamily)
+        .style('font-size', this.fontSize)
+        .style('fill', this.fontColor)
+        .on('click', (d, i) => {
+          this.controller.xaxisClick(i)
+          d3.event.stopPropagation()
+        })
+    }
+
   }
 
   updateHighlights ({ column = null } = {}) {
@@ -92,10 +136,18 @@ class XAxis extends BaseComponent {
     }
   }
 
+  rotatingUp () {
+    return this.rotation < 0
+  }
+
+  rotatingDown () {
+    return this.rotation > 0
+  }
+
   yOffsetCorrectionForRotation () {
-    return (this.rotatingUp())
-      ? this.bounds.height
-      : 12 // TODO this is hacky
+    if (this.rotatingUp()) { return this.bounds.height }
+    if (this.rotatingDown()) { return 12 } // TODO this is hacky
+    return 0
   }
 
   applyZoom ({scale, translate, extent}) {

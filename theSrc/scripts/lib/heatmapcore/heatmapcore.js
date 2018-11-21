@@ -158,90 +158,6 @@ class Heatmap {
     this.layout = new HeatmapLayout(this.options.width, this.options.height, this.options.padding)
     const {options, inner} = this
 
-    if (!options.xaxis_hidden) {
-      if (this.dendrogramData.columns) { options.xaxis_location = 'bottom' }
-      const xaxisCellName = (options.xaxis_location === 'bottom')
-        ? CellNames.BOTTOM_XAXIS
-        : CellNames.TOP_XAXIS
-
-      this.components[xaxisCellName] = new XAxis({
-        parentContainer: inner,
-        labels: this.matrix.cols,
-        fontSize: options.xaxis_font_size,
-        fontFamily: options.xaxis_font_family,
-        fontColor: options.xaxis_font_color,
-        maxWidth: 0.33 * options.width, // TODO make configurable
-        maxHeight: 0.33 * options.height, // TODO make configurable
-        rotation: (xaxisCellName === CellNames.TOP_XAXIS) ? -45 : 45
-      })
-
-      const dimensions = this.components[xaxisCellName].computePreferredDimensions()
-      this.layout.enable(xaxisCellName)
-      this.layout.setPreferredDimensions(xaxisCellName, dimensions)
-    }
-
-    if (!options.yaxis_hidden) {
-      if (this.dendrogramData.rows) { options.yaxis_location = 'right' }
-      const yaxisCellName = (options.yaxis_location === 'right')
-        ? CellNames.RIGHT_YAXIS
-        : CellNames.LEFT_YAXIS
-
-      this.components[yaxisCellName] = new YAxis({
-        parentContainer: inner,
-        placement: yaxisCellName,
-        labels: this.matrix.rows,
-        fontSize: options.yaxis_font_size,
-        fontFamily: options.yaxis_font_family,
-        fontColor: options.yaxis_font_color,
-        maxWidth: 0.33 * options.width, // TODO make configurable
-        maxHeight: 0.33 * options.height // TODO make configurable
-      })
-
-      const dimensions = this.components[yaxisCellName].computePreferredDimensions()
-      this.layout.enable(yaxisCellName)
-      this.layout.setPreferredDimensions(yaxisCellName, dimensions)
-    }
-
-    if (options.xaxis_title) {
-      const xaxisTitleCellName = this.layout.enabled(CellNames.BOTTOM_XAXIS)
-        ? CellNames.BOTTOM_XAXIS_TITLE
-        : CellNames.TOP_XAXIS_TITLE
-
-      this.components[xaxisTitleCellName] = new XTitle({
-        parentContainer: inner,
-        text: options.xaxis_title,
-        fontFamily: options.xaxis_title_font_family,
-        fontSize: options.xaxis_title_font_size,
-        fontColor: options.xaxis_title_font_color,
-        maxWidth: options.width * 0.7, // NB TODO just making numbers up here (need the max xaxis title width here)
-        bold: options.xaxis_title_bold
-      })
-
-      const dimensions = this.components[xaxisTitleCellName].computePreferredDimensions()
-      this.layout.enable(xaxisTitleCellName)
-      this.layout.setPreferredDimensions(xaxisTitleCellName, dimensions)
-    }
-
-    if (options.yaxis_title) {
-      const yaxisTitleCellName = this.layout.enabled(CellNames.RIGHT_YAXIS)
-        ? CellNames.RIGHT_YAXIS_TITLE
-        : CellNames.LEFT_YAXIS_TITLE
-
-      this.components[yaxisTitleCellName] = new YTitle({
-        parentContainer: inner,
-        text: options.yaxis_title,
-        fontFamily: options.yaxis_title_font_family,
-        fontSize: options.yaxis_title_font_size,
-        fontColor: options.yaxis_title_font_color,
-        maxHeight: options.height * 0.7, // NB TODO just making numbers up here (need the max yaxis title height here)
-        bold: options.yaxis_title_bold
-      })
-
-      const dimensions = this.components[yaxisTitleCellName].computePreferredDimensions()
-      this.layout.enable(yaxisTitleCellName)
-      this.layout.setPreferredDimensions(yaxisTitleCellName, dimensions)
-    }
-
     if (options.left_columns) {
       this.components[CellNames.LEFT_COLUMN] = new ColumnGroup({
         parentContainer: inner,
@@ -393,6 +309,100 @@ class Heatmap {
       this.layout.setPreferredDimensions(CellNames.COLOR_LEGEND, dimensions)
     }
 
+    if (!options.yaxis_hidden) {
+      if (this.dendrogramData.rows) { options.yaxis_location = 'right' }
+      const yaxisCellName = (options.yaxis_location === 'right')
+        ? CellNames.RIGHT_YAXIS
+        : CellNames.LEFT_YAXIS
+
+      this.components[yaxisCellName] = new YAxis({
+        parentContainer: inner,
+        placement: yaxisCellName,
+        labels: this.matrix.rows,
+        fontSize: options.yaxis_font_size,
+        fontFamily: options.yaxis_font_family,
+        fontColor: options.yaxis_font_color,
+        maxWidth: 0.33 * options.width, // TODO make configurable
+        maxHeight: 0.33 * options.height // TODO make configurable
+      })
+
+      const dimensions = this.components[yaxisCellName].computePreferredDimensions()
+      this.layout.enable(yaxisCellName)
+      this.layout.setPreferredDimensions(yaxisCellName, dimensions)
+    }
+
+    if (options.yaxis_title) {
+      const yaxisTitleCellName = this.layout.enabled(CellNames.RIGHT_YAXIS)
+        ? CellNames.RIGHT_YAXIS_TITLE
+        : CellNames.LEFT_YAXIS_TITLE
+
+      this.components[yaxisTitleCellName] = new YTitle({
+        parentContainer: inner,
+        text: options.yaxis_title,
+        fontFamily: options.yaxis_title_font_family,
+        fontSize: options.yaxis_title_font_size,
+        fontColor: options.yaxis_title_font_color,
+        maxHeight: options.height * 0.7, // NB TODO just making numbers up here (need the max yaxis title height here)
+        bold: options.yaxis_title_bold
+      })
+
+      const dimensions = this.components[yaxisTitleCellName].computePreferredDimensions()
+      this.layout.enable(yaxisTitleCellName)
+      this.layout.setPreferredDimensions(yaxisTitleCellName, dimensions)
+    }
+
+    // Xaxis complication: wrapping. To know the required height (due to wrapping) ,
+    // we need to know the available width
+    if (!options.xaxis_hidden) {
+      if (this.dendrogramData.columns) { options.xaxis_location = 'bottom' }
+      const xaxisCellName = (options.xaxis_location === 'bottom')
+        ? CellNames.BOTTOM_XAXIS
+        : CellNames.TOP_XAXIS
+
+      let rotation = 0
+      if (xaxisCellName === CellNames.BOTTOM_XAXIS) { rotation = 45 }
+      if (xaxisCellName === CellNames.TOP_XAXIS && (options.left_columns_subtitles || options.right_columns_subtitles)) { rotation = -45 }
+
+      this.layout.enable(xaxisCellName)
+      // this.layout.setPreferredDimensions(xaxisCellName, { width: 0, height: 0 })
+      const { width: allocatedWidth } = this.layout.getAllocatedSpace()
+      const estimatedColumnWidth = (this.options.width - allocatedWidth) / this.matrix.cols.length
+
+      this.components[xaxisCellName] = new XAxis({
+        parentContainer: inner,
+        labels: this.matrix.cols,
+        fontSize: options.xaxis_font_size,
+        fontFamily: options.xaxis_font_family,
+        fontColor: options.xaxis_font_color,
+        maxLines: 3, // TODO make configurable
+        rotation
+      })
+
+      const dimensions = this.components[xaxisCellName].computePreferredDimensions(estimatedColumnWidth)
+      this.layout.enable(xaxisCellName)
+      this.layout.setPreferredDimensions(xaxisCellName, dimensions)
+    }
+
+    if (options.xaxis_title) {
+      const xaxisTitleCellName = this.layout.enabled(CellNames.BOTTOM_XAXIS)
+        ? CellNames.BOTTOM_XAXIS_TITLE
+        : CellNames.TOP_XAXIS_TITLE
+
+      this.components[xaxisTitleCellName] = new XTitle({
+        parentContainer: inner,
+        text: options.xaxis_title,
+        fontFamily: options.xaxis_title_font_family,
+        fontSize: options.xaxis_title_font_size,
+        fontColor: options.xaxis_title_font_color,
+        maxWidth: options.width * 0.7, // NB TODO just making numbers up here (need the max xaxis title width here)
+        bold: options.xaxis_title_bold
+      })
+
+      const dimensions = this.components[xaxisTitleCellName].computePreferredDimensions()
+      this.layout.enable(xaxisTitleCellName)
+      this.layout.setPreferredDimensions(xaxisTitleCellName, dimensions)
+    }
+
     this.components[CellNames.COLORMAP] = new Colormap({
       parentContainer: inner,
       matrix: this.matrix,
@@ -402,7 +412,7 @@ class Heatmap {
       tipFontSize: options.tip_font_size,
       tipFontFamily: options.tip_font_family,
       cellFontSize: options.cell_font_size,
-      cellFontFamily: options.cell_font_family, // NB this should be family
+      cellFontFamily: options.cell_font_family, // NB TODO this should be family
       brushColor: options.brush_color,
       animDuration: options.anim_duration,
       showGrid: options.show_grid,

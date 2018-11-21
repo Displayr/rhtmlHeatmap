@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 let uniqueId = 0
 function getUniqueId () { return uniqueId++ }
 function toRadians (degrees) { return degrees * (Math.PI / 180) }
@@ -42,6 +44,44 @@ function getLabelDimensionsUsingSvgApproximation (parentContainer, inputString, 
   return { width, height, xOffset, yOffset }
 }
 
+function wordTokenizer (inputString) {
+  return inputString.split(' ').map(_.trim).filter((token) => !_.isEmpty(token))
+}
+
+function splitIntoLines (parentContainer, inputString, maxWidth, fontSize = 12, fontFamily = 'sans-serif', maxLines = null) {
+  let tokens = wordTokenizer(inputString)
+
+  let currentLine = []
+  let lines = []
+  let token = null
+  while (token = tokens.shift()) { // eslint-disable-line no-cond-assign
+    currentLine.push(token)
+
+    const { width } = getLabelDimensionsUsingSvgApproximation(parentContainer, currentLine.join(' '), fontSize, fontFamily)
+    if (width > maxWidth && currentLine.length > 1) {
+      if (maxLines && lines.length === maxLines - 1) {
+        currentLine.pop()
+        currentLine.push('...')
+        tokens = []
+        lines.push(`${currentLine.join(' ')}`)
+        currentLine = []
+        break
+      } else {
+        tokens.unshift(currentLine.pop())
+        lines.push(`${currentLine.join(' ')}`)
+        currentLine = []
+      }
+    }
+  }
+
+  if (currentLine.length > 0) {
+    lines.push(`${currentLine.join(' ')}`)
+  }
+
+  return lines
+}
+
 module.exports = {
-  getLabelDimensionsUsingSvgApproximation
+  getLabelDimensionsUsingSvgApproximation,
+  splitIntoLines
 }

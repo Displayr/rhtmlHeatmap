@@ -1,0 +1,10 @@
+{
+  "matrix": {
+    "cols": [
+      "Col-1 Long Verbose Label for this column that should induce wrapping",
+      "Col-2",
+      "Col-3 Long Verbose Label for this column that should induce wrapping"
+    ]
+  }
+}
+
