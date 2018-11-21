@@ -128,8 +128,6 @@ class HeatmapLayout {
   }
 
   getAllocatedSpace () {
-    // find all enabled rows, get their height, add it up
-    // find all enabled columns, get their width, add it up
     const height = _(HeatmapRows)
       .map('name')
       .filter(name => this._rowEnabled(name))

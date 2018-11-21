@@ -14,7 +14,7 @@ class XAxis extends BaseComponent {
 
     // to deal with superflous zoom calls at beginning of render
     this.amIZoomed = false
-    this.innerLinePadding = 1
+    this.innerLinePadding = 1 // TODO move up
   }
 
   computePreferredDimensions (estimatedColumnWidth) {
@@ -60,7 +60,6 @@ class XAxis extends BaseComponent {
         d3.event.stopPropagation()
       })
 
-    // NB we only handle wrapping when rotation = 0
     const { fontFamily, fontSize, parentContainer, maxLines, innerLinePadding } = this
     if (this.rotation === 0) {
       this.textSelection = this.cellSelection.append('text')
@@ -85,8 +84,8 @@ class XAxis extends BaseComponent {
             textGroup.append('tspan')
               .attr('x', 0)
               .attr('y', i * (fontSize + innerLinePadding))
-              .style('font-size', function (d) { return fontSize })
-              .style('font-family', function (d) { return fontFamily })
+              .style('font-size', fontSize)
+              .style('font-family', fontFamily)
               .style('dominant-baseline', 'text-before-edge')
               .text(lineText)
           })
@@ -106,7 +105,6 @@ class XAxis extends BaseComponent {
           d3.event.stopPropagation()
         })
     }
-
   }
 
   updateHighlights ({ column = null } = {}) {

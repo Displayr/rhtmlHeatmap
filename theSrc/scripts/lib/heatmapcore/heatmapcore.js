@@ -155,6 +155,8 @@ class Heatmap {
   }
 
   buildLayout () {
+    // NB heatmap is not responsible for placing title, subtitle, or footer. See HeatmapOuter
+
     this.layout = new HeatmapLayout(this.options.width, this.options.height, this.options.padding)
     const {options, inner} = this
 
@@ -174,22 +176,6 @@ class Heatmap {
       const dimensions = this.components[CellNames.LEFT_COLUMN].computePreferredDimensions()
       this.layout.enable(CellNames.LEFT_COLUMN)
       this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN, dimensions)
-    }
-
-    if (options.left_columns_title) {
-      this.components[CellNames.LEFT_COLUMN_TITLE] = new ColumnTitle({
-        parentContainer: inner,
-        text: options.left_columns_title,
-        fontFamily: options.left_columns_title_font_family,
-        fontSize: options.left_columns_title_font_size,
-        fontColor: options.left_columns_title_font_color,
-        maxWidth: options.width * 0.33, // TODO needs fixin
-        bold: options.left_columns_title_bold
-      })
-
-      const dimensions = this.components[CellNames.LEFT_COLUMN_TITLE].computePreferredDimensions()
-      this.layout.enable(CellNames.LEFT_COLUMN_TITLE)
-      this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN_TITLE, dimensions)
     }
 
     if (options.left_columns_subtitles) {
@@ -224,22 +210,6 @@ class Heatmap {
       const dimensions = this.components[CellNames.RIGHT_COLUMN].computePreferredDimensions()
       this.layout.enable(CellNames.RIGHT_COLUMN)
       this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN, dimensions)
-    }
-
-    if (options.right_columns_title) {
-      this.components[CellNames.RIGHT_COLUMN_TITLE] = new ColumnTitle({
-        parentContainer: inner,
-        text: options.right_columns_title,
-        fontFamily: options.right_columns_title_font_family,
-        fontSize: options.right_columns_title_font_size,
-        fontColor: options.right_columns_title_font_color,
-        maxWidth: options.width * 0.33, // TODO needs fixin
-        bold: options.right_columns_title_bold
-      })
-
-      const dimensions = this.components[CellNames.RIGHT_COLUMN_TITLE].computePreferredDimensions()
-      this.layout.enable(CellNames.RIGHT_COLUMN_TITLE)
-      this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN_TITLE, dimensions)
     }
 
     if (options.right_columns_subtitles) {
@@ -351,38 +321,6 @@ class Heatmap {
       this.layout.setPreferredDimensions(yaxisTitleCellName, dimensions)
     }
 
-    // Xaxis complication: wrapping. To know the required height (due to wrapping) ,
-    // we need to know the available width
-    if (!options.xaxis_hidden) {
-      if (this.dendrogramData.columns) { options.xaxis_location = 'bottom' }
-      const xaxisCellName = (options.xaxis_location === 'bottom')
-        ? CellNames.BOTTOM_XAXIS
-        : CellNames.TOP_XAXIS
-
-      let rotation = 0
-      if (xaxisCellName === CellNames.BOTTOM_XAXIS) { rotation = 45 }
-      if (xaxisCellName === CellNames.TOP_XAXIS && (options.left_columns_subtitles || options.right_columns_subtitles)) { rotation = -45 }
-
-      this.layout.enable(xaxisCellName)
-      // this.layout.setPreferredDimensions(xaxisCellName, { width: 0, height: 0 })
-      const { width: allocatedWidth } = this.layout.getAllocatedSpace()
-      const estimatedColumnWidth = (this.options.width - allocatedWidth) / this.matrix.cols.length
-
-      this.components[xaxisCellName] = new XAxis({
-        parentContainer: inner,
-        labels: this.matrix.cols,
-        fontSize: options.xaxis_font_size,
-        fontFamily: options.xaxis_font_family,
-        fontColor: options.xaxis_font_color,
-        maxLines: 3, // TODO make configurable
-        rotation
-      })
-
-      const dimensions = this.components[xaxisCellName].computePreferredDimensions(estimatedColumnWidth)
-      this.layout.enable(xaxisCellName)
-      this.layout.setPreferredDimensions(xaxisCellName, dimensions)
-    }
-
     if (options.xaxis_title) {
       const xaxisTitleCellName = this.layout.enabled(CellNames.BOTTOM_XAXIS)
         ? CellNames.BOTTOM_XAXIS_TITLE
@@ -401,6 +339,78 @@ class Heatmap {
       const dimensions = this.components[xaxisTitleCellName].computePreferredDimensions()
       this.layout.enable(xaxisTitleCellName)
       this.layout.setPreferredDimensions(xaxisTitleCellName, dimensions)
+    }
+
+    // NB Xaxis complication: wrapping. To know the required height (due to wrapping) ,
+    // we need to know the available width. (this is why it is done near end)
+    if (!options.xaxis_hidden) {
+      if (this.dendrogramData.columns) { options.xaxis_location = 'bottom' }
+      const xaxisCellName = (options.xaxis_location === 'bottom')
+        ? CellNames.BOTTOM_XAXIS
+        : CellNames.TOP_XAXIS
+
+      let rotation = 0
+      if (xaxisCellName === CellNames.BOTTOM_XAXIS) { rotation = 45 }
+      if (xaxisCellName === CellNames.TOP_XAXIS && (options.left_columns_subtitles || options.right_columns_subtitles)) { rotation = -45 }
+
+      const { width: allocatedWidth } = this.layout.getAllocatedSpace()
+      const estimatedColumnWidth = (this.options.width - allocatedWidth) / this.matrix.cols.length
+
+      this.components[xaxisCellName] = new XAxis({
+        parentContainer: inner,
+        labels: this.matrix.cols,
+        fontSize: options.xaxis_font_size,
+        fontFamily: options.xaxis_font_family,
+        fontColor: options.xaxis_font_color,
+        maxLines: 3, // TODO make configurable
+        rotation
+      })
+
+      const dimensions = this.components[xaxisCellName].computePreferredDimensions(estimatedColumnWidth)
+      this.layout.enable(xaxisCellName)
+      this.layout.setPreferredDimensions(xaxisCellName, dimensions)
+    }
+
+    // NB Column title complication: wrapping. To know the required height (due to wrapping) ,
+    // we need to know the available width. (this is why it is done near end)
+    if (options.right_columns_title) {
+      const { width: availableWidth } = this.layout.getCellBounds(CellNames.RIGHT_COLUMN)
+
+      this.components[CellNames.RIGHT_COLUMN_TITLE] = new ColumnTitle({
+        parentContainer: inner,
+        text: options.right_columns_title,
+        fontFamily: options.right_columns_title_font_family,
+        fontSize: options.right_columns_title_font_size,
+        fontColor: options.right_columns_title_font_color,
+        maxWidth: availableWidth,
+        maxLines: 3,
+        bold: options.right_columns_title_bold
+      })
+
+      const dimensions = this.components[CellNames.RIGHT_COLUMN_TITLE].computePreferredDimensions()
+      this.layout.enable(CellNames.RIGHT_COLUMN_TITLE)
+      this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN_TITLE, dimensions)
+    }
+
+    // NB Column title complication: wrapping. To know the required height (due to wrapping) ,
+    // we need to know the available width. (this is why it is done near end)
+    if (options.left_columns_title) {
+      const { width: availableWidth } = this.layout.getCellBounds(CellNames.RIGHT_COLUMN)
+
+      this.components[CellNames.LEFT_COLUMN_TITLE] = new ColumnTitle({
+        parentContainer: inner,
+        text: options.left_columns_title,
+        fontFamily: options.left_columns_title_font_family,
+        fontSize: options.left_columns_title_font_size,
+        fontColor: options.left_columns_title_font_color,
+        maxWidth: availableWidth,
+        maxLines: 3,
+        bold: options.left_columns_title_bold
+      })
+
+      const dimensions = this.components[CellNames.LEFT_COLUMN_TITLE].computePreferredDimensions()
+      this.layout.enable(CellNames.LEFT_COLUMN_TITLE)
+      this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN_TITLE, dimensions)
     }
 
     this.components[CellNames.COLORMAP] = new Colormap({
