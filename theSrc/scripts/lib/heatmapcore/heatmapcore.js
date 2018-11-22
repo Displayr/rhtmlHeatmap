@@ -194,6 +194,26 @@ class Heatmap {
       this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN_SUBTITLE, dimensions)
     }
 
+    if (options.left_columns_title) {
+      // NB need available width to perform wrapping, which influences required height
+      const { width: availableWidth } = this.layout.getCellBounds(CellNames.LEFT_COLUMN)
+
+      this.components[CellNames.LEFT_COLUMN_TITLE] = new ColumnTitle({
+        parentContainer: inner,
+        text: options.left_columns_title,
+        fontFamily: options.left_columns_title_font_family,
+        fontSize: options.left_columns_title_font_size,
+        fontColor: options.left_columns_title_font_color,
+        maxWidth: availableWidth,
+        maxLines: 3,
+        bold: options.left_columns_title_bold
+      })
+
+      const dimensions = this.components[CellNames.LEFT_COLUMN_TITLE].computePreferredDimensions()
+      this.layout.enable(CellNames.LEFT_COLUMN_TITLE)
+      this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN_TITLE, dimensions)
+    }
+
     if (options.right_columns) {
       this.components[CellNames.RIGHT_COLUMN] = new ColumnGroup({
         parentContainer: inner,
@@ -227,6 +247,26 @@ class Heatmap {
       const dimensions = this.components[CellNames.RIGHT_COLUMN_SUBTITLE].computePreferredDimensions()
       this.layout.enable(CellNames.RIGHT_COLUMN_SUBTITLE)
       this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN_SUBTITLE, dimensions)
+    }
+
+    if (options.right_columns_title) {
+      // NB need available width to perform wrapping, which influences required height
+      const { width: availableWidth } = this.layout.getCellBounds(CellNames.RIGHT_COLUMN)
+
+      this.components[CellNames.RIGHT_COLUMN_TITLE] = new ColumnTitle({
+        parentContainer: inner,
+        text: options.right_columns_title,
+        fontFamily: options.right_columns_title_font_family,
+        fontSize: options.right_columns_title_font_size,
+        fontColor: options.right_columns_title_font_color,
+        maxWidth: availableWidth,
+        maxLines: 3,
+        bold: options.right_columns_title_bold
+      })
+
+      const dimensions = this.components[CellNames.RIGHT_COLUMN_TITLE].computePreferredDimensions()
+      this.layout.enable(CellNames.RIGHT_COLUMN_TITLE)
+      this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN_TITLE, dimensions)
     }
 
     if (this.dendrogramData.columns) {
@@ -369,48 +409,6 @@ class Heatmap {
       const dimensions = this.components[xaxisCellName].computePreferredDimensions(estimatedColumnWidth)
       this.layout.enable(xaxisCellName)
       this.layout.setPreferredDimensions(xaxisCellName, dimensions)
-    }
-
-    // NB Column title complication: wrapping. To know the required height (due to wrapping) ,
-    // we need to know the available width. (this is why it is done near end)
-    if (options.right_columns_title) {
-      const { width: availableWidth } = this.layout.getCellBounds(CellNames.RIGHT_COLUMN)
-
-      this.components[CellNames.RIGHT_COLUMN_TITLE] = new ColumnTitle({
-        parentContainer: inner,
-        text: options.right_columns_title,
-        fontFamily: options.right_columns_title_font_family,
-        fontSize: options.right_columns_title_font_size,
-        fontColor: options.right_columns_title_font_color,
-        maxWidth: availableWidth,
-        maxLines: 3,
-        bold: options.right_columns_title_bold
-      })
-
-      const dimensions = this.components[CellNames.RIGHT_COLUMN_TITLE].computePreferredDimensions()
-      this.layout.enable(CellNames.RIGHT_COLUMN_TITLE)
-      this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN_TITLE, dimensions)
-    }
-
-    // NB Column title complication: wrapping. To know the required height (due to wrapping) ,
-    // we need to know the available width. (this is why it is done near end)
-    if (options.left_columns_title) {
-      const { width: availableWidth } = this.layout.getCellBounds(CellNames.RIGHT_COLUMN)
-
-      this.components[CellNames.LEFT_COLUMN_TITLE] = new ColumnTitle({
-        parentContainer: inner,
-        text: options.left_columns_title,
-        fontFamily: options.left_columns_title_font_family,
-        fontSize: options.left_columns_title_font_size,
-        fontColor: options.left_columns_title_font_color,
-        maxWidth: availableWidth,
-        maxLines: 3,
-        bold: options.left_columns_title_bold
-      })
-
-      const dimensions = this.components[CellNames.LEFT_COLUMN_TITLE].computePreferredDimensions()
-      this.layout.enable(CellNames.LEFT_COLUMN_TITLE)
-      this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN_TITLE, dimensions)
     }
 
     this.components[CellNames.COLORMAP] = new Colormap({

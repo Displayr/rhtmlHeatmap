@@ -227,6 +227,7 @@ class Colormap extends BaseComponent {
     const label = this.matrix.merged[row * this.counts.column + col].label
 
     if (this.matrix.merged[row * this.counts.column + col].hide) {
+      this.tip.hide()
       return
     }
     var this_tip = this.tip.show({col, row, label}).style({
