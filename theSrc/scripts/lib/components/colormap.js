@@ -370,16 +370,17 @@ function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extr
   return (d, i) => {
     var rowTitle = yaxisTitle || 'Row'
     var colTitle = xaxisTitle || 'Column'
+
     let extraInfoHtml = ''
-//     if (extraTooltipInfo) {
-//       extraInfoHtml = _.map(extraTooltipInfo, (value, key) => {
-//         return `
-// <tr>
-//   <th style="${commonStyleWithAlign}">${key}</th>
-//   <td style="${commonStyle}">${htmlEscape(value[d.row * numCols + d.col])}</td>
-// </tr>`
-//       })
-//     }
+    if (extraTooltipInfo) {
+      extraInfoHtml = _.map(extraTooltipInfo, (value, key) => {
+        return `
+          <tr>
+            <th style="${commonStyleWithAlign}">${key}</th>
+            <td style="${commonStyle}">${htmlEscape(value[d.row * numCols + d.col])}</td>
+          </tr>`
+      }).join('')
+    }
 
     return `<table class="rhtmlHeatmap-tip-table">
       <tr>
