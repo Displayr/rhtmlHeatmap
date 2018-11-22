@@ -2,23 +2,38 @@ import BaseComponent from './baseComponent'
 import d3 from 'd3'
 import _ from 'lodash'
 
+const validLabelFormatValues = ['normal', 'percentage']
+
 class Legend extends BaseComponent {
   constructor ({parentContainer, colors, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat}) {
     super()
     _.assign(this, {parentContainer, colors, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat})
+
+    if (!_.includes(validLabelFormatValues, this.labelFormat)) {
+      throw new Error(`Invalid labelFormat '${this.labelFormat}: valid values : ${validLabelFormatValues}`)
+    }
   }
 
+  makeD3Format (digits, labelFormat) {
+    // http://bl.ocks.org/zanarmstrong/05c1e95bf7aa16c4768e <-- NB how d3.format works interactive example
+    const formatCodes = {normal: 'f', percentage: '%'}
+    return d3.format(`,.${digits}${formatCodes[labelFormat]}`)
+  }
+
+  // NB this actually does two things (yay side effects)
+  //  1: compute preferred dimensions
+  //  2: compute and save this.legend_format <-- requires (in some cases) knowing the tick count, which requires drawing the axis
   computePreferredDimensions () {
     const dummySvg = this.parentContainer.append('svg')
     const legendAxisG = dummySvg.append('g')
 
     dummySvg.selectAll('rect').data(this.colors)
 
-    const rectHeight = 10
+    const rectHeight = 10 // NB this is just placeholder as we are only interested in computing width
 
-    const legendScale = d3.scale.linear().range([this.colors.length * rectHeight, 0]).nice()
-
-    legendScale.domain(this.range)
+    const legendScale = d3.scale.linear()
+      .domain(this.range)
+      .range([this.colors.length * rectHeight, 0]).nice()
 
     const legendAxis = d3.svg.axis()
       .scale(legendScale)
@@ -30,7 +45,7 @@ class Legend extends BaseComponent {
 
     if (this.colors) {
       if (this.digits) {
-        this.legend_format = d3.format(',.' + this.digits + 'f')
+        this.legend_format = this.makeD3Format(this.digits, this.labelFormat)
       } else {
         const legend_step = (d3.max(this.range) - d3.min(this.range)) / (legendTicksCount - 1)
         let legend_dig
@@ -41,12 +56,8 @@ class Legend extends BaseComponent {
         } else {
           legend_dig = 0
         }
-        this.legend_format = d3.format(',.' + legend_dig + 'f')
+        this.legend_format = this.makeD3Format(legend_dig, this.labelFormat)
       }
-    }
-    // http://bl.ocks.org/zanarmstrong/05c1e95bf7aa16c4768e <-- figure out how d3.format works
-    if (this.labelFormat) {
-      this.legend_format = d3.format(',.1%')
     }
 
     legendAxis.tickFormat(this.legend_format)
@@ -88,8 +99,9 @@ class Legend extends BaseComponent {
       .style('stroke', (d) => d)
       .style('stroke-width', '1px')
 
-    const legendScale = d3.scale.linear().range([this.colors.length * rectHeight, 0]).nice()
-    legendScale.domain(this.range)
+    const legendScale = d3.scale.linear()
+      .domain(this.range)
+      .range([this.colors.length * rectHeight, 0]).nice()
 
     const legendAxis = d3.svg.axis()
       .scale(legendScale)

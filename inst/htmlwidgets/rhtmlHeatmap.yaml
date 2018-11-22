@@ -1,0 +1,5 @@
+dependencies:
+- name: style
+  version: 0.0.1
+  src: htmlwidgets/lib/style
+  stylesheet: heatmapcore.css

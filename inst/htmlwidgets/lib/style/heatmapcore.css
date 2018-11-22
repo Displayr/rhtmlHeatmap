@@ -1,0 +1,89 @@
+.link {
+  fill: none;
+}
+.rhtmlHeatmap-tip {
+  font-size: 15px;
+  font-family: sans-serif;
+  white-space: nowrap;
+  background-color: #444;
+  padding: 6px 12px;
+  box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.22);
+  color: white;
+}
+.rhtmlHeatmap-tip-table {
+  border-collapse: separate;
+  border-spacing: 2px;
+}
+.rhtmlHeatmap-tip-table th,
+.rhtmlHeatmap-tip-table td {
+  padding: 0 1px;
+  color: white;
+}
+.rhtmlHeatmap {
+  position: relative;
+  overflow: hidden;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.rhtmlHeatmap .inner {
+  position: relative;
+}
+.rhtmlHeatmap .domain {
+  fill: none;
+  stroke: none;
+}
+.rhtmlHeatmap .click-rect,
+.rhtmlHeatmap .axis-text {
+  cursor: pointer;
+}
+.rhtmlHeatmap .axis {
+  overflow: hidden;
+}
+.rhtmlHeatmap .axis line {
+  fill: none;
+  stroke: #AAA;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+.rhtmlHeatmap .brush .extent {
+  fill-opacity: 0.15;
+  stroke-width: 1px;
+}
+.rhtmlHeatmap .dendrogram {
+  position: absolute;
+  overflow: hidden;
+}
+.rhtmlHeatmap .highlighting .data-cell {
+  opacity: 0.2;
+}
+.rhtmlHeatmap .highlighting .data-cell.highlight {
+  opacity: 1;
+}
+.rhtmlHeatmap .row-highlighting .yaxis .axis-text {
+  opacity: 0.4;
+}
+.rhtmlHeatmap .row-highlighting .yaxis .axis-text.highlight {
+  opacity: 1;
+}
+.rhtmlHeatmap .row-highlighting .column-text {
+  opacity: 0.4;
+}
+.rhtmlHeatmap .row-highlighting .column-text.highlight {
+  opacity: 1;
+}
+.rhtmlHeatmap .column-highlighting .xaxis .axis-text {
+  opacity: 0.4;
+}
+.rhtmlHeatmap .column-highlighting .xaxis .axis-text.highlight {
+  opacity: 1;
+}
+.rhtmlHeatmap .zoomed .xaxis .axis-text {
+  opacity: 0;
+}
+.rhtmlHeatmap .zoomed .xaxis .axis-text.in-zoom {
+  opacity: 1;
+}

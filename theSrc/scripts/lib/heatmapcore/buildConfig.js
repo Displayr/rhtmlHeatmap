@@ -14,7 +14,7 @@ const defaultConfig = {
   legend_colors: null,
   legend_digits: null,
   legend_font_size: 15,
-  legend_format: null,
+  legend_label_format: 'normal', // 'normal' || 'percentage'
   legend_left_space: 26,
   legend_range: null,
   legend_width: null,
