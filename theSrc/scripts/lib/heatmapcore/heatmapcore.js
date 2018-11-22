@@ -159,6 +159,7 @@ class Heatmap {
 
     this.layout = new HeatmapLayout(this.options.width, this.options.height, this.options.padding)
     const {options, inner} = this
+    if (this.dendrogramData.columns) { options.xaxis_location = 'bottom' }
 
     if (options.left_columns) {
       this.components[CellNames.LEFT_COLUMN] = new ColumnGroup({
@@ -362,7 +363,7 @@ class Heatmap {
     }
 
     if (options.xaxis_title) {
-      const xaxisTitleCellName = this.layout.enabled(CellNames.BOTTOM_XAXIS)
+      const xaxisTitleCellName = (options.xaxis_location === 'bottom')
         ? CellNames.BOTTOM_XAXIS_TITLE
         : CellNames.TOP_XAXIS_TITLE
 
@@ -384,7 +385,6 @@ class Heatmap {
     // NB Xaxis complication: wrapping. To know the required height (due to wrapping) ,
     // we need to know the available width. (this is why it is done near end)
     if (!options.xaxis_hidden) {
-      if (this.dendrogramData.columns) { options.xaxis_location = 'bottom' }
       const xaxisCellName = (options.xaxis_location === 'bottom')
         ? CellNames.BOTTOM_XAXIS
         : CellNames.TOP_XAXIS
