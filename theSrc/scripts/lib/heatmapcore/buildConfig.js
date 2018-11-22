@@ -32,7 +32,6 @@ const defaultConfig = {
   tip_font_size: 11,
   title_margin_top: 5,
   title_margin_X: 10,
-  x_is_factor: null,
   xaxis_font_size: 15,
   xaxis_font_family: 'sans-serif',
   xaxis_font_color: 'black',

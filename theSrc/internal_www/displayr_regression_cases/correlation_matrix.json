@@ -338,7 +338,6 @@
     ]
   },
   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAABXklEQVQYlSXMsU7bQACA4QPJHdqJqar6En6HDlUfw10ZYexTIHViYGMoYkGVqixUkYhUEAoCBLFESGzHIdi++mL7fGD74GfI/ukTjuux1Ia0qLHRNXvnEXJni+FMoSrDJCt5GfURS21wXI8umXJ49UChDV0aYKdDjm4WNL1dxmmJSIuaLpniuB42vOT4LmWea3p+Qtvfp+cnFNogbHTN4dUDNrxc4blPICsalXAW5sx+fF+Ne+cRhTYc36XYub/C8YiTiaTNIkJZ0Q0OEHJniy4NmOeaQFbYeITjejyZmqbMeVxqTsMcMZwp7HRIz09oVMLJRPJkahzXoykk/4L/2PgWoSrD0c2Ctr/PWZjTZhFNmdMUEsf1aAe/uM9K1tWzFV/j3+Lvxy/i0+62WKxtCPX6TlyoNVH//CY+bP4Rn9+vC/Ey6jNOSwptGKcl3eCA0zDHxrfcZyXPtcZxPd4AM5hDqyzXZYsAAAAASUVORK5CYII=",
-  "theme": null,
   "options": {
     "xaxis_height": 80,
     "xaxis_font_size": 11.06,
@@ -406,9 +405,7 @@
     "right_columns_subtitles_font_family": "sans-serif",
     "right_columns_subtitles_font_color": "#000000",
     "brush_color": "#0000FF",
-    "show_grid": true,
-    "x_is_factor": false,
-    "legend_colors": [
+    "show_grid": true,    "legend_colors": [
       "#053061",
       "#0A3A70",
       "#10457F",

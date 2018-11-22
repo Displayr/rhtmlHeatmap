@@ -1117,7 +1117,6 @@
     ]
   },
   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAALCAYAAAAeEY8BAAADEElEQVQ4jX2UTWhcVRTHf+fd++bNR5vXicW0moQUEkRpbSxdpRI/0ErBjVA0SlelunEjQnHnQs2iLoIu3CiUiota0VoEF1KLQqOiLbaoxDChUlutTG0yCWnn471333Exk+lMRt1efhzO/Z/fOXJ67m/NWsPxn/9ipBgwMdiPAA2XkrUGBVQVgFrieOzezfLiyTntZOsuJbeOrSaOvDXsGSvKO7OXdXwgRBDqLiFrLbRYL+9b6onj2R1b+fTcn+wZK4oCGeNRTRIAPBEA8r7lzPwNndq+hSPHfuDoj38wMVaUwHjUEod0sAXf0nApswsV/fynMt9fqwBKYAy1+HZdmS0tqYgQOYcR4anpL9g+Psz0k/cBELWSAEjXfhcn5H3Lyfkyu+/ayHBfHoB64sj5FmmxIsKtOCFvDZ+VrjMUBjwwELYTKvgW+XahomtwLUkIjOGDi9cY3BTw6Mgd0DEO6Wii4VIyxuth686Rs7aLjVyK9YSXPrzIjrHNPL97qF3DW4tCVckaQ+RSDuzcyqnvrvDe+asABMajnriucQTGI0572awxPWzGeCjw1tQ4J958l5mzvyGtdznz6w3NrYvYqSLA3gPTPH5oilceGUVbP1nPxmmKEWHvobeZfHofrz5xz3+yK1FMmPGZX1wlsB7bwgLyTamiNZeQ6zBTRFhpRPRlfEpLq2wMLFsKOTwR6km3xSLCcj0iDHwuLd/EiDASFpojjRNyfjdbjRNy1vD174v0BQZPUXLGdpmpqoRBhsiljBY3cPj9C3wyVwZtWlzvMF5V2ZTNEKUp28ICr330Cx/PlZsjtb1s3rfEacrkcD9vHDuPPDQzq/9nfN05Mp7HvsPHeea5SQ7uGmwL1BmxiLAaxWzwbXfELbnXJ3wziptb8PrpBe3PWXbeGSIizVVqHZVUFa9jHBfKy9yKUh4c6m+znQ17IjQSh/WE/Ue+ZGR0gJn997ddCcztutJaWzlbWtJT89epVCMO7hrsuYKdslkRXjh6jtWVKidefvhfC6tqO52vLi8S+MLE3WsX0/X48w94b7N+LS2ZRQAAAABJRU5ErkJggg==",
-  "theme": null,
   "options": {
     "xaxis_height": 80,
     "xaxis_font_size": 10,
@@ -1186,7 +1185,6 @@
     "right_columns_subtitles_font_color": "#2C2C2C",
     "brush_color": "#0000FF",
     "show_grid": true,
-    "x_is_factor": false,
     "legend_colors": [
       "#08306B",
       "#083471",

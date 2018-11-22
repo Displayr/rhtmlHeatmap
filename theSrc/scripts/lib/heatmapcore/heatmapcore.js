@@ -263,7 +263,6 @@ class Heatmap {
       this.components[CellNames.COLOR_LEGEND] = new Legend({
         parentContainer: inner,
         colors: options.legend_colors,
-        x_is_factor: options.x_is_factor,
         range: options.legend_range,
         digits: options.legend_digits,
         fontSize: options.legend_font_size,

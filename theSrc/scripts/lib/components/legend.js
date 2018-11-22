@@ -3,9 +3,9 @@ import d3 from 'd3'
 import _ from 'lodash'
 
 class Legend extends BaseComponent {
-  constructor ({parentContainer, colors, x_is_factor, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat}) {
+  constructor ({parentContainer, colors, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat}) {
     super()
-    _.assign(this, {parentContainer, colors, x_is_factor, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat})
+    _.assign(this, {parentContainer, colors, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat})
   }
 
   computePreferredDimensions () {
@@ -16,9 +16,7 @@ class Legend extends BaseComponent {
 
     const rectHeight = 10
 
-    const legendScale = (this.x_is_factor)
-      ? d3.scale.ordinal().rangeBands([this.colors.length * rectHeight, 0]).nice()
-      : d3.scale.linear().range([this.colors.length * rectHeight, 0]).nice()
+    const legendScale = d3.scale.linear().range([this.colors.length * rectHeight, 0]).nice()
 
     legendScale.domain(this.range)
 
@@ -30,7 +28,7 @@ class Legend extends BaseComponent {
     legendAxisG.call(legendAxis)
     const legendTicksCount = legendAxisG.selectAll('text')[0].length
 
-    if (this.colors && !this.x_is_factor) {
+    if (this.colors) {
       if (this.digits) {
         this.legend_format = d3.format(',.' + this.digits + 'f')
       } else {
@@ -90,10 +88,7 @@ class Legend extends BaseComponent {
       .style('stroke', (d) => d)
       .style('stroke-width', '1px')
 
-    const legendScale = (this.x_is_factor)
-      ? d3.scale.ordinal().rangeBands([this.colors.length * rectHeight, 0]).nice()
-      : d3.scale.linear().range([this.colors.length * rectHeight, 0]).nice()
-
+    const legendScale = d3.scale.linear().range([this.colors.length * rectHeight, 0]).nice()
     legendScale.domain(this.range)
 
     const legendAxis = d3.svg.axis()

@@ -27,7 +27,7 @@ dendToTree <- function(dend) {
   
   # In the future, this could either be fixed here, or in the javascript.
   if (is.null(tree$edgePar$col))
-    tree$edgePar$col <- "" # Default to empty so CSS takes over (for dark theme)
+    tree$edgePar$col <- ""
   else
     tree$edgePar$col <- rgb(t(col2rgb(tree$edgePar$col, alpha = TRUE)), maxColorValue = 255)
   

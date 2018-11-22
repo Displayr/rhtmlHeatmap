@@ -2,8 +2,7 @@
   "options": {
     "legend_font_size": 11,
     "legend_font_family": "sans-serif",
-    "legend_font_color": "#000000",
-    "legend_colors": [
+    "legend_font_color": "#000000",    "legend_colors": [
       "#313695",
       "#37439B",
       "#3B50A2",

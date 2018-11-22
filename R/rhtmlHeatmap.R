@@ -16,9 +16,6 @@ NULL
 #'
 #' @param x A numeric matrix
 #'   Defaults to \code{TRUE} unless \code{x} contains any \code{NA}s.
-#' @param theme A custom CSS theme to use. Currently the only valid values are
-#'   \code{""} and \code{"dark"}. \code{"dark"} is primarily intended for
-#'   standalone visualizations, not R Markdown or Shiny.
 #' @param colors Either a colorbrewer2.org palette name (e.g. \code{"YlOrRd"} or
 #'   \code{"Blues"}), or a vector of colors to interpolate in hexadecimal
 #'   \code{"#RRGGBB"} format, or a color interpolation function like
@@ -567,45 +564,34 @@ Heatmap <- function(x,
 
   legend.colors = NULL
   legend.range = NULL
-  x_is_factor = FALSE
 
   if (show_legend) {
     if (scale == "column" || scale == "row") {
       show_legend = FALSE
     }
   }
-  if (is.factor(x)) {
-    x_is_factor = TRUE
-    colors <- scales::col_factor(colors, x, na.color = "transparent")
-    if (show_legend) {
-      legend.colors = colors(unique(x))
-      legend.range = as.character(unique(x))
+
+  if (!is.null(color_range)) {
+    if (!is.vector(color_range) || length(color_range) != 2) {
+      stop("color_range must be a vector with length 2.")
     }
+    if (max(x, na.rm = TRUE) > max(color_range) || min(x, na.rm = TRUE) < min(color_range)) {
+      stop("Range of color_range must not be smaller than range of x.
+           If this is not the case, make sure scale is set to 'none'")
+    }
+    colors <- scales::col_numeric(colors, color_range, na.color = "transparent")
+    rng <- c(min(color_range), max(color_range))
   } else {
-    if (!is.null(color_range)) {
-      if (!is.vector(color_range) || length(color_range) != 2) {
-        stop("color_range must be a vector with length 2.")
-      }
-      if (max(x, na.rm = TRUE) > max(color_range) || min(x, na.rm = TRUE) < min(color_range)) {
-        stop("Range of color_range must not be smaller than range of x.
-             If this is not the case, make sure scale is set to 'none'")
-      }
-      colors <- scales::col_numeric(colors, color_range, na.color = "transparent")
-      rng <- c(min(color_range), max(color_range))
-    } else {
-      rng <- range(x, na.rm = TRUE)
-      if (scale %in% c("row", "column")) {
-        rng <- c(max(abs(rng)), -max(abs(rng)))
-      }
-
-      colors <- scales::col_numeric(colors, rng, na.color = "transparent")
+    rng <- range(x, na.rm = TRUE)
+    if (scale %in% c("row", "column")) {
+      rng <- c(max(abs(rng)), -max(abs(rng)))
     }
-
-    if (show_legend) {
-      legend.val = seq(max(rng), min(rng), by = ((min(rng) - max(rng))/49))
-      legend.colors = colors(legend.val)
-      legend.range = rng
-    }
+    colors <- scales::col_numeric(colors, rng, na.color = "transparent")
+  }
+  if (show_legend) {
+    legend.val = seq(max(rng), min(rng), by = ((min(rng) - max(rng))/49))
+    legend.colors = colors(legend.val)
+    legend.range = rng
   }
 
   # colors is now a function that takes a number and returns an #RRGGBB value
@@ -790,7 +776,6 @@ Heatmap <- function(x,
 
       brush_color = brush_color,
       show_grid = show_grid,
-      x_is_factor = x_is_factor,
       legend_colors = legend.colors,
       legend_range = legend.range,
       legend_width = legend_width,
@@ -807,8 +792,7 @@ Heatmap <- function(x,
       options <- c(options, list(xclust_height = 0))
   }
 
-  payload <- list(rows = rowDend, cols = colDend, matrix = mtx, image = imgUri,
-    theme = theme, options = options)
+  payload <- list(rows = rowDend, cols = colDend, matrix = mtx, image = imgUri, options = options)
 
   # create widget
   htmlwidgets::createWidget(

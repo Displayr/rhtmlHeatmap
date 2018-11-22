@@ -3,7 +3,6 @@ const heatmapOuter = require('./heatmapOuter')
 
 module.exports = function (element) {
   const instance = {
-    lastTheme: null,
     lastValue: null
   }
 
@@ -13,14 +12,6 @@ module.exports = function (element) {
   // wrapper data object, not x.
   function doRenderValue (config) {
     instance.lastValue = config
-
-    if (instance.lastTheme && instance.lastTheme !== config.theme) {
-      d3.select(document.body).classed('theme-' + instance.lastTheme, false)
-    }
-    if (config.theme) {
-      d3.select(document.body).classed('theme-' + config.theme, true)
-    }
-
     element.innerHTML = ''
     d3.select(document.body).select('.rhtmlHeatmap-tip').remove()
 

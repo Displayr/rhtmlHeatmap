@@ -135,10 +135,6 @@ should cellnote be scaled if x is also scaled?}
 
 \item{legend_digits}{positive integer. Sets the decimal places of the legend texts. Estimates the decimal places needed by default.}
 
-\item{theme}{A custom CSS theme to use. Currently the only valid values are
-\code{""} and \code{"dark"}. \code{"dark"} is primarily intended for
-standalone visualizations, not R Markdown or Shiny.}
-
 \item{colors}{Either a colorbrewer2.org palette name (e.g. \code{"YlOrRd"} or
 \code{"Blues"}), or a vector of colors to interpolate in hexadecimal
 \code{"#RRGGBB"} format, or a color interpolation function like

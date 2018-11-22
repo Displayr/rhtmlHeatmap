@@ -1,8 +1,7 @@
 {
   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAALCAYAAAAeEY8BAAACzklEQVQ4jX2UT2hcVRTGf+e+P/MmycSUWpxQmoioi0SbtouuXAm6sBtdGFRwI7hy5aIbF7oS1xURwYIouumuUEoXtkgpVSlFCzHq6CLaf8SEJCbz3pt373v3uHhxzGSmLu7m8ONwzne++8lGWmocGi4u32d2cpynjkwiCLbyNEIDgFcFoHCekWzpaUSDbM95ksjw051t4tDwRHsCQSjKiiQK+qxpxgG29LwwN81H11dYur0NQBwYeq4CwIggCM04wFU1u3jmKudu3a7Z0FA4P8hGAbZU5g5P8tWteyzf3QGgEQbkdk/fzKqKgC09gRHmT1/g+Wce48yL8yjg9iihCorSs54kNlz59S/mHnmI9lSCwNB2gpC7iiQyXO2s024lPDk90a+PxQGSO9V/4aKsiALD+aW7zLTGOfHo1G69lnOvxLZUokBGsINDALhKCY3w+hc3OXX0EK8dn0VRXKmQO9XcqWa2fltZpd3C60uf3tCz369oZlVT63Urq3Q/+3c+mt0cwe70vHYLr8mxt/SDy7/3WfbDqfX/wSdP67uXOg9snFrfH6L57Pv69vmfHzhwar2ubjtNrdfle139bTXT1HqVzKoOOVOEnV7JeCPgz/WcsUbAw60YEaFww3fe6TkmkpA7GzmBCNMHktGOFyG3FY3I8OPKFmONEKMojTAYcLwqtJIQVylHDjZZ/ORbvv5lFbR28V7HA7SSiLJSDh9o8saXN2uWYVYVkiigrJSF2Sle/vAavHluSVPra9nyYdk2s1K7hdepVz7Xz2788b+eWOsOS5xZ1c2s7LOp9Zo71fVdVq51NrSVRDzeHh8ZKoLQLepzdO53KZzn6ZlJRATrhllbeUIjLLxziZNH25x99RiC4Ko6xAZ/kke6hddvOmus9XosLswgMJSCqlB5JTDCqY+vs7me8d17z6FAua+xKv0lfljZIg4M87uJOSon/gG4F6GzyoD1rgAAAABJRU5ErkJggg==",
   "options": {
-    "legend_font_size": 11,
-    "legend_colors": [
+    "legend_font_size": 11,    "legend_colors": [
       "#08306B",
       "#083573",
       "#093A7B",
