@@ -389,12 +389,17 @@ class Heatmap {
         ? CellNames.BOTTOM_XAXIS
         : CellNames.TOP_XAXIS
 
-      let rotation = 0
-      if (xaxisCellName === CellNames.BOTTOM_XAXIS) { rotation = 45 }
-      if (xaxisCellName === CellNames.TOP_XAXIS && (options.left_columns_subtitles || options.right_columns_subtitles)) { rotation = -45 }
-
       const { width: allocatedWidth } = this.layout.getAllocatedSpace()
       const estimatedColumnWidth = (this.options.width - allocatedWidth) / this.matrix.cols.length
+
+      // TODO NB estimateColumnWidht < MAGIC NUMBER - expose as advanced param
+      // TODO NB Should this be pushed into xaxis class ?
+      let rotation = 0
+      if (xaxisCellName === CellNames.BOTTOM_XAXIS) { rotation = 45 }
+      if (xaxisCellName === CellNames.TOP_XAXIS) {
+        if (options.left_columns_subtitles || options.right_columns_subtitles) { rotation = -45 }
+        if (estimatedColumnWidth < 100) { rotation = -45 }
+      }
 
       this.components[xaxisCellName] = new XAxis({
         parentContainer: inner,
