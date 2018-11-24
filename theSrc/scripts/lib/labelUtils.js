@@ -4,29 +4,29 @@ let uniqueId = 0
 function getUniqueId () { return uniqueId++ }
 function toRadians (degrees) { return degrees * (Math.PI / 180) }
 
-function getLabelDimensionsUsingSvgApproximation (parentContainer, inputString, fontSize, fontFamily, rotation = 0) {
+function getLabelDimensionsUsingSvgApproximation ({parentContainer, text, fontSize, fontFamily, rotation = 0}) {
   const uniqueId = `tempLabel-${getUniqueId()}`
 
   const container = parentContainer.append('g')
     .attr('class', 'tempLabel')
     .attr('id', uniqueId)
 
-  const text = container.append('text')
+  const textElement = container.append('text')
     .style('dominant-baseline', 'text-before-edge')
     .attr('x', 0)
     .attr('y', 0)
     .attr('dy', 0)
     .attr('transform', `rotate(${rotation})`)
 
-  text.append('tspan')
+  textElement.append('tspan')
     .attr('x', 0)
     .attr('y', 0)
     .style('font-size', `${fontSize}px`)
     .style('font-family', fontFamily)
     .style('dominant-baseline', 'text-before-edge')
-    .text(inputString)
+    .text(text)
 
-  const {x, y, width: unadjustedWidth, height: unadjustedHeight} = text.node().getBBox()
+  const {x, y, width: unadjustedWidth, height: unadjustedHeight} = textElement.node().getBBox()
 
   // NB on some window sizes getBBox will return negative y offsets. Add them to returned value for consistent behaviour
   // across all window sizes
@@ -48,34 +48,70 @@ function wordTokenizer (inputString) {
   return inputString.split(' ').map(_.trim).filter((token) => !_.isEmpty(token))
 }
 
-function splitIntoLines (parentContainer, inputString, maxWidth, fontSize = 12, fontFamily = 'sans-serif', maxLines = null) {
-  let tokens = wordTokenizer(inputString)
+function splitIntoLinesByWord ({parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', maxWidth, maxHeight, maxLines = null, rotation = 0} = {}) {
+  let tokens = wordTokenizer(text)
+  return _splitIntoLines({
+    parentContainer,
+    text,
+    fontSize,
+    fontFamily,
+    maxWidth,
+    maxHeight,
+    maxLines,
+    tokens,
+    joinCharacter: ' ',
+    rotation
+  })
+}
 
+function splitIntoLinesByCharacter ({parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', maxWidth, maxHeight, maxLines = null, rotation = 0} = {}) {
+  let tokens = text.split('')
+  return _splitIntoLines({
+    parentContainer,
+    text,
+    fontSize,
+    fontFamily,
+    maxWidth,
+    maxHeight,
+    maxLines,
+    tokens,
+    joinCharacter: '',
+    rotation
+  })
+}
+
+function _splitIntoLines ({parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', maxWidth, maxHeight, maxLines = null, tokens, joinCharacter, rotation} = {}) {
   let currentLine = []
   let lines = []
   let token = null
   while (token = tokens.shift()) { // eslint-disable-line no-cond-assign
     currentLine.push(token)
 
-    const { width } = getLabelDimensionsUsingSvgApproximation(parentContainer, currentLine.join(' '), fontSize, fontFamily)
-    if (width > maxWidth && currentLine.length > 1) {
+    const { width, height } = getLabelDimensionsUsingSvgApproximation({
+      parentContainer,
+      text: currentLine.join(joinCharacter),
+      fontSize,
+      fontFamily,
+      rotation
+    })
+    if ((width > maxWidth || height > maxHeight) && currentLine.length > 1) {
       if (maxLines && lines.length === maxLines - 1) {
         currentLine.pop()
         currentLine.push('...')
         tokens = []
-        lines.push(`${currentLine.join(' ')}`)
+        lines.push(`${currentLine.join(joinCharacter)}`)
         currentLine = []
         break
       } else {
         tokens.unshift(currentLine.pop())
-        lines.push(`${currentLine.join(' ')}`)
+        lines.push(`${currentLine.join(joinCharacter)}`)
         currentLine = []
       }
     }
   }
 
   if (currentLine.length > 0) {
-    lines.push(`${currentLine.join(' ')}`)
+    lines.push(`${currentLine.join(joinCharacter)}`)
   }
 
   return lines
@@ -83,5 +119,6 @@ function splitIntoLines (parentContainer, inputString, maxWidth, fontSize = 12, 
 
 module.exports = {
   getLabelDimensionsUsingSvgApproximation,
-  splitIntoLines
+  splitIntoLinesByWord,
+  splitIntoLinesByCharacter
 }

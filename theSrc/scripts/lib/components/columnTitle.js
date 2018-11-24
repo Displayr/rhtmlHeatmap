@@ -1,6 +1,6 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
-import {getLabelDimensionsUsingSvgApproximation, splitIntoLines} from '../labelUtils'
+import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByWord} from '../labelUtils'
 import d3 from 'd3'
 
 // TODO preferred dimensions must account for maxes
@@ -12,8 +12,22 @@ class XAxis extends BaseComponent {
   }
 
   computePreferredDimensions () {
-    const lines = splitIntoLines(this.parentContainer, this.text, this.maxWidth, this.fontSize, this.fontFamily, this.maxLines)
-    const lineDimensions = lines.map(line => getLabelDimensionsUsingSvgApproximation(this.parentContainer, line, this.fontSize, this.fontFamily, this.rotation))
+    const lines = splitIntoLinesByWord({
+      parentContainer: this.parentContainer,
+      text: this.text,
+      maxWidth: this.maxWidth,
+      fontSize: this.fontSize,
+      maxLines: this.maxLines,
+      fontFamily: this.fontFamily
+    })
+    const lineDimensions = lines.map(text => getLabelDimensionsUsingSvgApproximation({
+      text,
+      parentContainer: this.parentContainer,
+      fontSize: this.fontSize,
+      fontFamily: this.fontFamily,
+      rotation: this.rotation
+    }))
+
     return {
       width: _(lineDimensions).map('width').max(),
       height: _(lineDimensions).map('height').sum() + (lines.length - 1) * this.innerLinePadding
@@ -43,7 +57,14 @@ class XAxis extends BaseComponent {
         d3.event.stopPropagation()
       })
       .each(function () {
-        const lines = splitIntoLines(parentContainer, text, bounds.width, fontSize, fontFamily, maxLines)
+        const lines = splitIntoLinesByWord({
+          parentContainer: parentContainer,
+          text: text,
+          maxWidth: bounds.width,
+          fontSize: fontSize,
+          fontFamily: fontFamily,
+          maxLines: maxLines
+        })
         const textGroup = d3.select(this)
         _(lines).each((lineText, i) => {
           textGroup.append('tspan')

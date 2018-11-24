@@ -15,7 +15,13 @@ class ColumnSubtitles extends BaseComponent {
   }
 
   computePreferredDimensions () {
-    const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily, this.rotation))
+    const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation({
+      text,
+      parentContainer: this.parentContainer,
+      fontSize: this.fontSize,
+      fontFamily: this.fontFamily,
+      rotation: this.rotation
+    }))
 
     const preferredDimensions = {
       width: 0, // NB accept column width

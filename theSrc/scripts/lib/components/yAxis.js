@@ -15,7 +15,13 @@ class YAxis extends BaseComponent {
   }
 
   computePreferredDimensions () {
-    const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily))
+    const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation({
+      text,
+      parentContainer: this.parentContainer,
+      fontSize: this.fontSize,
+      fontFamily: this.fontFamily
+    }))
+
     return {
       width: _(labelDimensions).map('width').max(),
       height: 0 // NB take what is provided

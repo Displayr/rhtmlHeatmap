@@ -84,6 +84,7 @@ NULL
 #' @param legend_font_size positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).
 #' @param legend_width positive integer. Sets the desired width of the legend bar. Defaults to 60 (pixcels).
 #' @param legend_digits positive integer. Sets the decimal places of the legend texts. Estimates the decimal places needed by default.
+#' @param legend_label_format string. "normal" or "percentage". If percentage, convert legend values to percent (* 100, add "%").
 #'
 #' @param labRow character vectors with row labels to use (from top to bottom); default to rownames(x).
 #' @param labCol character vectors with column labels to use (from left to right); default to colnames(x).
@@ -221,14 +222,14 @@ Heatmap <- function(x,
   tip_font_family = "sans-serif",
 
   show_legend = TRUE,
-  legend_font_size = 11,
   legend_font_family = "sans-serif",
   legend_font_color = "#000000",
   legend_width = 60,
   legend_digits = NULL,
+  legend_font_size = 11,
+  legend_label_format = "normal",
 
   ##TODO: decide later which names/conventions to keep
-  theme = NULL,
   colors = "RdYlBu",
   width = NULL, height = NULL,
 
@@ -724,6 +725,11 @@ Heatmap <- function(x,
       legend_font_size = legend_font_size,
       legend_font_family = legend_font_family,
       legend_font_color = legend_font_color,
+      legend_colors = legend.colors,
+      legend_range = legend.range,
+      legend_width = legend_width,
+      legend_digits = legend_digits,
+      legend_label_format = legend_label_format,
 
       left_columns = left_columns,
       left_columns_align = left_columns_align,
@@ -759,10 +765,6 @@ Heatmap <- function(x,
 
       brush_color = brush_color,
       show_grid = show_grid,
-      legend_colors = legend.colors,
-      legend_range = legend.range,
-      legend_width = legend_width,
-      legend_digits = legend_digits,
       shownote_in_cell = show_cellnote_in_cell,
       extra_tooltip_info = extra_tooltip_info,
       anim_duration = anim_duration

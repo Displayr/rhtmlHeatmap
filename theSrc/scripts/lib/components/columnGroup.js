@@ -16,7 +16,12 @@ class ColumnGroup extends BaseComponent {
   computePreferredDimensions () {
     this.columnWidths = this.labelMatrix.map(columnLabels => {
       const maxTextWidth = _(columnLabels)
-        .map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily))
+        .map(text => getLabelDimensionsUsingSvgApproximation({
+          text,
+          parentContainer: this.parentContainer,
+          fontSize: this.fontSize,
+          fontFamily: this.fontFamily
+        }))
         .map('width')
         .max()
       return _.min([this.maxSingleColumnWidth, maxTextWidth])

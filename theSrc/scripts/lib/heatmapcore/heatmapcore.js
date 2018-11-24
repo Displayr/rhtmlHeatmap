@@ -392,22 +392,25 @@ class Heatmap {
       const { width: allocatedWidth } = this.layout.getAllocatedSpace()
       const estimatedColumnWidth = (this.options.width - allocatedWidth) / this.matrix.cols.length
 
-      // TODO NB estimateColumnWidht < MAGIC NUMBER - expose as advanced param
+      // TODO NB estimateColumnWidth < MAGIC NUMBER - expose as advanced param
       // TODO NB Should this be pushed into xaxis class ?
-      let rotation = 0
-      if (xaxisCellName === CellNames.BOTTOM_XAXIS) { rotation = 45 }
-      if (xaxisCellName === CellNames.TOP_XAXIS) {
-        if (options.left_columns_subtitles || options.right_columns_subtitles) { rotation = -45 }
-        if (estimatedColumnWidth < 100) { rotation = -45 }
-      }
+      // proposed logic (deferred for now)
+      // let rotation = 0
+      // if (xaxisCellName === CellNames.BOTTOM_XAXIS) { rotation = 45 }
+      // if (xaxisCellName === CellNames.TOP_XAXIS) {
+      //   if (options.left_columns_subtitles || options.right_columns_subtitles) { rotation = -45 }
+      //   if (estimatedColumnWidth < 100) { rotation = -45 }
+      // }
 
+      let rotation = (xaxisCellName === CellNames.BOTTOM_XAXIS) ? 45 : -45
       this.components[xaxisCellName] = new XAxis({
         parentContainer: inner,
         labels: this.matrix.cols,
         fontSize: options.xaxis_font_size,
         fontFamily: options.xaxis_font_family,
         fontColor: options.xaxis_font_color,
-        maxLines: 3, // TODO make configurable
+        maxLines: 1, // TODO make configurable
+        maxHeight: 100, // TODO make configurable
         rotation
       })
 

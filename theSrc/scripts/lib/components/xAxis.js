@@ -1,16 +1,16 @@
 import _ from 'lodash'
 import d3 from 'd3'
 import BaseComponent from './baseComponent'
-import {getLabelDimensionsUsingSvgApproximation, splitIntoLines} from '../labelUtils'
+import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByCharacter, splitIntoLinesByWord} from '../labelUtils'
 
 const DEBUG = false
 
 // TODO preferred dimensions must account for maxes
 // TODO NB we only handle wrapping when rotation = 0
 class XAxis extends BaseComponent {
-  constructor ({parentContainer, labels, fontSize, fontFamily, fontColor, rotation = -45, controller, maxLines}) {
+  constructor ({parentContainer, labels, fontSize, fontFamily, fontColor, rotation = -45, controller, maxLines, maxHeight}) {
     super()
-    _.assign(this, {parentContainer, labels, fontSize, fontFamily, fontColor, rotation, controller, maxLines})
+    _.assign(this, {parentContainer, labels, fontSize, fontFamily, fontColor, rotation, controller, maxLines, maxHeight})
 
     // to deal with superflous zoom calls at beginning of render
     this.amIZoomed = false
@@ -21,15 +21,48 @@ class XAxis extends BaseComponent {
     let labelDimensions = null
     if (this.rotation === 0) {
       labelDimensions = this.labels.map(text => {
-        const lines = splitIntoLines(this.parentContainer, text, estimatedColumnWidth, this.fontSize, this.fontFamily, this.maxLines)
-        const lineDimensions = lines.map(line => getLabelDimensionsUsingSvgApproximation(this.parentContainer, line, this.fontSize, this.fontFamily, this.rotation))
+        const lines = splitIntoLinesByWord({
+          parentContainer: this.parentContainer,
+          text: text,
+          maxWidth: estimatedColumnWidth,
+          maxHeight: this.maxHeight,
+          maxLines: this.maxLines,
+          fontSize: this.fontSize,
+          fontFamily: this.fontFamily
+        })
+        const lineDimensions = lines.map(text => getLabelDimensionsUsingSvgApproximation({
+          text,
+          parentContainer: this.parentContainer,
+          fontSize: this.fontSize,
+          fontFamily: this.fontFamily,
+          rotation: this.rotation
+        }))
+
         return {
           width: _(lineDimensions).map('width').max(),
           height: _(lineDimensions).map('height').sum() + (lines.length - 1) * this.innerLinePadding
         }
       })
     } else {
-      labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation(this.parentContainer, text, this.fontSize, this.fontFamily, this.rotation))
+      // NB only allow 1 line of rotated text for now
+      labelDimensions = this.labels.map(text => {
+        const lines = splitIntoLinesByCharacter({
+          parentContainer: this.parentContainer,
+          text: text,
+          maxHeight: this.maxHeight,
+          maxLines: 1,
+          fontSize: this.fontSize,
+          fontFamily: this.fontFamily,
+          rotation: this.rotation
+        })
+        return getLabelDimensionsUsingSvgApproximation({
+          text: lines[0],
+          parentContainer: this.parentContainer,
+          fontSize: this.fontSize,
+          fontFamily: this.fontFamily,
+          rotation: this.rotation
+        })
+      })
     }
     return {
       width: 0, // NB xaxis width takes what is given, and does not force width on the chart
@@ -78,7 +111,15 @@ class XAxis extends BaseComponent {
           d3.event.stopPropagation()
         })
         .each(function (d) {
-          const lines = splitIntoLines(parentContainer, d, columnWidth, fontSize, fontFamily, maxLines)
+          const lines = splitIntoLinesByWord({
+            parentContainer: parentContainer,
+            text: d,
+            maxWidth: columnWidth,
+            maxHeight: this.maxHeight,
+            maxLines: maxLines,
+            fontSize: fontSize,
+            fontFamily: fontFamily
+          })
           const textGroup = d3.select(this)
           _(lines).each((lineText, i) => {
             textGroup.append('tspan')
@@ -95,7 +136,18 @@ class XAxis extends BaseComponent {
         .classed('axis-text', true)
         .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation})`)
         .attr('x', 0)
-        .text(d => d)
+        .text(d => {
+          const lines = splitIntoLinesByCharacter({
+            parentContainer: this.parentContainer,
+            text: d,
+            maxHeight: this.maxHeight,
+            maxLines: this.maxLines,
+            fontSize: this.fontSize,
+            fontFamily: this.fontFamily,
+            rotation: this.rotation
+          })
+          return lines[0]
+        })
         .style('text-anchor', 'start')
         .style('font-family', this.fontFamily)
         .style('font-size', this.fontSize)
