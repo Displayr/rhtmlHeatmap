@@ -329,6 +329,7 @@ class Heatmap {
       this.components[yaxisCellName] = new YAxis({
         parentContainer: inner,
         placement: yaxisCellName,
+        type: yaxisCellName,
         labels: this.matrix.rows,
         fontSize: options.yaxis_font_size,
         fontFamily: options.yaxis_font_family,
@@ -350,6 +351,7 @@ class Heatmap {
       this.components[yaxisTitleCellName] = new YTitle({
         parentContainer: inner,
         text: options.yaxis_title,
+        type: yaxisTitleCellName,
         fontFamily: options.yaxis_title_font_family,
         fontSize: options.yaxis_title_font_size,
         fontColor: options.yaxis_title_font_color,
