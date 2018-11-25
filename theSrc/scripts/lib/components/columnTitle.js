@@ -51,6 +51,7 @@ class XAxis extends BaseComponent {
       .style('dominant-baseline', 'text-before-edge')
       .style('font-family', this.fontFamily)
       .style('font-size', this.fontSize)
+      .style('font-weight', this.bold ? 'bold' : 'normal')
       .style('fill', this.fontColor)
       .on('click', (d, i) => {
         this.controller.xaxisClick(i)

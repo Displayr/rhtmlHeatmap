@@ -16,6 +16,10 @@
       "c",
       "c"
     ],
+    "right_columns_subtitles": [
+      "RightCol SubTitle 1",
+      "RightCol SubTitle 2"
+    ],
     "right_columns_font_size": 11,
     "right_columns_font_family": "sans-serif",
     "right_columns_font_color": "#000000",
