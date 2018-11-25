@@ -33,7 +33,7 @@ class Legend extends BaseComponent {
 
     const legendScale = d3.scale.linear()
       .domain(this.range)
-      .range([this.colors.length * rectHeight, 0]).nice()
+      .range([this.colors.length * rectHeight, 0])
 
     const legendAxis = d3.svg.axis()
       .scale(legendScale)
@@ -101,12 +101,11 @@ class Legend extends BaseComponent {
 
     const legendScale = d3.scale.linear()
       .domain(this.range)
-      .range([this.colors.length * rectHeight, 0]).nice()
+      .range([this.colors.length * rectHeight, 0])
 
     const legendAxis = d3.svg.axis()
       .scale(legendScale)
       .orient('right')
-      .tickSize(0)
       .tickFormat(this.legend_format)
 
     legendLabels.call(legendAxis)
