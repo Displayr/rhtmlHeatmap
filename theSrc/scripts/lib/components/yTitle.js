@@ -45,12 +45,13 @@ class YTitle extends BaseComponent {
       .attr('x', 0)
       .attr('y', 0)
       .attr('dy', 0)
-      .attr('transform', `translate(${bounds.width / 2},${bounds.height / 2}),rotate(-90)`)
+      .attr('transform', `translate(0,${bounds.height / 2}),rotate(-90)`)
       .style('font-weight', (this.bold) ? 'bold' : 'normal')
       .style('font-size', this.fontSize)
       .style('fill', this.fontColor)
       .style('font-family', this.fontFamily)
       .style('text-anchor', 'middle')
+      .style('dominant-baseline', 'text-before-edge')
   }
 
   get extraLeftPadding () {

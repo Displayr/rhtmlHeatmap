@@ -313,7 +313,6 @@ class Colormap extends BaseComponent {
   }
 
   placeTextSelection (selection, cellFontSize, cellFontFamily) {
-    console.log(`placeTextSelection called`)
     var x_scale, y_scale
     if (this.scales.originalX && this.scales.originalY) {
       x_scale = this.scales.originalX
@@ -326,9 +325,6 @@ class Colormap extends BaseComponent {
     var box_w = x_scale(1) - x_scale(0) - this.spacing
     var box_h = y_scale(1) - y_scale(0) - this.spacing
     var ft_size = Math.min(Math.floor(box_h / 1.5), cellFontSize)
-
-    console.log(`orig cellFontSize: ${cellFontSize}`)
-    console.log(`orig ft_size: ${ft_size}`)
 
     selection
       .attr('x', (d, i) => x_scale(i % this.counts.column) + (box_w) / 2)

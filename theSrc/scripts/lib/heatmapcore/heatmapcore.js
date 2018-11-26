@@ -364,10 +364,15 @@ class Heatmap {
       this.layout.setPreferredDimensions(yaxisTitleCellName, dimensions)
     }
 
+    // NB Xaxis complication: wrapping. To know the required height (due to wrapping) ,
+    // we need to know the available width. (this is why it is done near end)
     if (options.xaxis_title) {
       const xaxisTitleCellName = (options.xaxis_location === 'bottom')
         ? CellNames.BOTTOM_XAXIS_TITLE
         : CellNames.TOP_XAXIS_TITLE
+
+      const { width: allocatedWidth } = this.layout.getAllocatedSpace()
+      const estimatedWidth = this.options.width - allocatedWidth
 
       this.components[xaxisTitleCellName] = new XTitle({
         parentContainer: inner,
@@ -375,11 +380,11 @@ class Heatmap {
         fontFamily: options.xaxis_title_font_family,
         fontSize: options.xaxis_title_font_size,
         fontColor: options.xaxis_title_font_color,
-        maxWidth: options.width * 0.7, // NB TODO just making numbers up here (need the max xaxis title width here)
+        maxLines: 3,
         bold: options.xaxis_title_bold
       })
 
-      const dimensions = this.components[xaxisTitleCellName].computePreferredDimensions()
+      const dimensions = this.components[xaxisTitleCellName].computePreferredDimensions(estimatedWidth)
       this.layout.enable(xaxisTitleCellName)
       this.layout.setPreferredDimensions(xaxisTitleCellName, dimensions)
     }

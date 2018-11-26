@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import d3 from 'd3'
 import BaseComponent from './baseComponent'
-import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
+import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByCharacter} from '../labelUtils'
 import { CellNames } from '../heatmapcore/layout'
 
 // TODO preferred dimensions must account for maxes
@@ -15,12 +15,23 @@ class YAxis extends BaseComponent {
   }
 
   computePreferredDimensions () {
-    const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation({
-      text,
-      parentContainer: this.parentContainer,
-      fontSize: this.fontSize,
-      fontFamily: this.fontFamily
-    }))
+    const labelDimensions = this.labels.map(text => {
+      const lines = splitIntoLinesByCharacter({
+        parentContainer: this.parentContainer,
+        text: text,
+        maxWidth: this.maxWidth,
+        maxLines: 1,
+        fontSize: this.fontSize,
+        fontFamily: this.fontFamily,
+        rotation: 0
+      })
+      return getLabelDimensionsUsingSvgApproximation({
+        text: lines[0],
+        parentContainer: this.parentContainer,
+        fontSize: this.fontSize,
+        fontFamily: this.fontFamily
+      })
+    })
 
     return {
       width: _(labelDimensions).map('width').max(),
@@ -33,8 +44,21 @@ class YAxis extends BaseComponent {
     const container = this.parentContainer.append('g').classed('axis yaxis', true).attr('transform', this.buildTransform(bounds))
     const rowHeight = bounds.height / this.labels.length
 
+    const adjustedLabels = this.labels.map(text => {
+      const lines = splitIntoLinesByCharacter({
+        parentContainer: this.parentContainer,
+        text: text,
+        maxWidth: this.maxWidth,
+        maxLines: 1,
+        fontSize: this.fontSize,
+        fontFamily: this.fontFamily,
+        rotation: 0
+      })
+      return lines[0]
+    })
+
     this.cellSelection = container.selectAll('g')
-      .data(this.labels)
+      .data(adjustedLabels)
       .enter()
       .append('g')
       .attr('transform', (d, i) => `translate(0,${rowHeight * i})`)
