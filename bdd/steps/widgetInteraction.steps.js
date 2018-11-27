@@ -61,6 +61,7 @@ module.exports = function () {
         .mouseMove(this.context.heatmapPlot.cell(cellOneRowIndex, cellOneColumnIndex))
         .mouseDown()
         .mouseMove(this.context.heatmapPlot.cell(cellTwoRowIndex, cellTwoColumnIndex))
+        .mouseMove({ x: 10, y: 10 })
         .mouseUp()
         .perform()
     })
