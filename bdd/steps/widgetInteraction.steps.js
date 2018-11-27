@@ -84,5 +84,4 @@ module.exports = function () {
       return this.context.heatmapPlot.legendBars().click()
     })
   })
-
 }
