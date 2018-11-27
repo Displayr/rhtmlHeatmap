@@ -96,6 +96,7 @@ class XAxis extends BaseComponent {
     const { fontFamily, fontSize, parentContainer, maxLines, innerLinePadding } = this
     if (this.rotation === 0) {
       this.textSelection = this.cellSelection.append('text')
+        .attr('class', (d, i) => `tick-${i}`)
         .classed('axis-text', true)
         .attr('transform', `translate(${columnWidth / 2}, 0)`)
         .attr('x', 0)
@@ -130,6 +131,7 @@ class XAxis extends BaseComponent {
         })
     } else {
       this.textSelection = this.cellSelection.append('text')
+        .attr('class', (d, i) => `tick-${i}`)
         .classed('axis-text', true)
         .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation})`)
         .attr('x', 0)

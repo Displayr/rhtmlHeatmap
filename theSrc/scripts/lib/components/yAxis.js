@@ -75,6 +75,7 @@ class YAxis extends BaseComponent {
       })
 
     this.textSelection = this.cellSelection.append('text')
+      .attr('class', (d, i) => `tick-${i}`)
       .classed('axis-text', true)
       .style('font-size', this.fontSize)
       .style('fill', this.fontColor)

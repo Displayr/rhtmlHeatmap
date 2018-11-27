@@ -1,0 +1,89 @@
+{
+  "rows": null,
+  "cols": null,
+  "matrix": {
+    "data": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "dim": [
+      3,
+      3
+    ],
+    "rows": [
+      "Row-1",
+      "Row-2",
+      "Row-3"
+    ],
+    "cols": [
+      "Col-1",
+      "Col-2",
+      "Col-3"
+    ],
+    "cells_to_hide": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "cellnote_in_cell": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ]
+  },
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAEklEQVR42mPUyttfzwAFjDg5AH/sBYa1VBOMAAAAAElFTkSuQmCC",
+  "options": {
+    "legend_font_size": 11,
+    "legend_font_family": "Arial",
+    "legend_font_color": "#2C2C2C",
+    "legend_colors": [
+      "#9400D3",
+      "#4B0082",
+      "#0000FF",
+      "#00FF00",
+      "#FFFF00",
+      "#FF7F00",
+      "#FF0000"
+    ],
+    "legend_range": [
+      0.1,
+      0.9
+    ],
+    "legend_width": 60,
+    "legend_digits": null,
+    "tip_font_size": 11,
+    "tip_font_family": "sans-serif",
+    "cell_font_size": 11,
+    "cell_font_family": "sans-serif",
+    "brush_color": "#0000FF",
+    "show_grid": true,
+    "shownote_in_cell": true,
+    "extra_tooltip_info": null,
+    "table_style": true,
+    "anim_duration": 500,
+    "yclust_width": 0,
+    "xclust_height": 0,
+    "yaxis_hidden": false,
+    "yaxis_location": "left"
+  }
+}
+
