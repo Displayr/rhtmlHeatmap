@@ -20,3 +20,10 @@ Feature: Tooltip Interactions
     And I hover over cell 2x2 with offset 50x50
     Then Sleep 700 milliseconds
     Then the "interaction_hover_cell_2x2_tooltip_bottom_right_anchoring" snapshot matches the baseline
+
+  Scenario: Scenario: User can add extra data to tooltip
+    Given I am viewing "displayr_regression_cases.correlation_matrix" with dimensions 1000x1000
+    And I hover over cell 5x0
+    Then Sleep 700 milliseconds
+    Then the "interaction_hover_cell_extra_tooltip_info" snapshot matches the baseline
+
