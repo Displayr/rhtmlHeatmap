@@ -5676,9 +5676,9 @@ ret@~0.1.10:
   version "0.1.15"
   resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
 
-rhtmlBuildUtils@Displayr/rhtmlBuildUtils#3.0.3:
-  version "3.0.3"
-  resolved "https://codeload.github.com/Displayr/rhtmlBuildUtils/tar.gz/e899625fd7de809645290257e4e0f89905a61ab7"
+rhtmlBuildUtils@Displayr/rhtmlBuildUtils#3.0.4:
+  version "3.0.4"
+  resolved "https://codeload.github.com/Displayr/rhtmlBuildUtils/tar.gz/4df9c12f765e74fde821efc140c6896b50d150ae"
   dependencies:
     app-root-dir "^1.0.2"
     babel-plugin-array-includes "^2.0.3"
