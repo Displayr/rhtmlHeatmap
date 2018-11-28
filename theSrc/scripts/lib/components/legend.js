@@ -41,24 +41,8 @@ class Legend extends BaseComponent {
       .tickSize(0)
 
     legendAxisG.call(legendAxis)
-    const legendTicksCount = legendAxisG.selectAll('text')[0].length
-
-    if (this.colors) {
-      if (this.digits) {
-        this.legend_format = this.makeD3Format(this.digits, this.labelFormat)
-      } else {
-        const legend_step = (d3.max(this.range) - d3.min(this.range)) / (legendTicksCount - 1)
-        let legend_dig
-        if (legend_step < 0.1) {
-          legend_dig = -Math.floor(Math.log(legend_step) / Math.log(10) + 1) + 1
-        } else if (legend_step >= 0.1 && legend_step < 1) {
-          legend_dig = 1
-        } else {
-          legend_dig = 0
-        }
-        this.legend_format = this.makeD3Format(legend_dig, this.labelFormat)
-      }
-    }
+    let digits = this.digits || this.computeLegendDigits(legendAxisG.selectAll('text')[0].length)
+    this.legend_format = this.makeD3Format(digits, this.labelFormat)
 
     legendAxis.tickFormat(this.legend_format)
     legendAxisG.call(legendAxis)
@@ -114,6 +98,15 @@ class Legend extends BaseComponent {
       .style('font-size', this.fontSize + 'px')
       .style('font-family', this.fontFamily)
       .style('fill', this.fontColor)
+  }
+
+  computeLegendDigits (legendTicksCount) {
+    const legend_step = (d3.max(this.range) - d3.min(this.range)) / (legendTicksCount - 1)
+    let digits = Math.max(0, -1 * Math.floor(Math.log(legend_step) / Math.log(10)))
+    if (this.labelFormat === 'percentage') {
+      digits = Math.max(0, digits - 2)
+    }
+    return digits
   }
 }
 
