@@ -1,0 +1,35 @@
+{
+  "options": {
+    "right_columns": [
+      [
+        "RC1-1",
+        "RC1-2",
+        "RC1-3"
+      ],
+      [
+        "RC2-1",
+        "RC2-2",
+        "RC2-3"
+      ]
+    ],
+    "right_columns_align": [
+      "c",
+      "c"
+    ],
+    "right_columns_subtitles": [
+      "RightCol SubTitle 1",
+      "RightCol SubTitle 2"
+    ],
+    "right_columns_font_size": 11,
+    "right_columns_font_family": "sans-serif",
+    "right_columns_font_color": "#000000",
+    "right_columns_title": "RC title",
+    "right_columns_title_bold": true,
+    "right_columns_title_font_size": 14,
+    "right_columns_title_font_family": "sans-serif",
+    "right_columns_title_font_color": "#000000",
+    "right_columns_subtitles_font_size": 12,
+    "right_columns_subtitles_font_family": "sans-serif",
+    "right_columns_subtitles_font_color": "#000000"
+  }
+}
