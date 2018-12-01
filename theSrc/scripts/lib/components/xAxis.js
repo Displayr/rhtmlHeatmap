@@ -103,7 +103,6 @@ class XAxis extends BaseComponent {
         .attr('y', 0)
         .attr('dy', 0)
         .style('text-anchor', 'middle')
-        .style('dominant-baseline', 'text-before-edge')
         .style('font-family', this.fontFamily)
         .style('font-size', this.fontSize)
         .style('fill', this.fontColor)
@@ -124,6 +123,7 @@ class XAxis extends BaseComponent {
           const textGroup = d3.select(this)
           _(lines).each((lineText, i) => {
             textGroup.append('tspan')
+              .style('dominant-baseline', 'text-before-edge')
               .attr('x', 0)
               .attr('y', i * (fontSize + innerLinePadding))
               .text(lineText)

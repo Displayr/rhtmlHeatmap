@@ -53,7 +53,6 @@ class XAxis extends BaseComponent {
       .attr('y', 0)
       .attr('dy', 0)
       .style('text-anchor', 'middle')
-      .style('dominant-baseline', 'text-before-edge')
       .style('font-weight', (this.bold) ? 'bold' : 'normal')
       .style('font-size', this.fontSize)
       .style('fill', this.fontColor)
@@ -61,6 +60,7 @@ class XAxis extends BaseComponent {
 
     _(lines).each((lineText, i) => {
       textElement.append('tspan')
+        .style('dominant-baseline', 'text-before-edge')
         .attr('x', 0)
         .attr('y', i * (this.fontSize + this.innerLinePadding))
         .text(lineText)

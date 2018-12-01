@@ -12,7 +12,6 @@ function getLabelDimensionsUsingSvgApproximation ({parentContainer, text, fontSi
     .attr('id', uniqueId)
 
   const textElement = container.append('text')
-    .style('dominant-baseline', 'text-before-edge')
     .attr('x', 0)
     .attr('y', 0)
     .attr('dy', 0)
