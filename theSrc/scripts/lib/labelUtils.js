@@ -37,8 +37,8 @@ function getLabelDimensionsUsingSvgApproximation ({parentContainer, text, fontSi
   const angleInRads = toRadians(Math.abs(rotation))
   const height = Math.sin(angleInRads) * unrotatedWidth + Math.cos(angleInRads) * unrotatedHeight
   const width = Math.cos(angleInRads) * unrotatedWidth + Math.sin(angleInRads) * unrotatedHeight
-  const xOffset = (rotation > 0) ? -1 * Math.sin(angleInRads) * unrotatedHeight : 0
-  const yOffset = (rotation < 0) ? -1 * Math.sin(angleInRads) * unrotatedWidth : 0
+  const xOffset = unrotatedHeight * Math.sin(angleInRads)
+  const yOffset = -1 * (unrotatedHeight - unrotatedHeight * Math.cos(angleInRads))
 
   return { width, height, xOffset, yOffset }
 }

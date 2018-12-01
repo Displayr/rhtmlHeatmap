@@ -63,6 +63,9 @@ class XAxis extends BaseComponent {
           rotation: this.rotation
         })
       })
+
+      this._xOffsetCorrectionForRotation = _(labelDimensions).map('xOffset').max() // should be all the same but take max anyway
+      this._yOffsetCorrectionForRotation = _(labelDimensions).map('yOffset').max() // should be all the same but take max anyway
     }
     return {
       width: 0, // NB xaxis width takes what is given, and does not force width on the chart
@@ -133,7 +136,7 @@ class XAxis extends BaseComponent {
       this.textSelection = this.cellSelection.append('text')
         .attr('class', (d, i) => `tick-${i}`)
         .classed('axis-text', true)
-        .attr('transform', `translate(${columnWidth / 2 - this.fontSize / 2},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation})`)
+        .attr('transform', `translate(${columnWidth / 2 - this.xOffsetCorrectionForRotation()},${this.yOffsetCorrectionForRotation()}),rotate(${this.rotation})`)
         .attr('x', 0)
         .text(d => {
           const lines = splitIntoLinesByCharacter({
@@ -194,8 +197,14 @@ class XAxis extends BaseComponent {
   }
 
   yOffsetCorrectionForRotation () {
-    if (this.rotatingUp()) { return this.bounds.height }
-    if (this.rotatingDown()) { return 12 } // TODO this is hacky
+    if (this.rotatingUp()) { return this.bounds.height - this._yOffsetCorrectionForRotation }
+    if (this.rotatingDown()) { return 6 } // TODO this is hacky
+    return 0
+  }
+
+  xOffsetCorrectionForRotation () {
+    if (this.rotatingUp()) { return 0 }
+    if (this.rotatingDown()) { return this._xOffsetCorrectionForRotation }
     return 0
   }
 
