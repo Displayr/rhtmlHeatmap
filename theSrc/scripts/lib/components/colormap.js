@@ -1,6 +1,8 @@
 import _ from 'lodash'
 import BaseComponent from './baseComponent'
 import d3 from 'd3'
+// import {showLine} from './../labelUtils'
+
 const d3Tip = require('d3-tip')
 d3Tip(d3)
 
@@ -208,6 +210,9 @@ class Colormap extends BaseComponent {
       .on('mouseenter', () => { this.showToolTip() })
       .on('mousemove', () => { this.showToolTip() })
       .on('mouseleave', () => { this.tip.hide() })
+
+    // temp code, move to BDD
+    // showLine(this.container, [{ x: 27.54156494140625 / 2, y: 0 }, { x: 27.54156494140625 / 2, y: this.bounds.height }], 'black', 'foo')
   }
 
   showToolTip () {

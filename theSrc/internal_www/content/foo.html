@@ -13,7 +13,7 @@
 
       $(document).ready(function () {
         console.log('ready')
-        const rotateSettings = [-45]
+        const rotateSettings = [-45, 45]
         // const rotateSettings = [0, 10, -10, 20, -20, 30, -30, 40, -40, 50, -50, 60, -60, 70, -70, 80, -80, 90, -90]
         // const rotateSettings = [0, 10,  20,  30,  40,  50,  60,  70,  80,  90]
         // const rotateSettings = [0, -10, -20, -30, -40, -50, -60, -70, -80, -90]
@@ -74,7 +74,7 @@
         const xOffset = (rotation > 0) ? -1 * Math.sin(angleInRads) * height : 0
         const yOffset = (rotation < 0) ? -1 * Math.sin(angleInRads) * width : 0
 
-        console.log(`W ROTATION: rotate(${rotation} yields ${JSON.stringify({width: newWidth, height: newHeight})}`)
+        console.log(`W ROTATION: rotate(${rotation} yields ${JSON.stringify({width: newWidth, height: newHeight, xOffset, yOffset})}`)
 
         container.append('rect')
           .attr('width', newWidth)

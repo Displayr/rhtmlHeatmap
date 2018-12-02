@@ -116,8 +116,23 @@ function _splitIntoLines ({parentContainer, text, fontSize = 12, fontFamily = 's
   return lines
 }
 
+// NB TODO labelUtils is a bad location for this helper. Initially placed here for ease.
+// for debugging
+function showLine (svg, coords, color = 'black', note = '') {
+  const path = 'M' + coords.map(({x, y}) => `${x} ${y}`).join(' L')
+  svg.append('path')
+    .classed('debug', true)
+    .attr('d', path)
+    .attr('stroke', color)
+    .attr('stroke-width', 1)
+    .attr('fill', 'none')
+    .style('opacity', 1)
+    .style('display', 'inline')
+}
+
 module.exports = {
   getLabelDimensionsUsingSvgApproximation,
   splitIntoLinesByWord,
-  splitIntoLinesByCharacter
+  splitIntoLinesByCharacter,
+  showLine
 }
