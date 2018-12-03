@@ -7,7 +7,6 @@
 
     "brush_color": "#0000FF",
     "show_grid": true,
-    "x_is_factor": false,
     "shownote_in_cell": true,
     "extra_tooltip_info": null,
     "table_style": true,

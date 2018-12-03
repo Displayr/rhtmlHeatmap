@@ -3,12 +3,16 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <link href='/style/heatmapcore.css' rel='stylesheet' type='text/css'>
+    <link href='/styles/heatmapcore.css' rel='stylesheet' type='text/css'>
 </head>
 <body style="background-color:white">
 
 <div style="position:relative" snapshot-name="displayr_regression_cases.single_column">
-    <div class="example" data-width="1000" data-height="1000" data-config="displayr_regression_cases.single_column"></div>
+  <div class="row">
+    <div style="display:inline-block" class="example" data-width="300" data-height="1000" data-config="displayr_regression_cases.single_column"></div>
+    <div style="display:inline-block" class="example" data-width="300" data-height="1000" data-config="displayr_regression_cases.single_column|config.yaxis_right"></div>
+  </div>
+
 </div>
 
 <script src="/js/renderContentPage.js"></script>

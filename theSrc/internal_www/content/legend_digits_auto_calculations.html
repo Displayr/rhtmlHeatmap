@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link href='/styles/heatmapcore.css' rel='stylesheet' type='text/css'>
+</head>
+<body style="background-color:white">
+
+
+<div style="position:relative" snapshot-name="legend_digits_auto_compute">
+  <h1>The number of digits on the legend are auto computed based on the range and the number of ticks to display</h1>
+  <div class="row">
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 10" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [0,10] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 1" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [0,1] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 0.1" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [0,0.1] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 0.01" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [0,0.01] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 0.001" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [0,0.001] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 0.0001" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [0,0.0001] } }'
+    ></div>
+  </div>
+
+  <div class="row">
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: -100 - -90" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [-100,-90] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: -100 - -99" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [-100,-99] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: -100 - -99.9" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [-100,-99.9] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: -100 - -99.99" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [-100,-99.99] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: -100 - -99.999" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [-100,-99.999] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: -100 - -99.9999" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      { "options": { "legend_range": [-100,-99.9999] } }'
+    ></div>
+  </div>
+
+  <h1>The relevant examples from above but now set legend_label_format: "percentage"</h1>
+  <div class="row">
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 1" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      config.legend_format_percentage|
+      { "options": { "legend_range": [0,1] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 0.1" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      config.legend_format_percentage|
+      { "options": { "legend_range": [0,0.1] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 0.01" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      config.legend_format_percentage|
+      { "options": { "legend_range": [0,0.01] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 0.001" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      config.legend_format_percentage|
+      { "options": { "legend_range": [0,0.001] } }'
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="250" data-height="500" data-config='
+      { "options": { "title": "range: 0 - 0.0001" } }|
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.legend|
+      config.legend_format_percentage|
+      { "options": { "legend_range": [0,0.0001] } }'
+    ></div>
+  </div>
+</div>
+
+<script src="/js/renderContentPage.js"></script>
+</body>
+</html>

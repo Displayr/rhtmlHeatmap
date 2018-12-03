@@ -223,7 +223,6 @@
     ]
   },
   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAJCAYAAAD+WDajAAABBUlEQVQYlQXBQShDcQDA4d/+z/O8V7M028wBaWlLLQeHXUQOSxzEmohyUpLLcnBw25WsdrHJ7khJlCPlwAlFidbQlDelrfWy3uu95vtcUxvnTc+3wWfYy7X/gK2haYIqnJz5EIndDJLpcDN2iRQKIIAPAwDExeo6vZsuZkvj6IUidhMy6gtap4MASHvLLI/WSEZSlPdlnPsiVkUglLpF7HCYAY9JMNSgdUaQkJa4St4hZMPiNnpE5OmZ3OQXpcd2VM1mLjuIiG8LFk7j6LlXJvbCpBZ/qD7INNwKYr5NJ7+js9K9Rt97lVjAoOZW6BixaDk2u8gXfNADmt/hz5bof/ulXlH4ByhnVlEvhZucAAAAAElFTkSuQmCC",
-  "theme": null,
   "options": {
     "xaxis_height": 80,
     "xaxis_font_size": 10,
@@ -292,7 +291,6 @@
     "right_columns_subtitles_font_color": "#2C2C2C",
     "brush_color": "#0000FF",
     "show_grid": true,
-    "x_is_factor": false,
     "legend_colors": [
       "#9E0142",
       "#A81244",

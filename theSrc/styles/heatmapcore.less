@@ -1,0 +1,137 @@
+.link {
+  fill: none;
+}
+.rhtmlHeatmap-tip{
+  font-size: 15px;
+  font-family: sans-serif;
+  white-space: nowrap;
+  background-color: #444;
+  padding: 6px 12px;
+  box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.22);
+  color: white;
+}
+.rhtmlHeatmap-tip-table {
+  border-collapse: separate;
+  border-spacing: 2px;
+}
+.rhtmlHeatmap-tip-table th, .rhtmlHeatmap-tip-table td {
+  padding: 0 1px;
+  color: white;
+}
+
+
+.rhtmlHeatmap {
+  position: relative;
+  overflow: hidden;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  .inner {
+    position: relative;
+  }
+
+  .domain {
+    fill: none;
+    stroke: none;
+  }
+
+  .click-rect, .axis-text {
+    cursor: pointer;
+  }
+
+  .axis {
+    overflow: hidden;
+
+    // shouldn't need this anymore
+    line {
+      fill: none;
+      stroke: #AAA;
+      stroke-width: 1px;
+      shape-rendering: crispEdges;
+    }
+  }
+
+  // nest in colormap
+  .brush .extent{
+    fill-opacity: 0.15;
+    stroke-width: 1px;
+  }
+
+  .dendrogram {
+    position: absolute;
+    overflow: hidden;
+  }
+
+  // when something is actively highlighted apply these styles
+  .highlighting {
+    .data-cell {
+      opacity: 0.2;
+    }
+    .data-cell.highlight {
+      opacity: 1;
+    }
+  }
+
+  .row-highlighting {
+    .yaxis .axis-text {
+      opacity: 0.4;
+    }
+    .yaxis .axis-text.highlight {
+      opacity: 1;
+    }
+
+    .column-text {
+      opacity: 0.4;
+    }
+    .column-text.highlight {
+      opacity: 1;
+    }
+  }
+
+  .column-highlighting {
+    .xaxis .axis-text {
+      opacity: 0.4;
+    }
+    .xaxis .axis-text.highlight {
+      opacity: 1;
+    }
+  }
+
+  .zoomed {
+    .xaxis .axis-text {
+      opacity: 0;
+    }
+    .xaxis .axis-text.in-zoom {
+      opacity: 1;
+    }
+  }
+}
+
+//.rhtmlHeatmap text {
+//  cursor: default;
+//}
+
+
+//.colormap {
+//  position: absolute;
+//  overflow: hidden;
+//}
+
+
+
+
+
+//.xtitle {
+//  position: absolute;
+//  overflow: hidden;
+//  font-family: sans-serif;
+//}
+//.ytitle {
+//  position: absolute;
+//  overflow: hidden;
+//  font-family: sans-serif;
+//}

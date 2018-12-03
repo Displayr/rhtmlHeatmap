@@ -53,7 +53,6 @@
     ]
   },
   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAABCAYAAAAMwoR9AAAALklEQVQImWMUiV/+X05JjEFPVYTh+btvDOxsLAy+umIMEzbfZLi7bSPDvtUtDADTnAyRaq0ZWgAAAABJRU5ErkJggg==",
-  "theme": null,
   "options": {
     "xaxis_height": 80,
     "xaxis_font_size": 10,
@@ -122,7 +121,6 @@
     "right_columns_subtitles_font_color": "#2C2C2C",
     "brush_color": "#0000FF",
     "show_grid": true,
-    "x_is_factor": false,
     "legend_colors": [
       "#08306B",
       "#083471",

@@ -16,9 +16,6 @@ NULL
 #'
 #' @param x A numeric matrix
 #'   Defaults to \code{TRUE} unless \code{x} contains any \code{NA}s.
-#' @param theme A custom CSS theme to use. Currently the only valid values are
-#'   \code{""} and \code{"dark"}. \code{"dark"} is primarily intended for
-#'   standalone visualizations, not R Markdown or Shiny.
 #' @param colors Either a colorbrewer2.org palette name (e.g. \code{"YlOrRd"} or
 #'   \code{"Blues"}), or a vector of colors to interpolate in hexadecimal
 #'   \code{"#RRGGBB"} format, or a color interpolation function like
@@ -87,6 +84,7 @@ NULL
 #' @param legend_font_size positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).
 #' @param legend_width positive integer. Sets the desired width of the legend bar. Defaults to 60 (pixcels).
 #' @param legend_digits positive integer. Sets the decimal places of the legend texts. Estimates the decimal places needed by default.
+#' @param legend_label_format string. "normal" or "percentage". If percentage, convert legend values to percent (* 100, add "%").
 #'
 #' @param labRow character vectors with row labels to use (from top to bottom); default to rownames(x).
 #' @param labCol character vectors with column labels to use (from left to right); default to colnames(x).
@@ -224,14 +222,14 @@ Heatmap <- function(x,
   tip_font_family = "sans-serif",
 
   show_legend = TRUE,
-  legend_font_size = 11,
   legend_font_family = "sans-serif",
   legend_font_color = "#000000",
   legend_width = 60,
   legend_digits = NULL,
+  legend_font_size = 11,
+  legend_label_format = "normal",
 
   ##TODO: decide later which names/conventions to keep
-  theme = NULL,
   colors = "RdYlBu",
   width = NULL, height = NULL,
 
@@ -567,45 +565,34 @@ Heatmap <- function(x,
 
   legend.colors = NULL
   legend.range = NULL
-  x_is_factor = FALSE
 
   if (show_legend) {
     if (scale == "column" || scale == "row") {
       show_legend = FALSE
     }
   }
-  if (is.factor(x)) {
-    x_is_factor = TRUE
-    colors <- scales::col_factor(colors, x, na.color = "transparent")
-    if (show_legend) {
-      legend.colors = colors(unique(x))
-      legend.range = as.character(unique(x))
+
+  if (!is.null(color_range)) {
+    if (!is.vector(color_range) || length(color_range) != 2) {
+      stop("color_range must be a vector with length 2.")
     }
+    if (max(x, na.rm = TRUE) > max(color_range) || min(x, na.rm = TRUE) < min(color_range)) {
+      stop("Range of color_range must not be smaller than range of x.
+           If this is not the case, make sure scale is set to 'none'")
+    }
+    colors <- scales::col_numeric(colors, color_range, na.color = "transparent")
+    rng <- c(min(color_range), max(color_range))
   } else {
-    if (!is.null(color_range)) {
-      if (!is.vector(color_range) || length(color_range) != 2) {
-        stop("color_range must be a vector with length 2.")
-      }
-      if (max(x, na.rm = TRUE) > max(color_range) || min(x, na.rm = TRUE) < min(color_range)) {
-        stop("Range of color_range must not be smaller than range of x.
-             If this is not the case, make sure scale is set to 'none'")
-      }
-      colors <- scales::col_numeric(colors, color_range, na.color = "transparent")
-      rng <- c(min(color_range), max(color_range))
-    } else {
-      rng <- range(x, na.rm = TRUE)
-      if (scale %in% c("row", "column")) {
-        rng <- c(max(abs(rng)), -max(abs(rng)))
-      }
-
-      colors <- scales::col_numeric(colors, rng, na.color = "transparent")
+    rng <- range(x, na.rm = TRUE)
+    if (scale %in% c("row", "column")) {
+      rng <- c(max(abs(rng)), -max(abs(rng)))
     }
-
-    if (show_legend) {
-      legend.val = seq(max(rng), min(rng), by = ((min(rng) - max(rng))/49))
-      legend.colors = colors(legend.val)
-      legend.range = rng
-    }
+    colors <- scales::col_numeric(colors, rng, na.color = "transparent")
+  }
+  if (show_legend) {
+    legend.val = seq(max(rng), min(rng), by = ((min(rng) - max(rng))/49))
+    legend.colors = colors(legend.val)
+    legend.range = rng
   }
 
   # colors is now a function that takes a number and returns an #RRGGBB value
@@ -672,26 +659,18 @@ Heatmap <- function(x,
   cout = check.extra.columns(left_columns,
                               left_columns_align,
                               left_columns_subtitles,
-                              #left_columns_subtitles_align,
-                              #left_columns_subtitles_bold,
                               TRUE)
   left_columns = cout[[1]]
   left_columns_align = cout[[2]]
   left_columns_subtitles = cout[[3]]
-  #left_columns_subtitles_align = cout[[4]]
-  #left_columns_subtitles_bold = cout[[5]]
 
   cout = check.extra.columns(right_columns,
                              right_columns_align,
                              right_columns_subtitles,
-                             #right_columns_subtitles_align,
-                             #right_columns_subtitles_bold,
                              FALSE)
   right_columns = cout[[1]]
   right_columns_align = cout[[2]]
   right_columns_subtitles = cout[[3]]
-  #right_columns_subtitles_align = cout[[4]]
-  #right_columns_subtitles_bold = cout[[5]]
 
   options <- NULL
 
@@ -736,7 +715,6 @@ Heatmap <- function(x,
       footer_font_size = footer_font_size,
       footer_font_family = footer_font_family,
       footer_font_color = footer_font_color,
-      #footer_font_bold = footer_font_bold,
 
       tip_font_size = tip_font_size,
       tip_font_family = tip_font_family,
@@ -747,6 +725,11 @@ Heatmap <- function(x,
       legend_font_size = legend_font_size,
       legend_font_family = legend_font_family,
       legend_font_color = legend_font_color,
+      legend_colors = legend.colors,
+      legend_range = legend.range,
+      legend_width = legend_width,
+      legend_digits = legend_digits,
+      legend_label_format = legend_label_format,
 
       left_columns = left_columns,
       left_columns_align = left_columns_align,
@@ -755,15 +738,11 @@ Heatmap <- function(x,
       left_columns_font_color = left_columns_font_color,
 
       left_columns_title = left_columns_title,
-      #left_columns_title_align = left_columns_title_align,
-      #left_columns_title_bold = left_columns_title_bold,
       left_columns_title_font_size = left_columns_title_font_size,
       left_columns_title_font_family = left_columns_title_font_family,
       left_columns_title_font_color = left_columns_title_font_color,
 
       left_columns_subtitles = left_columns_subtitles,
-      #left_columns_subtitles_align = left_columns_subtitles_align,
-      #left_columns_subtitles_bold = left_columns_subtitles_bold,
       left_columns_subtitles_font_size = left_columns_subtitles_font_size,
       left_columns_subtitles_font_family = left_columns_subtitles_font_family,
       left_columns_subtitles_font_color = left_columns_subtitles_font_color,
@@ -775,26 +754,17 @@ Heatmap <- function(x,
       right_columns_font_color = right_columns_font_color,
 
       right_columns_title = right_columns_title,
-      #right_columns_title_align = right_columns_title_align,
-      #right_columns_title_bold = right_columns_title_bold,
       right_columns_title_font_size = right_columns_title_font_size,
       right_columns_title_font_family = right_columns_title_font_family,
       right_columns_title_font_color = right_columns_title_font_color,
 
       right_columns_subtitles = right_columns_subtitles,
-      #right_columns_subtitles_align = right_columns_subtitles_align,
-      #right_columns_subtitles_bold = right_columns_subtitles_bold,
       right_columns_subtitles_font_size = right_columns_subtitles_font_size,
       right_columns_subtitles_font_family = right_columns_subtitles_font_family,
       right_columns_subtitles_font_color = right_columns_subtitles_font_color,
 
       brush_color = brush_color,
       show_grid = show_grid,
-      x_is_factor = x_is_factor,
-      legend_colors = legend.colors,
-      legend_range = legend.range,
-      legend_width = legend_width,
-      legend_digits = legend_digits,
       shownote_in_cell = show_cellnote_in_cell,
       extra_tooltip_info = extra_tooltip_info,
       anim_duration = anim_duration
@@ -807,8 +777,7 @@ Heatmap <- function(x,
       options <- c(options, list(xclust_height = 0))
   }
 
-  payload <- list(rows = rowDend, cols = colDend, matrix = mtx, image = imgUri,
-    theme = theme, options = options)
+  payload <- list(rows = rowDend, cols = colDend, matrix = mtx, image = imgUri, options = options)
 
   # create widget
   htmlwidgets::createWidget(

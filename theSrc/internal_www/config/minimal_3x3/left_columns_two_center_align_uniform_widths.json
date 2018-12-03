@@ -1,0 +1,35 @@
+{
+  "options": {
+    "left_columns": [
+      [
+        "LC1-1",
+        "LC1-2",
+        "LC1-3"
+      ],
+      [
+        "LC2-1",
+        "LC2-2",
+        "LC2-3"
+      ]
+    ],
+    "left_columns_align": [
+      "c",
+      "c"
+    ],
+    "left_columns_font_size": 11,
+    "left_columns_font_family": "sans-serif",
+    "left_columns_font_color": "#000000",
+    "left_columns_title": "LC title",
+    "left_columns_title_bold": true,
+    "left_columns_title_font_size": 14,
+    "left_columns_title_font_family": "sans-serif",
+    "left_columns_title_font_color": "#000000",
+    "left_columns_subtitles": [
+      "LeftCol SubTitle 1",
+      "LeftCol SubTitle 2"
+    ],
+    "left_columns_subtitles_font_size": 12,
+    "left_columns_subtitles_font_family": "sans-serif",
+    "left_columns_subtitles_font_color": "#000000"
+  }
+}

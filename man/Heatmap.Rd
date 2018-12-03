@@ -17,11 +17,12 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   color_range = NULL, lower_triangle = FALSE, cells_to_hide = NULL,
   cell_font_size = 11, cell_font_family = "sans-serif",
   tip_font_size = 11, tip_font_family = "sans-serif", show_legend = TRUE,
-  legend_font_size = 11, legend_font_family = "sans-serif",
-  legend_font_color = "#000000", legend_width = 60, legend_digits = NULL,
-  theme = NULL, colors = "RdYlBu", width = NULL, height = NULL,
-  title = NULL, title_font_size = 24, title_font_family = "sans-serif",
-  title_font_color = "#000000", subtitle = NULL, subtitle_font_size = 18,
+  legend_font_family = "sans-serif", legend_font_color = "#000000",
+  legend_width = 60, legend_digits = NULL, legend_font_size = 11,
+  legend_label_format = "normal", colors = "RdYlBu", width = NULL,
+  height = NULL, title = NULL, title_font_size = 24,
+  title_font_family = "sans-serif", title_font_color = "#000000",
+  subtitle = NULL, subtitle_font_size = 18,
   subtitle_font_family = "sans-serif", subtitle_font_color = "#000000",
   footer = NULL, footer_font_size = 11, footer_font_family = "sans-serif",
   footer_font_color = "#000000", xaxis_hidden = FALSE, xaxis_height = 80,
@@ -125,8 +126,6 @@ should cellnote be scaled if x is also scaled?}
 
 \item{show_legend}{logical. Defaults to TRUE. However, if \code{scale} is not "none", legend will not be shown.}
 
-\item{legend_font_size}{positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).}
-
 \item{legend_font_family}{character. Sets the font family of the legend, defaults to "sans-serif".}
 
 \item{legend_font_color}{Sets the font color of the legend, defaults to "#000000".}
@@ -135,9 +134,9 @@ should cellnote be scaled if x is also scaled?}
 
 \item{legend_digits}{positive integer. Sets the decimal places of the legend texts. Estimates the decimal places needed by default.}
 
-\item{theme}{A custom CSS theme to use. Currently the only valid values are
-\code{""} and \code{"dark"}. \code{"dark"} is primarily intended for
-standalone visualizations, not R Markdown or Shiny.}
+\item{legend_font_size}{positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).}
+
+\item{legend_label_format}{string. "normal" or "percentage". If percentage, convert legend values to percent (* 100, add "%").}
 
 \item{colors}{Either a colorbrewer2.org palette name (e.g. \code{"YlOrRd"} or
 \code{"Blues"}), or a vector of colors to interpolate in hexadecimal

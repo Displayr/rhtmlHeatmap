@@ -112,8 +112,7 @@
     "right_columns_font_size": 11,
     "right_columns_font_family": "sans-serif",
     "right_columns_font_color": "#000000",
-    "right_columns_title": "right column title",
-    "right_columns_title_align": null,
+    "right_columns_title": "not bold title",
     "right_columns_title_bold": null,
     "right_columns_title_font_size": 14,
     "right_columns_title_font_family": "sans-serif",
@@ -123,12 +122,6 @@
       "Make",
       "Model"
     ],
-    "right_columns_subtitles_align": [
-      "c",
-      "c",
-      "c"
-    ],
-    "right_columns_subtitles_bold": null,
     "right_columns_subtitles_font_size": 12,
     "right_columns_subtitles_font_family": "sans-serif",
     "right_columns_subtitles_font_color": "#000000"

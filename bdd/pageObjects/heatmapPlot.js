@@ -4,9 +4,15 @@ class HeatmapPlot {
   }
 
   rowName (rowIndex) {
-    // the axis are auto gen by D3 so I cannot easily add classes to simplify this.
-    // On plus side, the expression will not change unless we upgrade d3
-    return element(by.css(`.axis.yaxis > g > g:nth-child(2) g:nth-child(${parseInt(rowIndex) + 1}) rect`))
+    return element(by.css(`.axis.yaxis .axis-text.tick-${rowIndex}`))
+  }
+
+  columnName (columnIndex) {
+    return element(by.css(`.axis.xaxis .axis-text.tick-${columnIndex}`))
+  }
+
+  legendBars () {
+    return element(by.css(`.legendBars`))
   }
 }
 

@@ -9,6 +9,13 @@ const wrapInPromiseAndLogErrors = function (fn) {
       })
   }).catch((err) => {
     console.log(err)
+    try {
+      browser.getCurrentUrl().then(url => {
+        console.log(`failed url: ${url}`)
+      })
+    } catch (e) {
+      console.log(`browser.getCurrentUrl() failed: ${e}`)
+    }
     throw err
   })
 }
@@ -54,6 +61,7 @@ module.exports = function () {
         .mouseMove(this.context.heatmapPlot.cell(cellOneRowIndex, cellOneColumnIndex))
         .mouseDown()
         .mouseMove(this.context.heatmapPlot.cell(cellTwoRowIndex, cellTwoColumnIndex))
+        .mouseMove({ x: 10, y: 10 })
         .mouseUp()
         .perform()
     })
@@ -62,6 +70,18 @@ module.exports = function () {
   this.When(/^I click row ([0-9]+) name$/, function (rowIndex) {
     return wrapInPromiseAndLogErrors(() => {
       return this.context.heatmapPlot.rowName(rowIndex).click()
+    })
+  })
+
+  this.When(/^I click column ([0-9]+) name$/, function (columnIndex) {
+    return wrapInPromiseAndLogErrors(() => {
+      return this.context.heatmapPlot.columnName(columnIndex).click()
+    })
+  })
+
+  this.When(/^I click the legend bar$/, function () {
+    return wrapInPromiseAndLogErrors(() => {
+      return this.context.heatmapPlot.legendBars().click()
     })
   })
 }

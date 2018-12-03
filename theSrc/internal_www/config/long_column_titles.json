@@ -1,0 +1,6 @@
+{
+  "options": {
+    "right_columns_title": "column title very verbose many words long strings should induce many wrappings",
+    "left_columns_title": "column title very verbose many words long strings should induce many wrappings"
+  }
+}

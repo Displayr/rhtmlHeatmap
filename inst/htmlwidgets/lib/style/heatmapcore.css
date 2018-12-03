@@ -1,12 +1,24 @@
-body.theme-dark {
-  background-color: #333 !important;
-}
 .link {
   fill: none;
 }
-.theme-dark .link {
+.rhtmlHeatmap-tip {
+  font-size: 15px;
+  font-family: sans-serif;
+  white-space: nowrap;
+  background-color: #444;
+  padding: 6px 12px;
+  box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.22);
+  color: white;
 }
-
+.rhtmlHeatmap-tip-table {
+  border-collapse: separate;
+  border-spacing: 2px;
+}
+.rhtmlHeatmap-tip-table th,
+.rhtmlHeatmap-tip-table td {
+  padding: 0 1px;
+  color: white;
+}
 .rhtmlHeatmap {
   position: relative;
   overflow: hidden;
@@ -17,9 +29,16 @@ body.theme-dark {
   -ms-user-select: none;
   user-select: none;
 }
+.rhtmlHeatmap .inner {
+  position: relative;
+}
 .rhtmlHeatmap .domain {
   fill: none;
   stroke: none;
+}
+.rhtmlHeatmap .click-rect,
+.rhtmlHeatmap .axis-text {
+  cursor: pointer;
 }
 .rhtmlHeatmap .axis {
   overflow: hidden;
@@ -30,75 +49,41 @@ body.theme-dark {
   stroke-width: 1px;
   shape-rendering: crispEdges;
 }
-.rhtmlHeatmap .axis text, .rhtmlHeatmap-tip{
-  font-size: 15px;
-  font-family: sans-serif;
-}
-.rhtmlHeatmap .axis rect {
-  cursor: pointer;
-}
-.inner {
-  position: relative;
-}
-.rhtmlHeatmap text {
-  cursor: default;
-}
-.rhtmlHeatmap .brush .extent{
+.rhtmlHeatmap .brush .extent {
   fill-opacity: 0.15;
   stroke-width: 1px;
 }
-.colDend {
+.rhtmlHeatmap .dendrogram {
   position: absolute;
   overflow: hidden;
 }
-.rowDend {
-  position: absolute;
-  overflow: hidden;
-}
-.colormap {
-  position: absolute;
-  overflow: hidden;
-}
-.theme-dark text {
-  fill: #E2E2E2;
-}
-.highlighting .colormap .datapt {
+.rhtmlHeatmap .highlighting .data-cell {
   opacity: 0.2;
 }
-.highlighting .colormap .datapt.highlight {
+.rhtmlHeatmap .highlighting .data-cell.highlight {
   opacity: 1;
 }
-
-.highlighting .axis g.tick.faded {
-  opacity: 0.4 !important;
+.rhtmlHeatmap .row-highlighting .yaxis .axis-text {
+  opacity: 0.4;
 }
-
-.rhtmlHeatmap-tip {
-  white-space: nowrap;
-  background-color: #444;
-  padding: 6px 12px;
-  box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.22);
-  color: white;
+.rhtmlHeatmap .row-highlighting .yaxis .axis-text.highlight {
+  opacity: 1;
 }
-.theme-dark .rhtmlHeatmap-tip {
-  background-color: white;
-  color: #444;
+.rhtmlHeatmap .row-highlighting .column-text {
+  opacity: 0.4;
 }
-.rhtmlHeatmap-tip-table {
-  border-collapse: separate;
-  border-spacing: 2px;
+.rhtmlHeatmap .row-highlighting .column-text.highlight {
+  opacity: 1;
 }
-.rhtmlHeatmap-tip-table th, .rhtmlHeatmap-tip-table td {
-  padding: 0 1px;
-  color: white;
+.rhtmlHeatmap .column-highlighting .xaxis .axis-text {
+  opacity: 0.4;
 }
-.xtitle {
-  position: absolute;
-  overflow: hidden;
-  font-family: sans-serif;
+.rhtmlHeatmap .column-highlighting .xaxis .axis-text.highlight {
+  opacity: 1;
 }
-.ytitle {
-  position: absolute;
-  overflow: hidden;
-  font-family: sans-serif;
+.rhtmlHeatmap .zoomed .xaxis .axis-text {
+  opacity: 0;
+}
+.rhtmlHeatmap .zoomed .xaxis .axis-text.in-zoom {
+  opacity: 1;
 }
