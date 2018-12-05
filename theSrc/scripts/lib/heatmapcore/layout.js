@@ -157,21 +157,22 @@ class HeatmapLayout {
 
   _getRowHeight (rowName) {
     const row = this._getRow(rowName)
-
-    return _(row.cells)
+    const rowHeight = _(row.cells)
       .map(cellName => this.cellInfo[cellName])
       .filter({ enabled: true })
       .map(cellInfo => (cellInfo.fill) ? this._getHeightOfFillCell(cellInfo.name, rowName) : cellInfo.height)
       .max()
+    return rowHeight || 0
   }
 
   _getColumnWidth (columnName) {
     const column = this._getColumn(columnName)
-    return _(column.cells)
+    const columnWidth = _(column.cells)
       .map(cellName => this.cellInfo[cellName])
       .filter({ enabled: true })
       .map(cellInfo => (cellInfo.fill) ? this._getWidthOfFillCell(cellInfo.name, columnName) : this._getWidthOfFixedCell(cellInfo.name))
       .max()
+    return columnWidth || 0
   }
 
   _getWidthOfFillCell (cellName, columnName) {
