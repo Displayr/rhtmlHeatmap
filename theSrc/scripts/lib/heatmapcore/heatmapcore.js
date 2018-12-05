@@ -429,13 +429,13 @@ class Heatmap {
     this.components[CellNames.COLORMAP] = new Colormap({
       parentContainer: inner,
       matrix: this.matrix,
-      yaxisTitle: options.yaxis_title,
-      xaxisTitle: options.xaxis_title,
+      yaxisTitle: options.yaxis_title, // TODO review why we need to pass title in
+      xaxisTitle: options.xaxis_title, // TODO review why we need to pass title in
       extraTooltipInfo: options.extra_tooltip_info,
       tipFontSize: options.tip_font_size,
       tipFontFamily: options.tip_font_family,
       cellFontSize: options.cell_font_size,
-      cellFontFamily: options.cell_font_family, // NB TODO this should be family
+      cellFontFamily: options.cell_font_family,
       brushColor: options.brush_color,
       animDuration: options.anim_duration,
       showGrid: options.show_grid,

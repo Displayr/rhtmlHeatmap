@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import BaseComponent from './baseComponent'
 import d3 from 'd3'
-// import {showLine} from './../labelUtils'
 
 const d3Tip = require('d3-tip')
 d3Tip(d3)
