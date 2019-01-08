@@ -2,6 +2,7 @@ import _ from 'lodash'
 import d3 from 'd3'
 import Controller from './controller'
 import buildConfig from './buildConfig'
+import Title from '../components/title'
 import ColumnGroup from '../components/columnGroup'
 import ColumnSubtitles from '../components/columnSubtitles'
 import ColumnTitle from '../components/columnTitle'
@@ -10,7 +11,6 @@ import Dendrogram from '../components/dendrogram'
 import Legend from '../components/legend'
 import XAxis from '../components/xAxis'
 import YAxis from '../components/yAxis'
-import XTitle from '../components/xTitle'
 import YTitle from '../components/yTitle'
 import { HeatmapLayout, CellNames } from './layout'
 
@@ -52,96 +52,37 @@ class Heatmap {
     // TODO should add a baseComponent .addController. If component knows its name, then it can register itself too !
     this.wireupController()
 
-    if (this.layout.enabled(CellNames.TOP_XAXIS)) {
-      this.components[CellNames.TOP_XAXIS].draw(this.layout.getCellBounds(CellNames.TOP_XAXIS))
-    }
+    const cellsRequiringSpecialDrawInstructions = [CellNames.LEFT_COLUMN_SUBTITLE, CellNames.RIGHT_COLUMN_SUBTITLE, CellNames.TITLE, CellNames.SUBTITLE, CellNames.FOOTER]
+    const simpleCells = _.omit(CellNames, cellsRequiringSpecialDrawInstructions)
+    _(simpleCells).each(cellName => {
+      if (this.layout.enabled(cellName)) {
+        this.components[cellName].draw(this.layout.getCellBounds(cellName))
+      }
+    })
 
-    if (this.layout.enabled(CellNames.BOTTOM_XAXIS)) {
-      this.components[CellNames.BOTTOM_XAXIS].draw(this.layout.getCellBounds(CellNames.BOTTOM_XAXIS))
-    }
-
-    if (this.layout.enabled(CellNames.LEFT_YAXIS)) {
-      this.components[CellNames.LEFT_YAXIS].draw(this.layout.getCellBounds(CellNames.LEFT_YAXIS))
-    }
-
-    if (this.layout.enabled(CellNames.RIGHT_YAXIS)) {
-      this.components[CellNames.RIGHT_YAXIS].draw(this.layout.getCellBounds(CellNames.RIGHT_YAXIS))
-    }
-
-    if (this.layout.enabled(CellNames.TOP_XAXIS_TITLE)) {
-      this.components[CellNames.TOP_XAXIS_TITLE].draw(this.layout.getCellBounds(CellNames.TOP_XAXIS_TITLE))
-    }
-
-    if (this.layout.enabled(CellNames.BOTTOM_XAXIS_TITLE)) {
-      this.components[CellNames.BOTTOM_XAXIS_TITLE].draw(this.layout.getCellBounds(CellNames.BOTTOM_XAXIS_TITLE))
-    }
-
-    if (this.layout.enabled(CellNames.LEFT_YAXIS_TITLE)) {
-      this.components[CellNames.LEFT_YAXIS_TITLE].draw(this.layout.getCellBounds(CellNames.LEFT_YAXIS_TITLE))
-    }
-
-    if (this.layout.enabled(CellNames.RIGHT_YAXIS_TITLE)) {
-      this.components[CellNames.RIGHT_YAXIS_TITLE].draw(this.layout.getCellBounds(CellNames.RIGHT_YAXIS_TITLE))
-    }
-
-    if (this.layout.enabled(CellNames.TOP_DENDROGRAM)) {
-      this.components[CellNames.TOP_DENDROGRAM].draw(this.layout.getCellBounds(CellNames.TOP_DENDROGRAM))
-    }
-
-    if (this.layout.enabled(CellNames.LEFT_DENDROGRAM)) {
-      this.components[CellNames.LEFT_DENDROGRAM].draw(this.layout.getCellBounds(CellNames.LEFT_DENDROGRAM))
-    }
-
-    if (this.layout.enabled(CellNames.COLORMAP)) {
-      this.components[CellNames.COLORMAP].draw(this.layout.getCellBounds(CellNames.COLORMAP))
-    }
-
-    if (this.layout.enabled(CellNames.COLOR_LEGEND)) {
-      this.components[CellNames.COLOR_LEGEND].draw(this.layout.getCellBounds(CellNames.COLOR_LEGEND))
-    }
-
-    if (this.layout.enabled(CellNames.LEFT_COLUMN)) {
-      this.components[CellNames.LEFT_COLUMN].draw(this.layout.getCellBounds(CellNames.LEFT_COLUMN))
-    }
-
-    if (this.layout.enabled(CellNames.LEFT_COLUMN_TITLE)) {
-      this.components[CellNames.LEFT_COLUMN_TITLE].draw(this.layout.getCellBounds(CellNames.LEFT_COLUMN_TITLE))
-    }
+    // NB title/subtitle/footer : we want to center align with the colormap midpoint,
+    // but we want to wrap using the canvas boundaries, not the colormap boundaries
+    // we cannot currently express this in the layout component, so we need to do a bit of manual work here
+    _([CellNames.TITLE, CellNames.SUBTITLE, CellNames.FOOTER]).each(cellName => {
+      if (this.layout.enabled(cellName)) {
+        const bounds = this.layout.getCellBounds(cellName)
+        const midpoint = bounds.left + 0.5 * bounds.width
+        const canvasWidth = this.options.width
+        const shorterSide = Math.min(midpoint, canvasWidth - midpoint)
+        bounds.left = midpoint - shorterSide
+        bounds.width = 2 * shorterSide
+        this.components[cellName].draw(bounds)
+      }
+    })
 
     if (this.layout.enabled(CellNames.LEFT_COLUMN_SUBTITLE)) {
       this.components[CellNames.LEFT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.LEFT_COLUMN].getColumnWidths())
       this.components[CellNames.LEFT_COLUMN_SUBTITLE].draw(this.layout.getCellBounds(CellNames.LEFT_COLUMN_SUBTITLE))
     }
 
-    if (this.layout.enabled(CellNames.RIGHT_COLUMN)) {
-      this.components[CellNames.RIGHT_COLUMN].draw(this.layout.getCellBounds(CellNames.RIGHT_COLUMN))
-    }
-
-    if (this.layout.enabled(CellNames.RIGHT_COLUMN_TITLE)) {
-      this.components[CellNames.RIGHT_COLUMN_TITLE].draw(this.layout.getCellBounds(CellNames.RIGHT_COLUMN_TITLE))
-    }
-
     if (this.layout.enabled(CellNames.RIGHT_COLUMN_SUBTITLE)) {
       this.components[CellNames.RIGHT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
       this.components[CellNames.RIGHT_COLUMN_SUBTITLE].draw(this.layout.getCellBounds(CellNames.RIGHT_COLUMN_SUBTITLE))
-      console.log(`RIGHT_COLUMN_SUBTITLE rightmost: ${this.layout.isRightmost(CellNames.RIGHT_COLUMN_SUBTITLE)}`)
-    }
-
-    // TODO audit if these are ever used once we have interaction regression in place
-    function on_col_label_mouseenter (e) { // eslint-disable-line no-unused-vars
-      controller.highlight(+d3.select(this).attr('index'), null)
-    }
-
-    function on_col_label_mouseleave (e) { // eslint-disable-line no-unused-vars
-      controller.highlight(null, null)
-    }
-
-    function on_row_label_mouseenter (e) { // eslint-disable-line no-unused-vars
-      controller.highlight(null, +d3.select(this).attr('index'))
-    }
-
-    function on_row_label_mouseleave (e) { // eslint-disable-line no-unused-vars
-      controller.highlight(null, null)
     }
 
     el.attr(`rhtmlHeatmap-status`, 'ready')
@@ -149,17 +90,33 @@ class Heatmap {
 
   wireupController () {
     _(this.components).each(component => component.setController(this.controller))
-
     this.controller.addComponents(this.components)
     this.controller.addOuter(this.inner)
   }
 
   buildLayout () {
-    // NB heatmap is not responsible for placing title, subtitle, or footer. See HeatmapOuter
-
     this.layout = new HeatmapLayout(this.options.width, this.options.height, this.options.padding)
     const {options, inner} = this
     if (this.dendrogramData.columns) { options.xaxis_location = 'bottom' }
+
+    this.components[CellNames.COLORMAP] = new Colormap({
+      parentContainer: inner,
+      matrix: this.matrix,
+      yaxisTitle: options.yaxis_title, // TODO review why we need to pass title in
+      xaxisTitle: options.xaxis_title, // TODO review why we need to pass title in
+      extraTooltipInfo: options.extra_tooltip_info,
+      tipFontSize: options.tip_font_size,
+      tipFontFamily: options.tip_font_family,
+      cellFontSize: options.cell_font_size,
+      cellFontFamily: options.cell_font_family,
+      brushColor: options.brush_color,
+      animDuration: options.anim_duration,
+      showGrid: options.show_grid,
+      shownoteInCell: options.shownote_in_cell,
+      controller: this.controller
+    })
+    this.layout.enable(CellNames.COLORMAP)
+    this.layout.setFillCell(CellNames.COLORMAP)
 
     if (options.left_columns) {
       this.components[CellNames.LEFT_COLUMN] = new ColumnGroup({
@@ -179,7 +136,7 @@ class Heatmap {
       this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN, dimensions)
     }
 
-    if (options.left_columns_subtitles) {
+    if (!_.isEmpty(options.left_columns_subtitles)) {
       this.components[CellNames.LEFT_COLUMN_SUBTITLE] = new ColumnSubtitles({
         parentContainer: inner,
         name: CellNames.LEFT_COLUMN_SUBTITLE,
@@ -195,7 +152,7 @@ class Heatmap {
       this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN_SUBTITLE, dimensions)
     }
 
-    if (options.left_columns_title) {
+    if (!_.isEmpty(options.left_columns_title)) {
       // NB need available width to perform wrapping, which influences required height
       const { width: availableWidth } = this.layout.getCellBounds(CellNames.LEFT_COLUMN)
 
@@ -233,7 +190,7 @@ class Heatmap {
       this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN, dimensions)
     }
 
-    if (options.right_columns_subtitles) {
+    if (!_.isEmpty(options.right_columns_subtitles)) {
       this.components[CellNames.RIGHT_COLUMN_SUBTITLE] = new ColumnSubtitles({
         parentContainer: inner,
         name: CellNames.RIGHT_COLUMN_SUBTITLE,
@@ -250,7 +207,7 @@ class Heatmap {
       this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN_SUBTITLE, dimensions)
     }
 
-    if (options.right_columns_title) {
+    if (!_.isEmpty(options.right_columns_title)) {
       // NB need available width to perform wrapping, which influences required height
       const { width: availableWidth } = this.layout.getCellBounds(CellNames.RIGHT_COLUMN)
 
@@ -343,7 +300,7 @@ class Heatmap {
       this.layout.setPreferredDimensions(yaxisCellName, dimensions)
     }
 
-    if (options.yaxis_title) {
+    if (!_.isEmpty(options.yaxis_title)) {
       const yaxisTitleCellName = this.layout.enabled(CellNames.RIGHT_YAXIS)
         ? CellNames.RIGHT_YAXIS_TITLE
         : CellNames.LEFT_YAXIS_TITLE
@@ -364,24 +321,28 @@ class Heatmap {
       this.layout.setPreferredDimensions(yaxisTitleCellName, dimensions)
     }
 
-    // NB Xaxis complication: wrapping. To know the required height (due to wrapping) ,
+    // NB Xaxis, title, subtitle, and footer complication: wrapping.
+    // To know the required height (due to wrapping),
     // we need to know the available width. (this is why it is done near end)
-    if (options.xaxis_title) {
+
+    // NB title/subtitle/footer : we want to center align with the colormap midpoint,
+    // but we want to wrap using the canvas boundaries, not the colormap boundaries.
+    // we cannot currently express this in the layout component, so we need to do a bit of manual work here
+    if (!_.isEmpty(options.xaxis_title)) {
       const xaxisTitleCellName = (options.xaxis_location === 'bottom')
         ? CellNames.BOTTOM_XAXIS_TITLE
         : CellNames.TOP_XAXIS_TITLE
+      const { width: estimatedWidth } = this.layout.getEstimatedCellBounds(xaxisTitleCellName)
 
-      const { width: allocatedWidth } = this.layout.getAllocatedSpace()
-      const estimatedWidth = this.options.width - allocatedWidth
-
-      this.components[xaxisTitleCellName] = new XTitle({
+      this.components[xaxisTitleCellName] = new Title({
         parentContainer: inner,
         text: options.xaxis_title,
         fontFamily: options.xaxis_title_font_family,
         fontSize: options.xaxis_title_font_size,
         fontColor: options.xaxis_title_font_color,
         maxLines: 3,
-        bold: options.xaxis_title_bold
+        bold: options.xaxis_title_bold,
+        innerPadding: 2 // TODO make configurable
       })
 
       const dimensions = this.components[xaxisTitleCellName].computePreferredDimensions(estimatedWidth)
@@ -389,15 +350,13 @@ class Heatmap {
       this.layout.setPreferredDimensions(xaxisTitleCellName, dimensions)
     }
 
-    // NB Xaxis complication: wrapping. To know the required height (due to wrapping) ,
-    // we need to know the available width. (this is why it is done near end)
     if (!options.xaxis_hidden) {
       const xaxisCellName = (options.xaxis_location === 'bottom')
         ? CellNames.BOTTOM_XAXIS
         : CellNames.TOP_XAXIS
 
-      const { width: allocatedWidth } = this.layout.getAllocatedSpace()
-      const estimatedColumnWidth = (this.options.width - allocatedWidth) / this.matrix.cols.length
+      const { width: estimatedWidth } = this.layout.getEstimatedCellBounds(xaxisCellName)
+      const estimatedColormapColumnWidth = estimatedWidth / this.matrix.cols.length
 
       // TODO NB estimateColumnWidth < MAGIC NUMBER - expose as advanced param
       // TODO NB Should this be pushed into xaxis class ?
@@ -421,29 +380,73 @@ class Heatmap {
         rotation
       })
 
-      const dimensions = this.components[xaxisCellName].computePreferredDimensions(estimatedColumnWidth)
+      const dimensions = this.components[xaxisCellName].computePreferredDimensions(estimatedColormapColumnWidth)
       this.layout.enable(xaxisCellName)
       this.layout.setPreferredDimensions(xaxisCellName, dimensions)
     }
 
-    this.components[CellNames.COLORMAP] = new Colormap({
-      parentContainer: inner,
-      matrix: this.matrix,
-      yaxisTitle: options.yaxis_title, // TODO review why we need to pass title in
-      xaxisTitle: options.xaxis_title, // TODO review why we need to pass title in
-      extraTooltipInfo: options.extra_tooltip_info,
-      tipFontSize: options.tip_font_size,
-      tipFontFamily: options.tip_font_family,
-      cellFontSize: options.cell_font_size,
-      cellFontFamily: options.cell_font_family,
-      brushColor: options.brush_color,
-      animDuration: options.anim_duration,
-      showGrid: options.show_grid,
-      shownoteInCell: options.shownote_in_cell,
-      controller: this.controller
-    })
-    this.layout.enable(CellNames.COLORMAP)
-    this.layout.setFillCell(CellNames.COLORMAP)
+    if (!_.isEmpty(options.title)) {
+      const { width: estimatedWidth, left: estimatedLeftBound } = this.layout.getEstimatedCellBounds(CellNames.TITLE)
+
+      this.components[CellNames.TITLE] = new Title({
+        parentContainer: inner,
+        text: options.title,
+        fontColor: options.title_font_color,
+        fontSize: options.title_font_size,
+        fontFamily: options.title_font_family,
+        bold: false,
+        innerPadding: 2 // TODO make configurable
+      })
+
+      const midpoint = estimatedLeftBound + 0.5 * estimatedWidth
+      const shorterSide = Math.min(midpoint, this.options.width - midpoint)
+
+      const dimensions = this.components[CellNames.TITLE].computePreferredDimensions(2 * shorterSide)
+      this.layout.enable(CellNames.TITLE)
+      this.layout.setPreferredDimensions(CellNames.TITLE, dimensions)
+    }
+
+    if (!_.isEmpty(options.subtitle)) {
+      const { width: estimatedWidth, left: estimatedLeftBound } = this.layout.getEstimatedCellBounds(CellNames.SUBTITLE)
+
+      this.components[CellNames.SUBTITLE] = new Title({
+        parentContainer: inner,
+        text: options.subtitle,
+        fontColor: options.subtitle_font_color,
+        fontSize: options.subtitle_font_size,
+        fontFamily: options.subtitle_font_family,
+        bold: false,
+        innerPadding: 2 // TODO make configurable
+      })
+
+      const midpoint = estimatedLeftBound + 0.5 * estimatedWidth
+      const shorterSide = Math.min(midpoint, this.options.width - midpoint)
+
+      const dimensions = this.components[CellNames.SUBTITLE].computePreferredDimensions(2 * shorterSide)
+      this.layout.enable(CellNames.SUBTITLE)
+      this.layout.setPreferredDimensions(CellNames.SUBTITLE, dimensions)
+    }
+
+    if (!_.isEmpty(options.footer)) {
+      const { width: estimatedWidth, left: estimatedLeftBound } = this.layout.getEstimatedCellBounds(CellNames.FOOTER)
+
+      this.components[CellNames.FOOTER] = new Title({
+        parentContainer: inner,
+        text: options.footer,
+        fontColor: options.footer_font_color,
+        fontSize: options.footer_font_size,
+        fontFamily: options.footer_font_family,
+        bold: false,
+        innerPadding: 2 // TODO make configurable
+      })
+
+      const midpoint = estimatedLeftBound + 0.5 * estimatedWidth
+      const shorterSide = Math.min(midpoint, this.options.width - midpoint)
+
+      const dimensions = this.components[CellNames.FOOTER].computePreferredDimensions(2 * shorterSide)
+      this.layout.enable(CellNames.FOOTER)
+      this.layout.setPreferredDimensions(CellNames.FOOTER, dimensions)
+    }
   }
 
   normalizeMatrix (matrix) {

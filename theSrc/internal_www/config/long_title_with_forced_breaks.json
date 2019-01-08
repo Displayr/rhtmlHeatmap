@@ -1,0 +1,10 @@
+{
+  "options": {
+    "title": "Title Title Title <br> Title Title Title Title Title<br>Title Title Title Title Title Title Title Title Title Title Title Title",
+    "subtitle": "Subtitle Subtitle Subtitle Subtitle Subtitle<br>Subtitle Subtitle Subtitle Subtitle<br>Subtitle Subtitle Subtitle Subtitle",
+    "footer": "Footer Footer Footer Footer Footer Footer Footer Footer Footer<br>Footer Footer Footer Footer<br>Footer Footer Footer Footer Footer Footer Footer Footer Footer<br>footer Footer Footer Footer",
+    "xaxis_title": "axis title axis title axis title axis title axis title axis title",
+    "yaxis_title": "axis title axis title axis title axis title axis title axis title",
+    "left_columns_title": "Column Title Column Title Column Title Column Title Column Title"
+  }
+}

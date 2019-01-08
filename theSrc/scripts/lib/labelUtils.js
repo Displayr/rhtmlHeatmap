@@ -44,7 +44,8 @@ function getLabelDimensionsUsingSvgApproximation ({parentContainer, text, fontSi
 }
 
 function wordTokenizer (inputString) {
-  return inputString.split(' ').map(_.trim).filter((token) => !_.isEmpty(token))
+  const inputString2 = inputString.replace(/<br>/g, ' <br> ')
+  return inputString2.split(' ').map(_.trim).filter((token) => !_.isEmpty(token))
 }
 
 function splitIntoLinesByWord ({parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', maxWidth, maxHeight, maxLines = null, rotation = 0} = {}) {
@@ -84,6 +85,12 @@ function _splitIntoLines ({parentContainer, text, fontSize = 12, fontFamily = 's
   let lines = []
   let token = null
   while (token = tokens.shift()) { // eslint-disable-line no-cond-assign
+    if (token === '<br>') {
+      lines.push(`${currentLine.join(joinCharacter)}`)
+      currentLine = []
+      continue
+    }
+
     currentLine.push(token)
 
     const { width, height } = getLabelDimensionsUsingSvgApproximation({

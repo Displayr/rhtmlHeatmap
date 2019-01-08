@@ -84,7 +84,7 @@ NULL
 #' @param legend_font_size positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).
 #' @param legend_width positive integer. Sets the desired width of the legend bar. Defaults to 60 (pixcels).
 #' @param legend_digits positive integer. Sets the decimal places of the legend texts. Estimates the decimal places needed by default.
-#' @param legend_label_format string. "normal" or "percentage". If percentage, convert legend values to percent (* 100, add "%").
+#' @param legend_label_format string. "normal" or "percentage". If percentage, convert legend values to percent (* 100, add "\%").
 #'
 #' @param labRow character vectors with row labels to use (from top to bottom); default to rownames(x).
 #' @param labCol character vectors with column labels to use (from left to right); default to colnames(x).

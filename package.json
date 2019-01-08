@@ -17,7 +17,7 @@
     "babel-polyfill": "^6.26.0",
     "d3": "3.5.11",
     "d3-tip": "Displayr/d3-tip#v3.0.0",
-    "rhtmlBuildUtils": "Displayr/rhtmlBuildUtils#3.0.5",
-    "rhtmlParts": "Displayr/rhtmlParts"
+    "loglevel": "^1.6.1",
+    "rhtmlBuildUtils": "Displayr/rhtmlBuildUtils#3.0.7"
   }
 }

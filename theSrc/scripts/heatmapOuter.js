@@ -2,8 +2,8 @@
 
 import _ from 'lodash'
 import d3 from 'd3'
+import * as rootLog from 'loglevel'
 
-import {Footer, Title, Subtitle} from 'rhtmlParts'
 const Heatmap = require('./lib/heatmapcore/heatmapcore')
 
 let uniqueInstanceCount = 0
@@ -14,103 +14,56 @@ function uniqueId () {
 module.exports = function (element, x) {
   const { options, image, matrix, rows, cols } = x
 
+  _initLogger(options.logLevel)
+
   const {width, height} = getContainerDimensions(_.has(element, 'length') ? element[0] : element)
   const uniqueClass = `heatmap-${uniqueId()}`
 
-  let titleHeight = 0
-  let subtitleHeight = 0
-  let footerHeight = 0
-
-  const outerSvg = d3.select(element)
+  d3.select(element)
     .append('svg')
-    .attr('class', 'svgContent')
+    .attr('class', `svgContent ${uniqueClass}`)
     .attr('width', width)
     .attr('height', height)
-
-  if (options.title) {
-    const title = new Title({
-      text: options.title,
-      fontColor: options.title_font_color,
-      fontSize: options.title_font_size,
-      fontFamily: options.title_font_family,
-      topPadding: 0,
-      bottomPadding: 10,
-      innerPadding: 2
-    })
-    title.setX(width / 2)
-    title.setMaxWidth(width)
-    title.drawWith(uniqueClass, outerSvg)
-    titleHeight = title.getHeight()
-  }
-
-  if (options.subtitle) {
-    const subtitle = new Subtitle({
-      subtitleText: options.subtitle,
-      subtitleFontColor: options.subtitle_font_color,
-      subtitleFontSize: options.subtitle_font_size,
-      subtitleFontFamily: options.subtitle_font_family,
-      yOffset: titleHeight,
-      bottomPadding: 10,
-      innerPadding: 2
-    })
-    subtitle.setX(width / 2)
-    subtitle.setMaxWidth(width)
-    subtitle.drawWith(uniqueClass, outerSvg)
-    subtitleHeight = subtitle.getHeight()
-  }
-
-  if (options.footer) {
-    const footer = new Footer({
-      footerText: options.footer,
-      footerFontColor: options.footer_font_color,
-      footerFontSize: options.footer_font_size,
-      footerFontFamily: options.footer_font_family,
-      containerHeight: height,
-      topPadding: 10,
-      bottomPadding: 10,
-      innerPadding: 2
-    })
-    footer.setX(width / 2)
-    footer.setMaxWidth(width)
-    footer.setContainerHeight(height)
-    footer.drawWith(uniqueClass, outerSvg)
-    footerHeight = footer.getHeight()
-  }
-
-  const plotHeight = height -
-    titleHeight -
-    subtitleHeight -
-    footerHeight
-
-  console.log(`canvas height: ${height}`)
-  console.log(`titleHeight: ${titleHeight}`)
-  console.log(`subtitleHeight: ${subtitleHeight}`)
-  console.log(`footerHeight: ${footerHeight}`)
-  console.log(`setting plot width: ${width}`)
-  console.log(`setting plot height: ${plotHeight}`)
-
-  const pieGroupYOffset = titleHeight + subtitleHeight
-  outerSvg.append('g')
-    .attr('class', `heatmap-container ${uniqueClass}`)
-    .attr('transform', `translate(0,${pieGroupYOffset})`)
 
   loadImage(image)
     .then(({imgData, width, height}) => processImageData({imgData, width, height, matrix, shownote_in_cell: options.shownote_in_cell}))
     .then(merged => {
       matrix.merged = merged
       return new Heatmap({
-        selector: `.heatmap-container.${uniqueClass}`,
+        selector: `.svgContent.${uniqueClass}`,
         options,
         matrix,
         dendrogramRows: rows,
         dendrogramColumns: cols,
         width,
-        height: plotHeight
+        height
       })
     })
     .catch(error => {
       throw error
     })
+}
+
+function _initLogger (loggerSettings = 'info') {
+  if (_.isNull(loggerSettings)) {
+    return
+  }
+  if (_.isString(loggerSettings)) {
+    rootLog.setLevel(loggerSettings)
+    _(getLoggerNames()).each((loggerName) => { rootLog.getLogger(loggerName).setLevel(loggerSettings) })
+    return
+  }
+  _(loggerSettings).each((loggerLevel, loggerName) => {
+    if (loggerName === 'default') {
+      rootLog.setLevel(loggerLevel)
+    } else {
+      rootLog.getLogger(loggerName).setLevel(loggerLevel)
+    }
+  })
+}
+
+function getLoggerNames () {
+  return ['layout']
 }
 
 function loadImage (uri) {

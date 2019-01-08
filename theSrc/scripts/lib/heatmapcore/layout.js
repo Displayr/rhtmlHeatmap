@@ -1,6 +1,11 @@
-const _ = require('lodash')
+import _ from 'lodash'
+import * as rootLog from 'loglevel'
+const layoutLogger = rootLog.getLogger('layout')
 
 const cells = {
+  TITLE: 'TITLE',
+  SUBTITLE: 'SUBTITLE',
+  FOOTER: 'FOOTER',
   LEFT_COLUMN_TITLE: 'LEFT_COLUMN_TITLE',
   LEFT_COLUMN_SUBTITLE: 'LEFT_COLUMN_SUBTITLE',
   LEFT_COLUMN: 'LEFT_COLUMN',
@@ -26,7 +31,7 @@ const HeatmapColumns = [
   { name: 'LEFT_YAXIS_TITLE', cells: [cells.LEFT_YAXIS_TITLE] },
   { name: 'LEFT_YAXIS', cells: [cells.LEFT_YAXIS] },
   { name: 'LEFT_COLUMN', cells: [cells.LEFT_COLUMN_TITLE, cells.LEFT_COLUMN_SUBTITLE, cells.LEFT_COLUMN] },
-  { name: 'COLORMAP', cells: [cells.TOP_XAXIS_TITLE, cells.TOP_XAXIS, cells.TOP_DENDROGRAM, cells.COLORMAP, cells.BOTTOM_XAXIS, cells.BOTTOM_XAXIS_TITLE] },
+  { name: 'COLORMAP', cells: [cells.TITLE, cells.SUBTITLE, cells.TOP_XAXIS_TITLE, cells.TOP_XAXIS, cells.TOP_DENDROGRAM, cells.COLORMAP, cells.BOTTOM_XAXIS, cells.BOTTOM_XAXIS_TITLE, cells.FOOTER] },
   { name: 'RIGHT_COLUMN', cells: [cells.RIGHT_COLUMN_TITLE, cells.RIGHT_COLUMN_SUBTITLE, cells.RIGHT_COLUMN] },
   { name: 'RIGHT_YAXIS', cells: [cells.RIGHT_YAXIS] },
   { name: 'RIGHT_YAXIS_TITLE', cells: [cells.RIGHT_YAXIS_TITLE] },
@@ -34,12 +39,15 @@ const HeatmapColumns = [
 ]
 
 const HeatmapRows = [
+  { name: 'TITLE', cells: [cells.TITLE] },
+  { name: 'SUBTITLE', cells: [cells.SUBTITLE] },
   { name: 'TOP_DENDROGRAM', cells: [cells.TOP_DENDROGRAM] },
   { name: 'TOP_COLUMN_TITLES', cells: [cells.LEFT_COLUMN_TITLE, cells.TOP_XAXIS_TITLE, cells.RIGHT_COLUMN_TITLE] },
   { name: 'TOP_COLUMN_LABELS', cells: [cells.LEFT_COLUMN_SUBTITLE, cells.TOP_XAXIS, cells.RIGHT_COLUMN_SUBTITLE] },
   { name: 'COLORMAP', cells: [cells.LEFT_DENDROGRAM, cells.LEFT_YAXIS_TITLE, cells.LEFT_YAXIS, cells.LEFT_COLUMN, cells.COLORMAP, cells.RIGHT_COLUMN, cells.RIGHT_YAXIS, cells.RIGHT_YAXIS_TITLE, cells.COLOR_LEGEND] },
   { name: 'BOTTOM_COLUMN_LABELS', cells: [cells.BOTTOM_XAXIS] },
-  { name: 'BOTTOM_COLUMN_TITLES', cells: [cells.BOTTOM_XAXIS_TITLE] }
+  { name: 'BOTTOM_COLUMN_TITLES', cells: [cells.BOTTOM_XAXIS_TITLE] },
+  { name: 'FOOTER', cells: [cells.FOOTER] }
 ]
 
 class HeatmapLayout {
@@ -104,6 +112,15 @@ class HeatmapLayout {
 
   getCellBounds (cellName) {
     this._throwIfNotEnabled(cellName)
+    return this._getCellBounds(cellName)
+  }
+
+  getEstimatedCellBounds (cellName) {
+    return this._getCellBounds(cellName)
+  }
+
+  _getCellBounds (cellName) {
+    layoutLogger.debug(`enter layout.getCellBounds(${cellName})`)
     const rowName = this._findRowFromCell(cellName)
     const columnName = this._findColumnFromCell(cellName)
     const rowsAbove = this._getEnabledRowsBeforeRow(rowName)
@@ -123,24 +140,8 @@ class HeatmapLayout {
     if (width === 0) { console.warn(`returning zero width for getCellBounds(${cellName})`) }
     if (height === 0) { console.warn(`returning zero height for getCellBounds(${cellName})`) }
 
-    console.log(`getCellBounds(${cellName}) -> w: ${width}, h: ${height}, t: ${top.toFixed(2)}, l: ${left.toFixed(2)}`)
+    layoutLogger.debug(`layout.getCellBounds(${cellName}) ->`, {width, height, top, left})
     return {width, height, top, left}
-  }
-
-  getAllocatedSpace () {
-    const height = _(HeatmapRows)
-      .map('name')
-      .filter(name => this._rowEnabled(name))
-      .map(name => this._getRowHeight(name))
-      .sum()
-
-    const width = _(HeatmapColumns)
-      .map('name')
-      .filter(name => this._columnEnabled(name))
-      .map(name => this._getColumnWidth(name))
-      .sum()
-
-    return { width, height }
   }
 
   _getRow (rowName) {
@@ -162,6 +163,7 @@ class HeatmapLayout {
       .filter({ enabled: true })
       .map(cellInfo => (cellInfo.fill) ? this._getHeightOfFillCell(cellInfo.name, rowName) : cellInfo.height)
       .max()
+    layoutLogger.debug(`layout._getRowHeight(${rowName}) ->`, rowHeight || 0)
     return rowHeight || 0
   }
 
@@ -172,31 +174,38 @@ class HeatmapLayout {
       .filter({ enabled: true })
       .map(cellInfo => (cellInfo.fill) ? this._getWidthOfFillCell(cellInfo.name, columnName) : this._getWidthOfFixedCell(cellInfo.name))
       .max()
+    layoutLogger.debug(`layout._getColumnWidth(${columnName}) ->`, columnWidth || 0)
     return columnWidth || 0
   }
 
   _getWidthOfFillCell (cellName, columnName) {
-    const otherColumns = _.filter(HeatmapColumns, (column) => column.name !== columnName)
+    const otherColumns = _.filter(HeatmapColumns, (column) => column.name !== columnName && this._columnEnabled(column.name))
     const allocatedWidth = _(otherColumns)
       .map(otherColumn => this._getColumnWidth(otherColumn.name))
-      .sum() + (otherColumns.length - 1) * this.padding + 2 * this.outerPadding
+      .sum() + otherColumns.length * this.padding + 2 * this.outerPadding
+    layoutLogger.debug(`layout._getWidthOfFillCell(${cellName}, ${columnName}) ->`, this.canvasWidth - allocatedWidth)
     return this.canvasWidth - allocatedWidth
   }
 
   _getHeightOfFillCell (cellName, rowName) {
-    const otherRows = _.filter(HeatmapRows, (row) => row.name !== rowName)
+    const otherRows = _.filter(HeatmapRows, (row) => row.name !== rowName && this._rowEnabled(row.name))
     const allocatedHeight = _(otherRows)
       .map(otherRow => this._getRowHeight(otherRow.name))
-      .sum() + (otherRows.length - 1) * this.padding + 2 * this.outerPadding
+      .sum() + otherRows.length * this.padding + 2 * this.outerPadding
+    layoutLogger.debug(`layout._getHeightOfFillCell(${cellName}, ${rowName}) ->`, this.canvasHeight - allocatedHeight)
     return this.canvasHeight - allocatedHeight
   }
 
   _getWidthOfFixedCell (cellName) {
     const cellInfo = this.cellInfo[cellName]
-    return (_.has(cellInfo, 'conditional.rightmost') && this.isRightmost(cellName))
+    const result = (_.has(cellInfo, 'conditional.rightmost') && this.isRightmost(cellName))
       ? cellInfo.conditional.rightmost
       : this.cellInfo[cellName].width
+    layoutLogger.debug(`layout._getWidthOfFixedCell(${cellName}) ->`, result)
+    return result
   }
+
+  // TODO for symmetry add _getHeightOfFixedCell
 
   _rowEnabled (rowName) {
     const row = this._getRow(rowName)
