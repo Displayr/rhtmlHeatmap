@@ -3,12 +3,10 @@ import _ from 'lodash'
 import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByWord} from '../labelUtils'
 
 // TODO preferred dimensions must account for maxes
-class XAxis extends BaseComponent {
-  constructor ({parentContainer, text, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines}) {
+class Title extends BaseComponent {
+  constructor ({parentContainer, text, fontSize, fontFamily, fontColor, bold = false, maxWidth, maxLines, innerPadding}) {
     super()
-    _.assign(this, {parentContainer, text, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines})
-
-    this.innerLinePadding = 1 // TODO move up
+    _.assign(this, {parentContainer, text, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines, innerPadding})
   }
 
   computePreferredDimensions (estimatedWidth) {
@@ -28,14 +26,14 @@ class XAxis extends BaseComponent {
     }))
 
     return {
-      width: _(lineDimensions).map('width').max(),
-      height: _(lineDimensions).map('height').sum() + (lines.length - 1) * this.innerLinePadding
+      width: 0, // NB title width takes what is given, and does not force width on the chart
+      height: _(lineDimensions).map('height').sum() + (lines.length - 1) * this.innerPadding
     }
   }
 
   draw (bounds) {
     const titleContainer = this.parentContainer.append('g')
-      .classed('xtitle', true)
+      .classed('title', true)
       .attr('transform', this.buildTransform(bounds))
 
     const lines = splitIntoLinesByWord({
@@ -62,10 +60,10 @@ class XAxis extends BaseComponent {
       textElement.append('tspan')
         .style('dominant-baseline', 'text-before-edge')
         .attr('x', 0)
-        .attr('y', i * (this.fontSize + this.innerLinePadding))
+        .attr('y', i * (this.fontSize + this.innerPadding))
         .text(lineText)
     })
   }
 }
 
-module.exports = XAxis
+module.exports = Title

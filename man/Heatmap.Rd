@@ -136,7 +136,7 @@ should cellnote be scaled if x is also scaled?}
 
 \item{legend_font_size}{positive integer. Sets the font size of the legend. Defaults to 11 (pixcels).}
 
-\item{legend_label_format}{string. "normal" or "percentage". If percentage, convert legend values to percent (* 100, add "%").}
+\item{legend_label_format}{string. "normal" or "percentage". If percentage, convert legend values to percent (* 100, add "\%").}
 
 \item{colors}{Either a colorbrewer2.org palette name (e.g. \code{"YlOrRd"} or
 \code{"Blues"}), or a vector of colors to interpolate in hexadecimal
