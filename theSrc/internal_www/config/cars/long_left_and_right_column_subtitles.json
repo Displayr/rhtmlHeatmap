@@ -1,0 +1,14 @@
+{
+  "options": {
+    "left_columns_subtitles": [
+      "1 these column subtitles are a touch too verbose and run on a little too long",
+      "2 these column subtitles are a touch too verbose and run on a little too long",
+      "3 these column subtitles are a touch too verbose and run on a little too long"
+    ],
+    "right_columns_subtitles": [
+      "1 these column subtitles are a touch too verbose and run on a little too long",
+      "2 these column subtitles are a touch too verbose and run on a little too long",
+      "3 these column subtitles are a touch too verbose and run on a little too long"
+    ]
+  }
+}
