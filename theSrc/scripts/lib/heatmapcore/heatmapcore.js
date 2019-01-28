@@ -146,7 +146,7 @@ class Heatmap {
         fontColor: options.left_columns_subtitles_font_color,
         padding: this.options.axis_padding,
         maxLines: 1, // TODO make configurable
-        maxHeight: 100 // TODO make configurable
+        maxHeight: options.xaxis_label_max_height
       })
 
       const dimensions = this.components[CellNames.LEFT_COLUMN_SUBTITLE].computePreferredDimensions()
@@ -202,7 +202,7 @@ class Heatmap {
         fontColor: options.right_columns_subtitles_font_color,
         padding: this.options.axis_padding,
         maxLines: 1, // TODO make configurable
-        maxHeight: 100 // TODO make configurable
+        maxHeight: options.xaxis_label_max_height
       })
 
       this.components[CellNames.RIGHT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())

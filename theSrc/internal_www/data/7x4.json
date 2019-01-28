@@ -114,13 +114,13 @@
   },
   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAECAYAAABCxiV9AAAAQ0lEQVQImWNcyqD2nwEJ+GXLwNmMn7Od/nMXeiHLMzyTSIVIPvny8T8DAwPDzANPUBTs7DvGwGjmNBtu7O8vv1AUAAB0JBR5DqvwJAAAAABJRU5ErkJggg==",
   "options": {
-    "xaxis_height": 80,
+
     "xaxis_font_size": 12,
     "xaxis_font_family": "sans-serif",
     "xaxis_font_color": "#000000",
     "xaxis_location": "bottom",
     "xaxis_hidden": false,
-    "yaxis_width": 120,
+
     "yaxis_font_size": 11,
     "yaxis_font_family": "sans-serif",
     "yaxis_font_color": "#000000",

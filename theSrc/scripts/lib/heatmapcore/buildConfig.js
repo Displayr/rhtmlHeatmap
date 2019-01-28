@@ -51,6 +51,7 @@ const defaultConfig = {
   xaxis_title_font_size: 15,
   xaxis_title_font_family: 'sans-serif',
   xaxis_title_font_color: '#000000',
+  xaxis_label_max_height: 100,
   yaxis_font_size: 15,
   yaxis_font_family: 'sans-serif',
   yaxis_font_color: 'black',

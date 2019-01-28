@@ -25,16 +25,16 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   subtitle = NULL, subtitle_font_size = 18,
   subtitle_font_family = "sans-serif", subtitle_font_color = "#000000",
   footer = NULL, footer_font_size = 11, footer_font_family = "sans-serif",
-  footer_font_color = "#000000", xaxis_hidden = FALSE, xaxis_height = 80,
+  footer_font_color = "#000000", xaxis_hidden = FALSE,
   xaxis_font_size = 12, xaxis_font_family = "sans-serif",
   xaxis_font_color = "#000000", xaxis_location = "bottom",
-  xaxis_title = NULL, xaxis_title_font_size = 14,
-  xaxis_title_font_family = "sans-serif",
+  xaxis_label_max_height = 100, xaxis_title = NULL,
+  xaxis_title_font_size = 14, xaxis_title_font_family = "sans-serif",
   xaxis_title_font_color = "#000000", yaxis_hidden = FALSE,
-  yaxis_width = 120, yaxis_font_size = 11,
-  yaxis_font_family = "sans-serif", yaxis_font_color = "#000000",
-  yaxis_location = "right", yaxis_title = NULL,
-  yaxis_title_font_size = 14, yaxis_title_font_family = "sans-serif",
+  yaxis_font_size = 11, yaxis_font_family = "sans-serif",
+  yaxis_font_color = "#000000", yaxis_location = "right",
+  yaxis_title = NULL, yaxis_title_font_size = 14,
+  yaxis_title_font_family = "sans-serif",
   yaxis_title_font_color = "#000000", left_columns = NULL,
   left_columns_align = NULL, left_columns_font_size = 11,
   left_columns_font_family = "sans-serif",
@@ -173,8 +173,6 @@ should cellnote be scaled if x is also scaled?}
 
 \item{xaxis_hidden}{Boolean variable to hide x axis. Defaults to FALSE.}
 
-\item{xaxis_height}{Size of axes, in pixels. Default is calculated automatically with axis font size specified.}
-
 \item{xaxis_font_size}{Font size of x axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 12.}
 
 \item{xaxis_font_family}{Font family of x axis labels. Defaults to "sans-serif".}
@@ -182,6 +180,8 @@ should cellnote be scaled if x is also scaled?}
 \item{xaxis_font_color}{Font folor of x axis labels. Defaults to "#000000".}
 
 \item{xaxis_location}{Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".}
+
+\item{xaxis_label_max_height}{Max allocated height for xaxis and column subtitle labels. Defaults to 100.}
 
 \item{xaxis_title}{Title text of the x axis.}
 
@@ -192,8 +192,6 @@ should cellnote be scaled if x is also scaled?}
 \item{xaxis_title_font_color}{Font folor of x axis title. Defaults to "#000000".}
 
 \item{yaxis_hidden}{Boolean variable to hide y axis. Defaults to FALSE. To use a table layout with \code{left_columns} or \code{right_columns}, this parameter must be TRUE.}
-
-\item{yaxis_width}{Size of axes, in pixels. Default is calculated automatically with axis font size specified.}
 
 \item{yaxis_font_size}{Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 11.}
 
