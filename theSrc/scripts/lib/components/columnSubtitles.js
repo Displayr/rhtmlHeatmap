@@ -1,13 +1,13 @@
 import BaseComponent from './baseComponent'
-import {getLabelDimensionsUsingSvgApproximation} from '../labelUtils'
+import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByCharacter} from '../labelUtils'
 import _ from 'lodash'
 import {CellNames} from '../heatmapcore/layout'
 
 // TODO preferred dimensions must account for maxes
 class ColumnSubtitles extends BaseComponent {
-  constructor ({parentContainer, name, labels, fontSize, fontColor, fontFamily, padding, rotation = -45}) {
+  constructor ({parentContainer, name, labels, fontSize, fontColor, fontFamily, padding, rotation = -45, maxLines, maxHeight}) {
     super()
-    _.assign(this, {parentContainer, name, labels, fontSize, fontColor, fontFamily, padding, rotation})
+    _.assign(this, {parentContainer, name, labels, fontSize, fontColor, fontFamily, padding, rotation, maxLines, maxHeight})
   }
 
   setColumnWidths (widths) {
@@ -15,13 +15,24 @@ class ColumnSubtitles extends BaseComponent {
   }
 
   computePreferredDimensions () {
-    const labelDimensions = this.labels.map(text => getLabelDimensionsUsingSvgApproximation({
-      text,
-      parentContainer: this.parentContainer,
-      fontSize: this.fontSize,
-      fontFamily: this.fontFamily,
-      rotation: this.rotation
-    }))
+    const labelDimensions = this.labels.map(text => {
+      const lines = splitIntoLinesByCharacter({
+        parentContainer: this.parentContainer,
+        text: text,
+        maxHeight: this.maxHeight,
+        maxLines: 1,
+        fontSize: this.fontSize,
+        fontFamily: this.fontFamily,
+        rotation: this.rotation
+      })
+      return getLabelDimensionsUsingSvgApproximation({
+        text: lines[0],
+        parentContainer: this.parentContainer,
+        fontSize: this.fontSize,
+        fontFamily: this.fontFamily,
+        rotation: this.rotation
+      })
+    })
 
     const preferredDimensions = {
       width: 0, // NB accept column width
@@ -68,7 +79,18 @@ class ColumnSubtitles extends BaseComponent {
       .append('text')
       .attr('transform', `rotate(${this.rotation})`)
       .attr('x', 0)
-      .text(d => d)
+      .text(d => {
+        const lines = splitIntoLinesByCharacter({
+          parentContainer: this.parentContainer,
+          text: d,
+          maxHeight: this.maxHeight,
+          maxLines: this.maxLines,
+          fontSize: this.fontSize,
+          fontFamily: this.fontFamily,
+          rotation: this.rotation
+        })
+        return lines[0]
+      })
       .style('text-anchor', 'start')
       .style('font-family', this.fontFamily)
       .style('font-size', this.fontSize)

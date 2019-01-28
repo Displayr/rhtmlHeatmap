@@ -144,7 +144,9 @@ class Heatmap {
         fontSize: options.left_columns_subtitles_font_size,
         fontFamily: options.left_columns_subtitles_font_family,
         fontColor: options.left_columns_subtitles_font_color,
-        padding: this.options.axis_padding
+        padding: this.options.axis_padding,
+        maxLines: 1, // TODO make configurable
+        maxHeight: 100 // TODO make configurable
       })
 
       const dimensions = this.components[CellNames.LEFT_COLUMN_SUBTITLE].computePreferredDimensions()
@@ -198,7 +200,9 @@ class Heatmap {
         fontSize: options.right_columns_subtitles_font_size,
         fontFamily: options.right_columns_subtitles_font_family,
         fontColor: options.right_columns_subtitles_font_color,
-        padding: this.options.axis_padding
+        padding: this.options.axis_padding,
+        maxLines: 1, // TODO make configurable
+        maxHeight: 100 // TODO make configurable
       })
 
       this.components[CellNames.RIGHT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
