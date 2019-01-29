@@ -105,7 +105,6 @@ NULL
 #' @param footer_font_color An RGB character to set the color of the chart footer_font_color. Defaults to "#000000".
 #'
 #' @param xaxis_hidden Boolean variable to hide x axis. Defaults to FALSE.
-#' @param xaxis_height Size of axes, in pixels. Default is calculated automatically with axis font size specified.
 #' @param xaxis_location Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".
 #' @param xaxis_font_size Font size of x axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 12.
 #' @param xaxis_font_family Font family of x axis labels. Defaults to "sans-serif".
@@ -116,8 +115,9 @@ NULL
 #' @param xaxis_title_font_family Font family of x axis title. Defaults to "sans-serif".
 #' @param xaxis_title_font_color Font folor of x axis title. Defaults to "#000000".
 
+#' @param xaxis_label_max_height Max allocated height for xaxis and column subtitle labels. Defaults to 100.
+
 #' @param yaxis_hidden Boolean variable to hide y axis. Defaults to FALSE. To use a table layout with \code{left_columns} or \code{right_columns}, this parameter must be TRUE.
-#' @param yaxis_width Size of axes, in pixels. Default is calculated automatically with axis font size specified.
 #' @param yaxis_location Location of the y axis, c("right", "left"). Defaults to "right". "left" only works when dendrogram is "none".
 #' @param yaxis_font_size Font size of axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 11.
 #' @param yaxis_font_family Font family of y axis labels. Defaults to "sans-serif".
@@ -249,11 +249,11 @@ Heatmap <- function(x,
   footer_font_color = "#000000",
 
   xaxis_hidden = FALSE,
-  xaxis_height = 80,
   xaxis_font_size = 12,
   xaxis_font_family = "sans-serif",
   xaxis_font_color = "#000000",
   xaxis_location = "bottom",
+  xaxis_label_max_height = 100,
 
   xaxis_title = NULL,
   xaxis_title_font_size = 14,
@@ -261,7 +261,6 @@ Heatmap <- function(x,
   xaxis_title_font_color = "#000000",
 
   yaxis_hidden = FALSE,
-  yaxis_width = 120,
   yaxis_font_size = 11,
   yaxis_font_family = "sans-serif",
   yaxis_font_color = "#000000",
@@ -675,14 +674,12 @@ Heatmap <- function(x,
   options <- NULL
 
   options <- c(options, list(
-      xaxis_height = xaxis_height,
       xaxis_font_size = xaxis_font_size,
       xaxis_font_family = xaxis_font_family,
       xaxis_font_color = xaxis_font_color,
       xaxis_location = xaxis_location,
       xaxis_hidden = xaxis_hidden,
 
-      yaxis_width = yaxis_width,
       yaxis_font_size = yaxis_font_size,
       yaxis_font_family = yaxis_font_family,
       yaxis_font_color = yaxis_font_color,
@@ -694,6 +691,7 @@ Heatmap <- function(x,
       xaxis_title_font_size = xaxis_title_font_size,
       xaxis_title_font_family = xaxis_title_font_family,
       xaxis_title_font_color = xaxis_title_font_color,
+      xaxis_label_max_height = xaxis_label_max_height,
 
       yaxis_title = yaxis_title,
       #yaxis_title_bold = yaxis_title_bold,

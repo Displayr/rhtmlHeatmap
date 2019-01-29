@@ -185,13 +185,13 @@
   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAAzElEQVQImQXBvUsCYRzA8e/zeJ2SL8mBL7ektogVRdESNDfo5Nqf4F/mGLiIIG62OCQNIUQGh5pxeGIp6snz6/NRz8OZdD4WvI0X+P6aRq1M6/UbY4R0MoqTiPJ07aKzxzHqlSzVG5dxr0vzxaOYS7JcbZn5azKJIw7GYIkIwXbPz18Iuw0XRYeH0glaK77mv7QHE+K2xlJKEbctzpwYACMvYPA+JwwN91cuj5cZbvNptIjgb3b0P5dETs8p5FPcVXLYdoSRFzBdhYgI/7aEThYyFg+wAAAAAElFTkSuQmCC",
   "theme": null,
   "options": {
-    "xaxis_height": 80,
+
     "xaxis_font_size": 32,
     "xaxis_font_family": "Arial",
     "xaxis_font_color": "#2C2C2C",
     "xaxis_location": "top",
     "xaxis_hidden": false,
-    "yaxis_width": 120,
+
     "yaxis_font_size": 32,
     "yaxis_font_family": "Arial",
     "yaxis_font_color": "#2C2C2C",

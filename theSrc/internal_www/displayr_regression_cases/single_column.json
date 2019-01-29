@@ -54,13 +54,13 @@
   },
   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAABCAYAAAAMwoR9AAAALklEQVQImWMUiV/+X05JjEFPVYTh+btvDOxsLAy+umIMEzbfZLi7bSPDvtUtDADTnAyRaq0ZWgAAAABJRU5ErkJggg==",
   "options": {
-    "xaxis_height": 80,
+
     "xaxis_font_size": 10,
     "xaxis_font_family": "Arial",
     "xaxis_font_color": "#2C2C2C",
     "xaxis_location": "top",
     "xaxis_hidden": false,
-    "yaxis_width": 120,
+
     "yaxis_font_size": 10,
     "yaxis_font_family": "Arial",
     "yaxis_font_color": "#2C2C2C",

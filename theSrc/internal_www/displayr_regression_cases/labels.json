@@ -224,13 +224,13 @@
   },
   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAJCAYAAAD+WDajAAABA0lEQVQYlQXBvUsCYQDA4d/73odWVycIQYIRDkJDWx/UGK1R4FwQODW0NEfhv9CSY0tfNBUODVEtRTmFBFdCKCmk3JWRmndydz2PKJQaoaGrOH8uW/lHNjNTtD2f6cQwMrOWQxGCnbMSxsgAISFmVAFAXhztcVN12F6ZpP5WRQrB8V2Fbt9HAlwWaxRrvxzuLjOXiOHYbQxdRdxaTmj3epw/N1hKx3H9gEFNYf+qjLgvf4frBw/ousJE0iS7MI7d9UjFhpCnL5/ks7N8WBU25pNcv7cYM6K4foD69NrEqrU4ya0SUST1rw5uYNLseKgz6VEWUzF+vD4dz0dTJPFoBEPT+Ad34GKkY2ryXAAAAABJRU5ErkJggg==",
   "options": {
-    "xaxis_height": 80,
+
     "xaxis_font_size": 10,
     "xaxis_font_family": "Arial",
     "xaxis_font_color": "#2C2C2C",
     "xaxis_location": "top",
     "xaxis_hidden": false,
-    "yaxis_width": 120,
+
     "yaxis_font_size": 10,
     "yaxis_font_family": "Arial",
     "yaxis_font_color": "#2C2C2C",
