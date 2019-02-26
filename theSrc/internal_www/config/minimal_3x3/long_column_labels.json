@@ -1,0 +1,39 @@
+{
+  "matrix": {
+    "cols": [
+      "Column 1 has a lot of text and should trigger wrapping at some point depending on the settings",
+      "Column 2 is not as long",
+      "Column 3 has a lot of text and should trigger wrapping at some point depending on the settings"
+    ],
+    "rows": [
+      "Row 1 has a lot of text and should trigger wrapping at some point depending on the settings",
+      "Row 2 is not as long",
+      "Row 3 has a lot of text and should trigger wrapping at some point depending on the settings"
+    ]
+  },
+  "options": {
+    "row_label_max_width": 0.1,
+    "left_columns_subtitles": [
+      "Left Col SubTitle 1 has a lot of text and should trigger wrapping at some point depending on the settings",
+      "LCol Sub2 in not long"
+    ],
+    "right_columns_subtitles": [
+      "RightCol SubTitle 1 has a lot of text and should trigger wrapping at some point depending on the settings",
+      "RCol Sub2 in not long"
+    ],
+    "left_columns": [
+      [
+        "LC1-1 is a long string of text describing this column",
+        "2",
+        "LC1-3-LC1"
+      ],
+      [
+        "LC2-1",
+        "2",
+        "LC2-3-LC2 is a long string of text describing this column"
+      ]
+    ]
+  }
+}
+
+

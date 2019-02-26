@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link href='/styles/heatmapcore.css' rel='stylesheet' type='text/css'>
+</head>
+<body style="background-color:white">
+
+<p> shows column alignment applied to both columns and y axis labels</p>
+<div style="position:relative" snapshot-name="column_label_orientation">
+  <h3>Horizontal Orientation</h3>
+  <div class="row">
+    <div style="display:inline-block" class="example" data-width="800" data-height="600" data-config='
+        { "options": { "title": "horizontal, xaxis top" } }|
+        data.minimal_3x3|
+        config.misc|
+        config.xaxis_font_size_12|
+        config.column_label_orientation_horizontal|
+        config.minimal_3x3.left_columns_two_left_align|
+        config.minimal_3x3.right_columns_two_left_align|
+        config.minimal_3x3.long_column_labels'>
+    </div>
+    <div style="display:inline-block" class="example" data-width="800" data-height="600" data-config='
+        { "options": { "title": "horizontal, xaxis bottom" } }|
+        data.minimal_3x3|
+        config.misc|
+        config.xaxis_font_size_12|
+        config.column_label_orientation_horizontal|
+        config.minimal_3x3.left_columns_two_left_align|
+        config.minimal_3x3.right_columns_two_left_align|
+        config.minimal_3x3.long_column_labels|
+        config.xaxis_bottom'>
+    </div>
+  </div>
+
+  <div class="row">
+    <h3>Vertical Orientation</h3>
+    <div style="display:inline-block" class="example" data-width="800" data-height="600" data-config='
+        { "options": { "title": "vertical, xaxis top" } }|
+        data.minimal_3x3|
+        config.misc|
+        config.xaxis_font_size_12|
+        config.column_label_orientation_vertical|
+        config.minimal_3x3.left_columns_two_left_align|
+        config.minimal_3x3.right_columns_two_left_align|
+        config.minimal_3x3.long_column_labels'>
+    </div>
+    <div style="display:inline-block" class="example" data-width="800" data-height="600" data-config='
+        { "options": { "title": "vertical, xaxis bottom" } }|
+        data.minimal_3x3|
+        config.misc|
+        config.xaxis_font_size_12|
+        config.column_label_orientation_vertical|
+        config.minimal_3x3.left_columns_two_left_align|
+        config.minimal_3x3.right_columns_two_left_align|
+        config.minimal_3x3.long_column_labels|
+        config.xaxis_bottom'>
+    </div>
+  </div>
+  <div class="row">
+    <h3>Diagonal Orientation</h3>
+    <div style="display:inline-block" class="example" data-width="800" data-height="600" data-config='
+        { "options": { "title": "diagonal, xaxis top" } }|
+        data.minimal_3x3|
+        config.misc|
+        config.xaxis_font_size_12|
+        config.column_label_orientation_diagonal|
+        config.minimal_3x3.left_columns_two_left_align|
+        config.minimal_3x3.right_columns_two_left_align|
+        config.minimal_3x3.long_column_labels'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-width="800" data-height="600" data-config='
+        { "options": { "title": "diagonal, xaxis bottom" } }|
+        data.minimal_3x3|
+        config.misc|
+        config.xaxis_font_size_12|
+        config.column_label_orientation_diagonal|
+        config.minimal_3x3.left_columns_two_left_align|
+        config.minimal_3x3.right_columns_two_left_align|
+        config.minimal_3x3.long_column_labels|
+        config.xaxis_bottom'>
+    </div>
+  </div>
+  <div class="row">
+    <h3>Y Axis Variations</h3>
+    <div style="display:inline-block" class="example" data-width="800" data-height="600" data-config='
+        { "options": { "title": "horizontal, yaxis right" } }|
+        data.minimal_3x3|
+        config.misc|
+        config.xaxis_font_size_12|
+        config.column_label_orientation_horizontal|
+        config.minimal_3x3.left_columns_two_left_align|
+        config.minimal_3x3.right_columns_two_left_align|
+        config.minimal_3x3.long_column_labels|
+        config.yaxis_right|
+        config.yaxis_font_size_15'>
+    </div>
+  </div>
+</div>
+
+<script src="/js/renderContentPage.js"></script>
+</body>
+</html>

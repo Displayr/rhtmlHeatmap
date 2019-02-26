@@ -25,11 +25,13 @@ Heatmap(x, Rowv = TRUE, Colv = if (symm) "Rowv" else TRUE, distfun = dist,
   subtitle = NULL, subtitle_font_size = 18,
   subtitle_font_family = "sans-serif", subtitle_font_color = "#000000",
   footer = NULL, footer_font_size = 11, footer_font_family = "sans-serif",
-  footer_font_color = "#000000", xaxis_hidden = FALSE,
+  footer_font_color = "#000000", column_label_orientation = "diagonal",
+  column_label_max_height = 0.25, row_label_max_width = 0.25,
+  heatmap_max_height = 1, heatmap_max_width = 1, xaxis_hidden = FALSE,
   xaxis_font_size = 12, xaxis_font_family = "sans-serif",
   xaxis_font_color = "#000000", xaxis_location = "bottom",
-  xaxis_label_max_height = 100, xaxis_title = NULL,
-  xaxis_title_font_size = 14, xaxis_title_font_family = "sans-serif",
+  xaxis_title = NULL, xaxis_title_font_size = 14,
+  xaxis_title_font_family = "sans-serif",
   xaxis_title_font_color = "#000000", yaxis_hidden = FALSE,
   yaxis_font_size = 11, yaxis_font_family = "sans-serif",
   yaxis_font_color = "#000000", yaxis_location = "right",
@@ -181,8 +183,6 @@ should cellnote be scaled if x is also scaled?}
 
 \item{xaxis_location}{Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".}
 
-\item{xaxis_label_max_height}{Max allocated height for xaxis and column subtitle labels. Defaults to 100.}
-
 \item{xaxis_title}{Title text of the x axis.}
 
 \item{xaxis_title_font_size}{Size of axis title text. Defaults to 14.}
@@ -273,6 +273,16 @@ non-integer).}
 For large \code{x} it may help performance to set this value to \code{0}.}
 
 \item{...}{currently ignored}
+
+\item{column_label_orientation.}{Enum ['horizontal', 'vertical', 'diagonal']. Defaults to 'diagonal'.}
+
+\item{column_label_max_height.}{Max height used by column labels (xaxis and column subtitles). Specified as proportion of total height. Defaults to 0.25.}
+
+\item{row_label_max_width.}{Max width used by row labels (yaxis and column labels). Specified as proportion of total height. Defaults to 0.25.}
+
+\item{heatmap_max_height.}{Max height used by heatmap grid. Specified as proportion of total height. Defaults to 1.}
+
+\item{heatmap_max_width.}{Max width used by heatmap grid. Specified as proportion of total width. Defaults to 1.}
 
 \item{yaxis_title}{Title text of the y axis.}
 

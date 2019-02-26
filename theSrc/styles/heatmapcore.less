@@ -19,7 +19,6 @@
   color: white;
 }
 
-
 .rhtmlHeatmap {
   position: relative;
   overflow: hidden;
@@ -77,61 +76,50 @@
   }
 
   .row-highlighting {
-    .yaxis .axis-text {
+    g.yaxis-label text {
       opacity: 0.4;
     }
-    .yaxis .axis-text.highlight {
+    g.yaxis-label text.highlight {
       opacity: 1;
     }
 
-    .column-text {
+    g.column-label text {
       opacity: 0.4;
     }
-    .column-text.highlight {
+    g.column-label text.highlight {
       opacity: 1;
     }
   }
 
   .column-highlighting {
-    .xaxis .axis-text {
+    g.xaxis-label text {
       opacity: 0.4;
     }
-    .xaxis .axis-text.highlight {
+    g.xaxis-label text.highlight {
       opacity: 1;
     }
   }
 
   .zoomed {
-    .xaxis .axis-text {
+    g.xaxis-label text {
       opacity: 0;
     }
-    .xaxis .axis-text.in-zoom {
+    g.xaxis-label text.in-zoom {
+      opacity: 1;
+    }
+
+    g.column-label text {
+      opacity: 0;
+    }
+    g.column-label text.in-zoom {
+      opacity: 1;
+    }
+
+    .yaxis text {
+      opacity: 0;
+    }
+    .yaxis text.in-zoom {
       opacity: 1;
     }
   }
 }
-
-//.rhtmlHeatmap text {
-//  cursor: default;
-//}
-
-
-//.colormap {
-//  position: absolute;
-//  overflow: hidden;
-//}
-
-
-
-
-
-//.xtitle {
-//  position: absolute;
-//  overflow: hidden;
-//  font-family: sans-serif;
-//}
-//.ytitle {
-//  position: absolute;
-//  overflow: hidden;
-//  font-family: sans-serif;
-//}

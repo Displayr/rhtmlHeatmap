@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link href='/styles/heatmapcore.css' rel='stylesheet' type='text/css'>
+</head>
+<body style="background-color:white">
+
+<p> shows column alignment applied to both columns and y axis labels</p>
+<div style="position:relative" snapshot-name="vary_max_sizes">
+  <div class="row">
+    <div style="display:inline-block" class="example" data-width="800" data-height="600" data-config='
+        { "options": { "title": "horizontal, xaxis top" } }|
+        data.minimal_3x3|
+        config.misc|
+        config.xaxis_font_size_12|
+        config.column_label_orientation_horizontal|
+        config.minimal_3x3.left_columns_two_left_align|
+        config.minimal_3x3.right_columns_two_left_align|
+        config.minimal_3x3.long_column_labels'>
+    </div>
+
+    <div style="display:inline-block" class="example" data-width="800" data-height="600" data-config='
+        { "options": { "title": "horizontal, xaxis top" } }|
+        data.minimal_3x3|
+        config.misc|
+        config.xaxis_font_size_12|
+        config.column_label_orientation_horizontal|
+        config.minimal_3x3.left_columns_two_left_align|
+        config.minimal_3x3.right_columns_two_left_align|
+        config.minimal_3x3.long_column_labels|
+        { "options": { "column_label_max_height": 0.2, "row_label_max_width": 0.2, "heatmap_max_height": 0.2, "heatmap_max_width": 0.2 } }'>
+    </div>
+  </div>
+</div>
+
+<script src="/js/renderContentPage.js"></script>
+</body>
+</html>

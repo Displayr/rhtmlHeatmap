@@ -1,0 +1,20 @@
+{
+  "options": {
+    "xaxis_font_size": 30,
+    "yaxis_font_size": 30,
+    "xaxis_title_font_size": 30,
+    "yaxis_title_font_size": 30,
+    "title_font_size": 30,
+    "subtitle_font_size": [],
+    "footer_font_size": 30,
+    "tip_font_size": 11,
+    "cell_font_size": 30,
+    "legend_font_size": 30,
+    "left_columns_font_size": 30,
+    "left_columns_title_font_size": 30,
+    "left_columns_subtitles_font_size": 30,
+    "right_columns_font_size": 30,
+    "right_columns_title_font_size": 30,
+    "right_columns_subtitles_font_size": 30
+  }
+}

@@ -38,7 +38,6 @@ class Controller {
   addOuter (outer) {
     this.outer = outer
     this.outer.on('click', () => {
-      // console.log('outer anything clicked')
       if (this.isAnythingHighlighted()) {
         this.clearHighlightedColumn()
         this.clearHighlightedRow()
@@ -85,7 +84,7 @@ class Controller {
     if (this.yaxis) { this.yaxis.updateHighlights(this.state.highlighted) }
     if (this.leftColumn) { this.leftColumn.updateHighlights(this.state.highlighted) }
     if (this.rightColumn) { this.rightColumn.updateHighlights(this.state.highlighted) }
-    // TODO clean this up
+
     if (this.outer) {
       this.outer.classed('highlighting', this.isAnythingHighlighted())
       this.outer.classed('row-highlighting', this.isRowHighlighted())
@@ -94,7 +93,6 @@ class Controller {
   }
 
   columnCellClick (rowIndex) {
-    // console.log(`columnCellClick(${rowIndex})`)
     if (this.isRowHighlighted(rowIndex)) {
       this.clearHighlightedRow(rowIndex)
     } else {
@@ -104,7 +102,6 @@ class Controller {
   }
 
   xaxisClick (index) {
-    // console.log(`xaxisClick(${index})`)
     if (this.isColumnHighlighted(index)) {
       this.clearHighlightedColumn(index)
     } else {
@@ -114,7 +111,6 @@ class Controller {
   }
 
   yaxisClick (index) {
-    // console.log(`yaxisClick(${index})`)
     if (this.isRowHighlighted(index)) {
       this.clearHighlightedRow(index)
     } else {
@@ -124,7 +120,6 @@ class Controller {
   }
 
   colormapCellClick (rowIndex, columnIndex) {
-    // console.log(`colormapCellClick(${rowIndex}, ${columnIndex})`)
     if (this.isAnythingHighlighted()) {
       this.clearHighlightedColumn()
       this.clearHighlightedRow()
@@ -133,10 +128,11 @@ class Controller {
   }
 
   colormapDragReset ({scale, translate, extent}) {
-    // console.log('colormapDragReset')
     if (this.colormap) { this.colormap.updateZoom({scale, translate, extent, zoom: false}) }
     if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent, zoom: false}) }
     if (this.yaxis) { this.yaxis.updateZoom({scale, translate, extent, zoom: false}) }
+    if (this.leftColumn) { this.leftColumn.updateZoom({scale, translate, extent, zoom: false}) }
+    if (this.rightColumn) { this.rightColumn.updateZoom({scale, translate, extent, zoom: false}) }
     if (this.left_dendrogram) { this.left_dendrogram.updateZoom({scale, translate, extent, zoom: false}) }
     if (this.top_dendrogram) { this.top_dendrogram.updateZoom({scale, translate, extent, zoom: false}) }
 
@@ -146,10 +142,11 @@ class Controller {
   }
 
   colormapDragSelection ({scale, translate, extent}) {
-    // console.log('colormapDragSelection')
     if (this.colormap) { this.colormap.updateZoom({scale, translate, extent, zoom: true}) }
     if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent, zoom: true}) }
     if (this.yaxis) { this.yaxis.updateZoom({scale, translate, extent, zoom: true}) }
+    if (this.leftColumn) { this.leftColumn.updateZoom({scale, translate, extent, zoom: true}) }
+    if (this.rightColumn) { this.rightColumn.updateZoom({scale, translate, extent, zoom: true}) }
     if (this.left_dendrogram) { this.left_dendrogram.updateZoom({scale, translate, extent, zoom: true}) }
     if (this.top_dendrogram) { this.top_dendrogram.updateZoom({scale, translate, extent, zoom: true}) }
 
