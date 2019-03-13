@@ -80,37 +80,83 @@ function splitIntoLinesByCharacter ({parentContainer, text, fontSize = 12, fontF
   })
 }
 
-function _splitIntoLines ({parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', maxWidth, maxHeight, maxLines = null, tokens, joinCharacter, rotation} = {}) {
+function _splitIntoLines ({parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', maxWidth = null, maxHeight = null, maxLines = null, tokens, joinCharacter, rotation} = {}) {
+  if (text.length === 0) { return [text] }
   let currentLine = []
   let lines = []
+  let totalHeight = 0
+  const truncationString = '...'
   let token = null
+
+  const widthExceeded = (width) => !_.isNull(maxWidth) && width > maxWidth
+  const heightExceeded = (height) => !_.isNull(maxHeight) && height > maxHeight
+  const getDimensionsFromString = (string) => getLabelDimensionsUsingSvgApproximation({
+    parentContainer,
+    text: string,
+    fontSize,
+    fontFamily,
+    rotation
+  })
+  const getDimensionsFromArray = (tokenArray) => getDimensionsFromString(tokenArray.join(joinCharacter))
+  const getDimensions = (arrayOrString) => (_.isArray(arrayOrString))
+    ? getDimensionsFromArray(arrayOrString)
+    : getDimensionsFromString(arrayOrString)
+
+  function truncateWith () {
+    let lastLine = lines[lines.length - 1]
+    const numTruncationCharacters = truncationString.length
+    lastLine = `${lastLine}${truncationString}`
+    let tooBig = true
+    while (tooBig && lastLine.length > 0 && lastLine !== truncationString) {
+      const { width } = getDimensions(lastLine)
+      tooBig = widthExceeded(width)
+      if (!tooBig) { break }
+      lastLine = lastLine.slice(0, lastLine.length - (numTruncationCharacters + 1)) + truncationString
+    }
+
+    lines[lines.length - 1] = lastLine
+  }
+
   while (token = tokens.shift()) { // eslint-disable-line no-cond-assign
     if (token === '<br>') {
+      const { height } = getDimensions(currentLine)
       lines.push(`${currentLine.join(joinCharacter)}`)
+      totalHeight += height
       currentLine = []
       continue
     }
 
     currentLine.push(token)
 
-    const { width, height } = getLabelDimensionsUsingSvgApproximation({
-      parentContainer,
-      text: currentLine.join(joinCharacter),
-      fontSize,
-      fontFamily,
-      rotation
-    })
-    if ((width > maxWidth || height > maxHeight) && currentLine.length > 1) {
+    const { width, height } = getDimensions(currentLine)
+
+    if (heightExceeded(totalHeight + height)) {
+      if (lines.length === 0) {
+        // TODO check if the current line still fits, and if not delete characters
+        lines.push(`${currentLine.join(joinCharacter)}`)
+        truncateWith()
+        currentLine = []
+        break
+      } else {
+        // TODO check if the modified last line still fits, and if not delete characters
+        truncateWith()
+        currentLine = []
+        break
+      }
+    }
+
+    // this still allows height to be exceeded ...
+    if ((widthExceeded(width)) && currentLine.length > 1) {
       if (maxLines && lines.length === maxLines - 1) {
         currentLine.pop()
-        currentLine.push('...')
-        tokens = []
         lines.push(`${currentLine.join(joinCharacter)}`)
+        truncateWith()
         currentLine = []
         break
       } else {
         tokens.unshift(currentLine.pop())
         lines.push(`${currentLine.join(joinCharacter)}`)
+        totalHeight += height
         currentLine = []
       }
     }
@@ -120,26 +166,13 @@ function _splitIntoLines ({parentContainer, text, fontSize = 12, fontFamily = 's
     lines.push(`${currentLine.join(joinCharacter)}`)
   }
 
-  return lines
-}
-
-// NB TODO labelUtils is a bad location for this helper. Initially placed here for ease.
-// for debugging
-function showLine (svg, coords, color = 'black', note = '') {
-  const path = 'M' + coords.map(({x, y}) => `${x} ${y}`).join(' L')
-  svg.append('path')
-    .classed('debug', true)
-    .attr('d', path)
-    .attr('stroke', color)
-    .attr('stroke-width', 1)
-    .attr('fill', 'none')
-    .style('opacity', 1)
-    .style('display', 'inline')
+  return (lines.length === 0)
+    ? ['...']
+    : lines
 }
 
 module.exports = {
   getLabelDimensionsUsingSvgApproximation,
   splitIntoLinesByWord,
-  splitIntoLinesByCharacter,
-  showLine
+  splitIntoLinesByCharacter
 }

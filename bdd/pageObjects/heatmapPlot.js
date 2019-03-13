@@ -4,11 +4,11 @@ class HeatmapPlot {
   }
 
   rowName (rowIndex) {
-    return element(by.css(`.axis.yaxis .axis-text.tick-${rowIndex}`))
+    return element(by.css(`.yaxis-label.tick-${rowIndex} text`))
   }
 
   columnName (columnIndex) {
-    return element(by.css(`.axis.xaxis .axis-text.tick-${columnIndex}`))
+    return element(by.css(`.xaxis-label.tick-${columnIndex} text`))
   }
 
   legendBars () {

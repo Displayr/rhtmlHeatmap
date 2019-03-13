@@ -1,30 +1,51 @@
+import BaseComponent from './baseComponent'
 import _ from 'lodash'
 import d3 from 'd3'
-import BaseComponent from './baseComponent'
 import HorizontalWrappedLabel from './parts/horizontalWrappedLabel'
 
-class YAxis extends BaseComponent {
-  constructor ({parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, controller}) {
+class Column extends BaseComponent {
+  constructor ({
+    parentContainer,
+    controller,
+    classNames,
+    labels,
+    horizontalAlignment,
+    fontSize,
+    fontColor,
+    fontFamily,
+    maxWidth,
+    maxHeight
+  }) {
     super()
-    _.assign(this, {parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, controller})
+    _.assign(this, {
+      parentContainer,
+      controller,
+      classNames,
+      labels,
+      horizontalAlignment,
+      fontSize,
+      fontColor,
+      fontFamily,
+      maxWidth,
+      maxHeight
+    })
 
-    // to deal with superflous zoom calls at beginning of render
-    this.amIZoomed = false
+    this.rowCount = this.labels.length
   }
 
   computePreferredDimensions () {
     this.labelObjects = this.labels.map((text, index) => {
       return new HorizontalWrappedLabel({
-        classNames: `yaxis-label tick-${index}`,
+        classNames: 'column-label',
         fontColor: this.fontColor,
         fontFamily: this.fontFamily,
         fontSize: this.fontSize,
-        maxHeight: this.maxHeight / this.labels.length,
+        maxHeight: this.maxHeight,
         maxWidth: this.maxWidth,
         parentContainer: this.parentContainer,
         text: text,
         verticalAlignment: 'center',
-        horizontalAlignment: (this.placement === 'left') ? 'right' : 'left'
+        horizontalAlignment: this.horizontalAlignment
       })
     })
     let labelDimensions = this.labelObjects.map(labelObject => labelObject.computePreferredDimensions())
@@ -36,14 +57,14 @@ class YAxis extends BaseComponent {
 
   draw (bounds) {
     this.bounds = bounds
-    const container = this.parentContainer.append('g')
-      .classed('axis yaxis', true)
+    this.container = this.parentContainer.append('g')
+      .classed(`${this.classNames} column`, true)
       .attr('transform', this.buildTransform(bounds))
 
     const rowHeight = bounds.height / this.labels.length
     this.labelObjects.map((labelObject, i) => {
       labelObject.draw({
-        container, // this is odd given we already supply parentContainer to constructor
+        container: this.container, // this is odd given we already supply parentContainer to constructor
         bounds: {
           top: i * rowHeight,
           left: 0,
@@ -51,32 +72,16 @@ class YAxis extends BaseComponent {
           width: bounds.width
         },
         onClick: () => {
-          this.controller.yaxisClick(i)
+          this.controller.columnCellClick(i)
           d3.event.stopPropagation()
         }
       })
     })
   }
 
-  // NB relies on CSS in heatmapcore.less
   updateHighlights ({ row = null } = {}) {
-    this.parentContainer.selectAll('.yaxis-label text')
+    this.container.selectAll('.column-label text')
       .classed('highlight', (d, i) => (row === i))
-  }
-
-  updateZoom ({ scale, translate, extent, zoom }) {
-    if (!zoom && !this.amIZoomed) {
-      return
-    }
-    if (zoom && this.amIZoomed) {
-      return
-    }
-    this.amIZoomed = zoom
-    if (this.amIZoomed) {
-      return this.applyZoom({scale, translate, extent})
-    } else {
-      return this.resetZoom()
-    }
   }
 
   applyZoom ({scale, translate, extent}) {
@@ -95,9 +100,9 @@ class YAxis extends BaseComponent {
   }
 
   resetZoom () {
-    const rowHeight = this.bounds.height / this.labels.length
+    const rowHeight = this.bounds.height / this.rowCount
     this.labelObjects.map((labelObject, i) => labelObject.resetVerticalZoom({yOffset: rowHeight * i}))
   }
 }
 
-module.exports = YAxis
+module.exports = Column

@@ -48,11 +48,18 @@ class Heatmap {
     this.inner = inner
 
     this.buildLayout()
-
-    // TODO should add a baseComponent .addController. If component knows its name, then it can register itself too !
     this.wireupController()
 
-    const cellsRequiringSpecialDrawInstructions = [CellNames.LEFT_COLUMN_SUBTITLE, CellNames.RIGHT_COLUMN_SUBTITLE, CellNames.TITLE, CellNames.SUBTITLE, CellNames.FOOTER]
+    const cellsRequiringSpecialDrawInstructions = [
+      CellNames.TOP_LEFT_COLUMN_SUBTITLE,
+      CellNames.BOTTOM_LEFT_COLUMN_SUBTITLE,
+      CellNames.TOP_RIGHT_COLUMN_SUBTITLE,
+      CellNames.BOTTOM_RIGHT_COLUMN_SUBTITLE,
+      CellNames.RIGHT_COLUMN_TITLE,
+      CellNames.TITLE,
+      CellNames.SUBTITLE,
+      CellNames.FOOTER
+    ]
     const simpleCells = _.omit(CellNames, cellsRequiringSpecialDrawInstructions)
     _(simpleCells).each(cellName => {
       if (this.layout.enabled(cellName)) {
@@ -75,14 +82,33 @@ class Heatmap {
       }
     })
 
-    if (this.layout.enabled(CellNames.LEFT_COLUMN_SUBTITLE)) {
-      this.components[CellNames.LEFT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.LEFT_COLUMN].getColumnWidths())
-      this.components[CellNames.LEFT_COLUMN_SUBTITLE].draw(this.layout.getCellBounds(CellNames.LEFT_COLUMN_SUBTITLE))
+    if (this.layout.enabled(CellNames.TOP_LEFT_COLUMN_SUBTITLE)) {
+      this.components[CellNames.TOP_LEFT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.LEFT_COLUMN].getColumnWidths())
+      this.components[CellNames.TOP_LEFT_COLUMN_SUBTITLE].draw(this.layout.getCellBounds(CellNames.TOP_LEFT_COLUMN_SUBTITLE))
     }
 
-    if (this.layout.enabled(CellNames.RIGHT_COLUMN_SUBTITLE)) {
-      this.components[CellNames.RIGHT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
-      this.components[CellNames.RIGHT_COLUMN_SUBTITLE].draw(this.layout.getCellBounds(CellNames.RIGHT_COLUMN_SUBTITLE))
+    if (this.layout.enabled(CellNames.BOTTOM_LEFT_COLUMN_SUBTITLE)) {
+      this.components[CellNames.BOTTOM_LEFT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.LEFT_COLUMN].getColumnWidths())
+      this.components[CellNames.BOTTOM_LEFT_COLUMN_SUBTITLE].draw(this.layout.getCellBounds(CellNames.BOTTOM_LEFT_COLUMN_SUBTITLE))
+    }
+
+    if (this.layout.enabled(CellNames.TOP_RIGHT_COLUMN_SUBTITLE)) {
+      this.components[CellNames.TOP_RIGHT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
+      this.components[CellNames.TOP_RIGHT_COLUMN_SUBTITLE].draw(this.layout.getCellBounds(CellNames.TOP_RIGHT_COLUMN_SUBTITLE))
+    }
+
+    if (this.layout.enabled(CellNames.BOTTOM_RIGHT_COLUMN_SUBTITLE)) {
+      this.components[CellNames.BOTTOM_RIGHT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
+      this.components[CellNames.BOTTOM_RIGHT_COLUMN_SUBTITLE].draw(this.layout.getCellBounds(CellNames.BOTTOM_RIGHT_COLUMN_SUBTITLE))
+    }
+
+    // NB the right column subtitle sometimes extends it's width to accomodate long diagonal labels
+    // the title centers in the middle of the width, but if the width has been extended, then
+    // the title will be off to the right. So force the width of the title to be the sum of the columns, not the potentially
+    // expanded width
+    if (this.layout.enabled(CellNames.RIGHT_COLUMN_TITLE)) {
+      this.components[CellNames.RIGHT_COLUMN_TITLE].forceWidth(_(this.components[CellNames.RIGHT_COLUMN].getColumnWidths()).sum())
+      this.components[CellNames.RIGHT_COLUMN_TITLE].draw(this.layout.getCellBounds(CellNames.RIGHT_COLUMN_TITLE))
     }
 
     el.attr(`rhtmlHeatmap-status`, 'ready')
@@ -102,8 +128,8 @@ class Heatmap {
     this.components[CellNames.COLORMAP] = new Colormap({
       parentContainer: inner,
       matrix: this.matrix,
-      yaxisTitle: options.yaxis_title, // TODO review why we need to pass title in
-      xaxisTitle: options.xaxis_title, // TODO review why we need to pass title in
+      yaxisTitle: options.yaxis_title,
+      xaxisTitle: options.xaxis_title,
       extraTooltipInfo: options.extra_tooltip_info,
       tipFontSize: options.tip_font_size,
       tipFontFamily: options.tip_font_family,
@@ -121,14 +147,15 @@ class Heatmap {
     if (options.left_columns) {
       this.components[CellNames.LEFT_COLUMN] = new ColumnGroup({
         parentContainer: inner,
-        groupName: 'left',
+        classNames: CellNames.LEFT_COLUMN.toLowerCase(),
         labelMatrix: _.reverse(options.left_columns),
         alignments: options.left_columns_align,
         fontSize: options.left_columns_font_size,
         fontColor: options.left_columns_font_color,
         fontFamily: options.left_columns_font_family,
         padding: options.axis_padding,
-        maxSingleColumnWidth: options.width * 0.2
+        maxSingleColumnWidth: parseFloat(options.row_label_max_width) * options.width,
+        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height
       })
 
       const dimensions = this.components[CellNames.LEFT_COLUMN].computePreferredDimensions()
@@ -137,21 +164,27 @@ class Heatmap {
     }
 
     if (!_.isEmpty(options.left_columns_subtitles)) {
-      this.components[CellNames.LEFT_COLUMN_SUBTITLE] = new ColumnSubtitles({
+      const columnSubtitleCellName = (options.xaxis_location === 'bottom')
+        ? CellNames.BOTTOM_LEFT_COLUMN_SUBTITLE
+        : CellNames.TOP_LEFT_COLUMN_SUBTITLE
+
+      this.components[columnSubtitleCellName] = new ColumnSubtitles({
         parentContainer: inner,
-        name: CellNames.LEFT_COLUMN_SUBTITLE,
+        classNames: CellNames.TOP_LEFT_COLUMN_SUBTITLE.toLowerCase(),
         labels: _.reverse(options.left_columns_subtitles),
         fontSize: options.left_columns_subtitles_font_size,
         fontFamily: options.left_columns_subtitles_font_family,
         fontColor: options.left_columns_subtitles_font_color,
         padding: this.options.axis_padding,
-        maxLines: 1, // TODO make configurable
-        maxHeight: options.xaxis_label_max_height
+        maxHeight: parseFloat(options.column_label_max_height) * this.options.height,
+        orientation: options.column_label_orientation,
+        verticalPlacement: options.xaxis_location,
+        horizontalPlacement: 'left'
       })
 
-      const dimensions = this.components[CellNames.LEFT_COLUMN_SUBTITLE].computePreferredDimensions()
-      this.layout.enable(CellNames.LEFT_COLUMN_SUBTITLE)
-      this.layout.setPreferredDimensions(CellNames.LEFT_COLUMN_SUBTITLE, dimensions)
+      const dimensions = this.components[columnSubtitleCellName].computePreferredDimensions(this.components[CellNames.LEFT_COLUMN].getColumnWidths())
+      this.layout.enable(columnSubtitleCellName)
+      this.layout.setPreferredDimensions(columnSubtitleCellName, dimensions)
     }
 
     if (!_.isEmpty(options.left_columns_title)) {
@@ -160,6 +193,7 @@ class Heatmap {
 
       this.components[CellNames.LEFT_COLUMN_TITLE] = new ColumnTitle({
         parentContainer: inner,
+        classNames: CellNames.LEFT_COLUMN_TITLE.toLowerCase(),
         text: options.left_columns_title,
         fontFamily: options.left_columns_title_font_family,
         fontSize: options.left_columns_title_font_size,
@@ -177,38 +211,45 @@ class Heatmap {
     if (options.right_columns) {
       this.components[CellNames.RIGHT_COLUMN] = new ColumnGroup({
         parentContainer: inner,
-        groupName: 'right',
+        classNames: CellNames.RIGHT_COLUMN.toLowerCase(),
         labelMatrix: options.right_columns,
         alignments: options.right_columns_align,
         fontSize: options.right_columns_font_size,
         fontColor: options.right_columns_font_color,
         fontFamily: options.right_columns_font_family,
         padding: options.axis_padding,
-        maxSingleColumnWidth: options.width * 0.2
+        maxSingleColumnWidth: parseFloat(options.row_label_max_width) * this.options.width,
+        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height
       })
 
-      const dimensions = this.components[CellNames.RIGHT_COLUMN].computePreferredDimensions()
+      const dimensions = this.components[CellNames.RIGHT_COLUMN].computePreferredDimensions(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
       this.layout.enable(CellNames.RIGHT_COLUMN)
       this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN, dimensions)
     }
 
     if (!_.isEmpty(options.right_columns_subtitles)) {
-      this.components[CellNames.RIGHT_COLUMN_SUBTITLE] = new ColumnSubtitles({
+      const columnSubtitleCellName = (options.xaxis_location === 'bottom')
+        ? CellNames.BOTTOM_RIGHT_COLUMN_SUBTITLE
+        : CellNames.TOP_RIGHT_COLUMN_SUBTITLE
+
+      this.components[columnSubtitleCellName] = new ColumnSubtitles({
         parentContainer: inner,
-        name: CellNames.RIGHT_COLUMN_SUBTITLE,
+        classNames: CellNames.TOP_RIGHT_COLUMN_SUBTITLE.toLowerCase(),
         labels: options.right_columns_subtitles,
         fontSize: options.right_columns_subtitles_font_size,
         fontFamily: options.right_columns_subtitles_font_family,
         fontColor: options.right_columns_subtitles_font_color,
         padding: this.options.axis_padding,
-        maxLines: 1, // TODO make configurable
-        maxHeight: options.xaxis_label_max_height
+        maxHeight: parseFloat(options.column_label_max_height) * this.options.height,
+        orientation: options.column_label_orientation,
+        verticalPlacement: options.xaxis_location,
+        horizontalPlacement: 'right'
       })
 
-      this.components[CellNames.RIGHT_COLUMN_SUBTITLE].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
-      const dimensions = this.components[CellNames.RIGHT_COLUMN_SUBTITLE].computePreferredDimensions()
-      this.layout.enable(CellNames.RIGHT_COLUMN_SUBTITLE)
-      this.layout.setPreferredDimensions(CellNames.RIGHT_COLUMN_SUBTITLE, dimensions)
+      this.components[columnSubtitleCellName].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
+      const dimensions = this.components[columnSubtitleCellName].computePreferredDimensions(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
+      this.layout.enable(columnSubtitleCellName)
+      this.layout.setPreferredDimensions(columnSubtitleCellName, dimensions)
     }
 
     if (!_.isEmpty(options.right_columns_title)) {
@@ -217,6 +258,7 @@ class Heatmap {
 
       this.components[CellNames.RIGHT_COLUMN_TITLE] = new ColumnTitle({
         parentContainer: inner,
+        classNames: CellNames.RIGHT_COLUMN_TITLE.toLowerCase(),
         text: options.right_columns_title,
         fontFamily: options.right_columns_title_font_family,
         fontSize: options.right_columns_title_font_size,
@@ -289,14 +331,14 @@ class Heatmap {
 
       this.components[yaxisCellName] = new YAxis({
         parentContainer: inner,
-        placement: yaxisCellName,
+        placement: (yaxisCellName === CellNames.LEFT_YAXIS) ? 'left' : 'right',
         type: yaxisCellName,
         labels: this.matrix.rows,
         fontSize: options.yaxis_font_size,
         fontFamily: options.yaxis_font_family,
         fontColor: options.yaxis_font_color,
-        maxWidth: 0.33 * options.width, // TODO make configurable
-        maxHeight: 0.33 * options.height // TODO make configurable
+        maxWidth: parseFloat(options.row_label_max_width) * options.width,
+        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height
       })
 
       const dimensions = this.components[yaxisCellName].computePreferredDimensions()
@@ -316,7 +358,7 @@ class Heatmap {
         fontFamily: options.yaxis_title_font_family,
         fontSize: options.yaxis_title_font_size,
         fontColor: options.yaxis_title_font_color,
-        maxHeight: options.height * 0.7, // NB TODO just making numbers up here (need the max yaxis title height here)
+        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height,
         bold: options.yaxis_title_bold
       })
 
@@ -372,16 +414,15 @@ class Heatmap {
       //   if (estimatedColumnWidth < 100) { rotation = -45 }
       // }
 
-      let rotation = (xaxisCellName === CellNames.BOTTOM_XAXIS) ? 45 : -45
       this.components[xaxisCellName] = new XAxis({
         parentContainer: inner,
         labels: this.matrix.cols,
         fontSize: options.xaxis_font_size,
         fontFamily: options.xaxis_font_family,
         fontColor: options.xaxis_font_color,
-        maxLines: 1, // TODO make configurable
-        maxHeight: 100, // TODO make configurable
-        rotation
+        maxHeight: parseFloat(options.column_label_max_height) * this.options.height,
+        orientation: options.column_label_orientation,
+        placement: (xaxisCellName === CellNames.BOTTOM_XAXIS) ? 'bottom' : 'top'
       })
 
       const dimensions = this.components[xaxisCellName].computePreferredDimensions(estimatedColormapColumnWidth)

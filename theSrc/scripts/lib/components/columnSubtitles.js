@@ -1,100 +1,131 @@
 import BaseComponent from './baseComponent'
-import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByCharacter} from '../labelUtils'
 import _ from 'lodash'
-import {CellNames} from '../heatmapcore/layout'
+
+import HorizontalWrappedLabel from './parts/horizontalWrappedLabel'
+import VerticalBottomToTopWrappedLabel from './parts/verticalBottomToTopWrappedLabel'
+import VerticalTopToBottomWrappedLabel from './parts/verticalTopToBottomWrappedLabel'
+import DiagonalUpWrappedLabel from './parts/diagonalUpWrappedLabel'
+import DiagonalDownWrappedLabel from './parts/diagonalDownWrappedLabel'
 
 // TODO preferred dimensions must account for maxes
 class ColumnSubtitles extends BaseComponent {
-  constructor ({parentContainer, name, labels, fontSize, fontColor, fontFamily, padding, rotation = -45, maxLines, maxHeight}) {
+  constructor ({
+    fontColor,
+    fontFamily,
+    fontSize,
+    labels,
+    maxHeight,
+    classNames,
+    orientation,
+    padding,
+    parentContainer,
+    verticalPlacement,
+    horizontalPlacement
+  }) {
     super()
-    _.assign(this, {parentContainer, name, labels, fontSize, fontColor, fontFamily, padding, rotation, maxLines, maxHeight})
+    _.assign(this, {
+      fontColor,
+      fontFamily,
+      fontSize,
+      labels,
+      maxHeight,
+      classNames,
+      orientation,
+      padding,
+      parentContainer,
+      verticalPlacement,
+      horizontalPlacement
+    })
+
+    if (this.orientation === 'horizontal') {
+      this.LabelFactory = HorizontalWrappedLabel
+    } else if (this.orientation === 'vertical' && this.verticalPlacement === 'top') {
+      this.LabelFactory = VerticalBottomToTopWrappedLabel
+    } else if (this.orientation === 'vertical' && this.verticalPlacement === 'bottom') {
+      this.LabelFactory = VerticalTopToBottomWrappedLabel
+    } else if (this.orientation === 'diagonal' && this.verticalPlacement === 'top') {
+      this.LabelFactory = DiagonalUpWrappedLabel
+    } else if (this.orientation === 'diagonal' && this.verticalPlacement === 'bottom') {
+      this.LabelFactory = DiagonalDownWrappedLabel
+    } else {
+      throw new Error(`could not determine LabelFactory: orientation: '${this.orientation}', placement: ${this.verticalPlacement}`)
+    }
   }
 
-  setColumnWidths (widths) {
-    this.columnWidths = widths
-  }
-
-  computePreferredDimensions () {
-    const labelDimensions = this.labels.map(text => {
-      const lines = splitIntoLinesByCharacter({
+  computePreferredDimensions (estimatedColumnWidths) {
+    this.labelObjects = this.labels.map((text, i) => {
+      return new this.LabelFactory({
+        classNames: 'column-subtitle',
+        fontColor: this.fontColor,
+        fontFamily: this.fontFamily,
+        fontSize: this.fontSize,
+        maxHeight: this.maxHeight,
+        maxWidth: estimatedColumnWidths[i],
         parentContainer: this.parentContainer,
         text: text,
-        maxHeight: this.maxHeight,
-        maxLines: 1,
-        fontSize: this.fontSize,
-        fontFamily: this.fontFamily,
-        rotation: this.rotation
-      })
-      return getLabelDimensionsUsingSvgApproximation({
-        text: lines[0],
-        parentContainer: this.parentContainer,
-        fontSize: this.fontSize,
-        fontFamily: this.fontFamily,
-        rotation: this.rotation
+        verticalAlignment: this.verticalPlacement === 'top' ? 'bottom' : 'top'
       })
     })
+    let labelDimensions = this.labelObjects.map(labelObject => labelObject.computePreferredDimensions())
 
     const preferredDimensions = {
       width: 0, // NB accept column width
       height: _(labelDimensions).map('height').max()
     }
 
-    if (this.name === CellNames.RIGHT_COLUMN_SUBTITLE) {
+    // NB The intent of the conditional.rightmost addition to dimensions:
+    // if Im diagonal labels, and Im the furthest component on the right, then the diagonal label on the rightmost column
+    // will be badly truncated unless extra space is reserved by the layout algorithm, so let it know we want more space
+    // TODO using classNames here is bad, should be an explicit signal to enable this behaviour
+    if (this.horizontalPlacement === 'right' && this.orientation === 'diagonal') {
       const rightmostLabelWidth = _.last(labelDimensions).width
-      const rightmostColumnWidth = _.last(this.columnWidths)
+      const rightmostColumnWidth = _.last(estimatedColumnWidths)
 
-      const currentColumnGroupWidth = _.sum(this.columnWidths) + (this.columnWidths.length - 1) * this.padding
+      const currentColumnGroupWidth = _.sum(estimatedColumnWidths) + (estimatedColumnWidths.length - 1) * this.padding
       const extraConditionalWidthOnRightSide = Math.max(0, rightmostLabelWidth - 0.5 * rightmostColumnWidth)
 
       preferredDimensions.conditional = {
-        rightmost: currentColumnGroupWidth + extraConditionalWidthOnRightSide // if Im furthest on the right i need an extra pixels to account for labels pushing outside of SVG
+        rightmost: currentColumnGroupWidth + extraConditionalWidthOnRightSide
       }
     }
 
     return preferredDimensions
   }
 
-  rotatingUp () {
-    return this.rotation < 0
+  // currently called after computePreferred and before draw
+  setColumnWidths (widths) {
+    this.columnWidths = widths
   }
 
   draw (bounds) {
-    const container = this.parentContainer
-      .append('g')
-      .classed(`column-subtitles ${this.name}`, true)
+    const container = this.parentContainer.append('g')
+      .classed(`column-subtitles ${this.classNames}`, true)
       .attr('transform', this.buildTransform(bounds))
-      .selectAll('g')
-      .data(this.labels)
-      .enter()
 
-    const yOffsetCorrectionForRotation = (this.rotatingUp())
-      ? bounds.height
-      : 12 // TODO this is hacky
+    const extraSpaceAvailable = (this.horizontalPlacement === 'right' && this.orientation === 'diagonal')
+      ? bounds.width - _(this.columnWidths).sum()
+      : 0
 
-    container.append('g')
-      .attr('transform', (d, i) => {
-        const previousColumnsWidth = _(this.columnWidths.slice(0, i)).sum() + i * this.padding
-        return `translate(${previousColumnsWidth + this.columnWidths[i] / 2},${yOffsetCorrectionForRotation})`
+    this.labelObjects.map((labelObject, i) => {
+      // TODO instead of checking for existence of fn, really we should be checking that LabelFactory = DiagonalDownWrappedLabel OR DiagonalDownWrappedLabel
+      if (_.isFunction(labelObject.setAvailableSpaceToTheRight)) {
+        const widthOfColumnsToTheRight = _(this.columnWidths.slice(i + 1)).sum() + (this.columnWidths.length - 1 - i) * this.padding
+        const widthOfComponentsToTheRight = bounds.canvasWidth - (bounds.left + bounds.width)
+        labelObject.setAvailableSpaceToTheRight(widthOfColumnsToTheRight + extraSpaceAvailable + widthOfComponentsToTheRight)
+      }
+      const previousColumnsWidth = _(this.columnWidths.slice(0, i)).sum() + i * this.padding
+      labelObject.draw({
+        container, // this is odd given we already supply parentContainer to constructor
+        bounds: {
+          top: 0,
+          left: previousColumnsWidth,
+          height: bounds.height,
+          width: this.columnWidths[i]
+        },
+        onClick: (d, i) => {},
+        classNames: 'column-title'
       })
-      .append('text')
-      .attr('transform', `rotate(${this.rotation})`)
-      .attr('x', 0)
-      .text(d => {
-        const lines = splitIntoLinesByCharacter({
-          parentContainer: this.parentContainer,
-          text: d,
-          maxHeight: this.maxHeight,
-          maxLines: this.maxLines,
-          fontSize: this.fontSize,
-          fontFamily: this.fontFamily,
-          rotation: this.rotation
-        })
-        return lines[0]
-      })
-      .style('text-anchor', 'start')
-      .style('font-family', this.fontFamily)
-      .style('font-size', this.fontSize)
-      .style('fill', this.fontColor)
+    })
   }
 }
 

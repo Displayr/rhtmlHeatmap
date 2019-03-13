@@ -63,27 +63,39 @@
 .rhtmlHeatmap .highlighting .data-cell.highlight {
   opacity: 1;
 }
-.rhtmlHeatmap .row-highlighting .yaxis .axis-text {
+.rhtmlHeatmap .row-highlighting g.yaxis-label text {
   opacity: 0.4;
 }
-.rhtmlHeatmap .row-highlighting .yaxis .axis-text.highlight {
+.rhtmlHeatmap .row-highlighting g.yaxis-label text.highlight {
   opacity: 1;
 }
-.rhtmlHeatmap .row-highlighting .column-text {
+.rhtmlHeatmap .row-highlighting g.column-label text {
   opacity: 0.4;
 }
-.rhtmlHeatmap .row-highlighting .column-text.highlight {
+.rhtmlHeatmap .row-highlighting g.column-label text.highlight {
   opacity: 1;
 }
-.rhtmlHeatmap .column-highlighting .xaxis .axis-text {
+.rhtmlHeatmap .column-highlighting g.xaxis-label text {
   opacity: 0.4;
 }
-.rhtmlHeatmap .column-highlighting .xaxis .axis-text.highlight {
+.rhtmlHeatmap .column-highlighting g.xaxis-label text.highlight {
   opacity: 1;
 }
-.rhtmlHeatmap .zoomed .xaxis .axis-text {
+.rhtmlHeatmap .zoomed g.xaxis-label text {
   opacity: 0;
 }
-.rhtmlHeatmap .zoomed .xaxis .axis-text.in-zoom {
+.rhtmlHeatmap .zoomed g.xaxis-label text.in-zoom {
+  opacity: 1;
+}
+.rhtmlHeatmap .zoomed g.column-label text {
+  opacity: 0;
+}
+.rhtmlHeatmap .zoomed g.column-label text.in-zoom {
+  opacity: 1;
+}
+.rhtmlHeatmap .zoomed .yaxis text {
+  opacity: 0;
+}
+.rhtmlHeatmap .zoomed .yaxis text.in-zoom {
   opacity: 1;
 }

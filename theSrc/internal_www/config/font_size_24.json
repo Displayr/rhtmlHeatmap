@@ -1,0 +1,19 @@
+{
+  "options": {
+    "xaxis_font_size": 24,
+    "yaxis_font_size": 24,
+    "xaxis_title_font_size": 24,
+    "yaxis_title_font_size": 24,
+    "title_font_size": 24,
+    "footer_font_size": 24,
+    "tip_font_size": 11,
+    "cell_font_size": 24,
+    "legend_font_size": 24,
+    "left_columns_font_size": 24,
+    "left_columns_title_font_size": 24,
+    "left_columns_subtitles_font_size": 24,
+    "right_columns_font_size": 24,
+    "right_columns_title_font_size": 24,
+    "right_columns_subtitles_font_size": 24
+  }
+}

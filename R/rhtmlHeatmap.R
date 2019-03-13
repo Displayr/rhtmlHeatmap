@@ -104,6 +104,12 @@ NULL
 #' @param footer_font_family character. Font family of the chart footer_font_family, defaults to "sans-serif".
 #' @param footer_font_color An RGB character to set the color of the chart footer_font_color. Defaults to "#000000".
 #'
+#' @param column_label_orientation. Enum ['horizontal', 'vertical', 'diagonal']. Defaults to 'diagonal'.
+#' @param column_label_max_height. Max height used by column labels (xaxis and column subtitles). Specified as proportion of total height. Defaults to 0.25.
+#' @param row_label_max_width. Max width used by row labels (yaxis and column labels). Specified as proportion of total height. Defaults to 0.25.
+#' @param heatmap_max_height. Max height used by heatmap grid. Specified as proportion of total height. Defaults to 1.
+#' @param heatmap_max_width. Max width used by heatmap grid. Specified as proportion of total width. Defaults to 1.
+#'
 #' @param xaxis_hidden Boolean variable to hide x axis. Defaults to FALSE.
 #' @param xaxis_location Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".
 #' @param xaxis_font_size Font size of x axis labels, as a CSS size (e.g. "14px" or "12pt"). Defaults to 12.
@@ -114,8 +120,6 @@ NULL
 #' @param xaxis_title_font_size Size of axis title text. Defaults to 14.
 #' @param xaxis_title_font_family Font family of x axis title. Defaults to "sans-serif".
 #' @param xaxis_title_font_color Font folor of x axis title. Defaults to "#000000".
-
-#' @param xaxis_label_max_height Max allocated height for xaxis and column subtitle labels. Defaults to 100.
 
 #' @param yaxis_hidden Boolean variable to hide y axis. Defaults to FALSE. To use a table layout with \code{left_columns} or \code{right_columns}, this parameter must be TRUE.
 #' @param yaxis_location Location of the y axis, c("right", "left"). Defaults to "right". "left" only works when dendrogram is "none".
@@ -248,12 +252,17 @@ Heatmap <- function(x,
   footer_font_family = "sans-serif",
   footer_font_color = "#000000",
 
+  column_label_orientation = 'diagonal',
+  column_label_max_height = 0.25,
+  row_label_max_width = 0.25,
+  heatmap_max_height = 1,
+  heatmap_max_width = 1,
+
   xaxis_hidden = FALSE,
   xaxis_font_size = 12,
   xaxis_font_family = "sans-serif",
   xaxis_font_color = "#000000",
   xaxis_location = "bottom",
-  xaxis_label_max_height = 100,
 
   xaxis_title = NULL,
   xaxis_title_font_size = 14,
@@ -691,7 +700,6 @@ Heatmap <- function(x,
       xaxis_title_font_size = xaxis_title_font_size,
       xaxis_title_font_family = xaxis_title_font_family,
       xaxis_title_font_color = xaxis_title_font_color,
-      xaxis_label_max_height = xaxis_label_max_height,
 
       yaxis_title = yaxis_title,
       #yaxis_title_bold = yaxis_title_bold,
@@ -713,6 +721,12 @@ Heatmap <- function(x,
       footer_font_size = footer_font_size,
       footer_font_family = footer_font_family,
       footer_font_color = footer_font_color,
+
+      column_label_orientation = column_label_orientation,
+      column_label_max_height = column_label_max_height,
+      row_label_max_width = row_label_max_width,
+      heatmap_max_height = heatmap_max_height,
+      heatmap_max_width = heatmap_max_width,
 
       tip_font_size = tip_font_size,
       tip_font_family = tip_font_family,

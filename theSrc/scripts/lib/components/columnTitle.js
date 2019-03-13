@@ -4,10 +4,10 @@ import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByWord} from '../
 import d3 from 'd3'
 
 // TODO preferred dimensions must account for maxes
-class XAxis extends BaseComponent {
-  constructor ({parentContainer, text, name, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines}) {
+class ColumnTitle extends BaseComponent {
+  constructor ({parentContainer, text, classNames, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines}) {
     super()
-    _.assign(this, {parentContainer, text, name, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines})
+    _.assign(this, {parentContainer, text, classNames, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines})
     this.innerLinePadding = 1 // TODO move up
   }
 
@@ -34,16 +34,24 @@ class XAxis extends BaseComponent {
     }
   }
 
+  forceWidth (forcedWidth) {
+    this.forcedWidth = forcedWidth
+  }
+
   draw (bounds) {
+    const adjustedBounds = (this.forcedWidth)
+      ? _.merge({}, bounds, { width: this.forcedWidth })
+      : bounds
+
     const titleContainer = this.parentContainer
       .append('g')
       .classed('title', true)
-      .classed(this.name, true)
-      .attr('transform', this.buildTransform(bounds))
+      .classed(this.classNames, true)
+      .attr('transform', this.buildTransform(adjustedBounds))
 
     const { text, fontFamily, fontSize, parentContainer, maxLines, innerLinePadding } = this
     titleContainer.append('text')
-      .attr('transform', `translate(${bounds.width / 2}, 0)`)
+      .attr('transform', `translate(${adjustedBounds.width / 2}, 0)`)
       .attr('x', 0)
       .attr('y', 0)
       .attr('dy', 0)
@@ -60,7 +68,7 @@ class XAxis extends BaseComponent {
         const lines = splitIntoLinesByWord({
           parentContainer: parentContainer,
           text: text,
-          maxWidth: bounds.width,
+          maxWidth: adjustedBounds.width,
           fontSize: fontSize,
           fontFamily: fontFamily,
           maxLines: maxLines
@@ -77,4 +85,4 @@ class XAxis extends BaseComponent {
   }
 }
 
-module.exports = XAxis
+module.exports = ColumnTitle

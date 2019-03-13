@@ -7,10 +7,12 @@ const cells = {
   SUBTITLE: 'SUBTITLE',
   FOOTER: 'FOOTER',
   LEFT_COLUMN_TITLE: 'LEFT_COLUMN_TITLE',
-  LEFT_COLUMN_SUBTITLE: 'LEFT_COLUMN_SUBTITLE',
+  TOP_LEFT_COLUMN_SUBTITLE: 'TOP_LEFT_COLUMN_SUBTITLE',
+  BOTTOM_LEFT_COLUMN_SUBTITLE: 'BOTTOM_LEFT_COLUMN_SUBTITLE',
   LEFT_COLUMN: 'LEFT_COLUMN',
   RIGHT_COLUMN_TITLE: 'RIGHT_COLUMN_TITLE',
-  RIGHT_COLUMN_SUBTITLE: 'RIGHT_COLUMN_SUBTITLE',
+  TOP_RIGHT_COLUMN_SUBTITLE: 'TOP_RIGHT_COLUMN_SUBTITLE',
+  BOTTOM_RIGHT_COLUMN_SUBTITLE: 'BOTTOM_RIGHT_COLUMN_SUBTITLE',
   RIGHT_COLUMN: 'RIGHT_COLUMN',
   TOP_XAXIS: 'TOP_XAXIS',
   TOP_XAXIS_TITLE: 'TOP_XAXIS_TITLE',
@@ -30,9 +32,9 @@ const HeatmapColumns = [
   { name: 'LEFT_DENDROGRAM', cells: [cells.LEFT_DENDROGRAM] },
   { name: 'LEFT_YAXIS_TITLE', cells: [cells.LEFT_YAXIS_TITLE] },
   { name: 'LEFT_YAXIS', cells: [cells.LEFT_YAXIS] },
-  { name: 'LEFT_COLUMN', cells: [cells.LEFT_COLUMN_TITLE, cells.LEFT_COLUMN_SUBTITLE, cells.LEFT_COLUMN] },
+  { name: 'LEFT_COLUMN', cells: [cells.LEFT_COLUMN_TITLE, cells.TOP_LEFT_COLUMN_SUBTITLE, cells.LEFT_COLUMN, cells.BOTTOM_LEFT_COLUMN_SUBTITLE] },
   { name: 'COLORMAP', cells: [cells.TITLE, cells.SUBTITLE, cells.TOP_XAXIS_TITLE, cells.TOP_XAXIS, cells.TOP_DENDROGRAM, cells.COLORMAP, cells.BOTTOM_XAXIS, cells.BOTTOM_XAXIS_TITLE, cells.FOOTER] },
-  { name: 'RIGHT_COLUMN', cells: [cells.RIGHT_COLUMN_TITLE, cells.RIGHT_COLUMN_SUBTITLE, cells.RIGHT_COLUMN] },
+  { name: 'RIGHT_COLUMN', cells: [cells.RIGHT_COLUMN_TITLE, cells.TOP_RIGHT_COLUMN_SUBTITLE, cells.RIGHT_COLUMN, cells.BOTTOM_RIGHT_COLUMN_SUBTITLE] },
   { name: 'RIGHT_YAXIS', cells: [cells.RIGHT_YAXIS] },
   { name: 'RIGHT_YAXIS_TITLE', cells: [cells.RIGHT_YAXIS_TITLE] },
   { name: 'COLOR_LEGEND', cells: [cells.COLOR_LEGEND] }
@@ -43,9 +45,9 @@ const HeatmapRows = [
   { name: 'SUBTITLE', cells: [cells.SUBTITLE] },
   { name: 'TOP_DENDROGRAM', cells: [cells.TOP_DENDROGRAM] },
   { name: 'TOP_COLUMN_TITLES', cells: [cells.LEFT_COLUMN_TITLE, cells.TOP_XAXIS_TITLE, cells.RIGHT_COLUMN_TITLE] },
-  { name: 'TOP_COLUMN_LABELS', cells: [cells.LEFT_COLUMN_SUBTITLE, cells.TOP_XAXIS, cells.RIGHT_COLUMN_SUBTITLE] },
+  { name: 'TOP_COLUMN_LABELS', cells: [cells.TOP_LEFT_COLUMN_SUBTITLE, cells.TOP_XAXIS, cells.TOP_RIGHT_COLUMN_SUBTITLE] },
   { name: 'COLORMAP', cells: [cells.LEFT_DENDROGRAM, cells.LEFT_YAXIS_TITLE, cells.LEFT_YAXIS, cells.LEFT_COLUMN, cells.COLORMAP, cells.RIGHT_COLUMN, cells.RIGHT_YAXIS, cells.RIGHT_YAXIS_TITLE, cells.COLOR_LEGEND] },
-  { name: 'BOTTOM_COLUMN_LABELS', cells: [cells.BOTTOM_XAXIS] },
+  { name: 'BOTTOM_COLUMN_LABELS', cells: [cells.BOTTOM_LEFT_COLUMN_SUBTITLE, cells.BOTTOM_XAXIS, cells.BOTTOM_RIGHT_COLUMN_SUBTITLE] },
   { name: 'BOTTOM_COLUMN_TITLES', cells: [cells.BOTTOM_XAXIS_TITLE] },
   { name: 'FOOTER', cells: [cells.FOOTER] }
 ]
@@ -96,6 +98,12 @@ class HeatmapLayout {
     return enabledColumnsToRight.length === 0
   }
 
+  getSpaceToTheRightOf (cell) {
+    const columnName = this._findColumnFromCell(cell)
+    const enabledColumnsToRight = this._getEnabledColumnsAfterColumn(columnName)
+    return _(enabledColumnsToRight).map(this._getColumnWidth.bind(this)).sum()
+  }
+
   setFillCell (cell) {
     this._throwIfNotValidCell(cell)
     const existingFillCell = _.find(this.cellInfo, {fill: true}, null)
@@ -141,7 +149,7 @@ class HeatmapLayout {
     if (height === 0) { console.warn(`returning zero height for getCellBounds(${cellName})`) }
 
     layoutLogger.debug(`layout.getCellBounds(${cellName}) ->`, {width, height, top, left})
-    return {width, height, top, left}
+    return {width, height, top, left, canvasWidth: this.canvasWidth, canvasHeight: this.canvasHeight}
   }
 
   _getRow (rowName) {

@@ -342,7 +342,6 @@ class Colormap extends BaseComponent {
 
       selection
         .each(function () {
-          // console.log(`this.getBBox().width > box_w - 4: ${this.getBBox().width} > ${box_w} - 4}`)
           if (this.getBBox().width > box_w - 4) {
             out_of_bounds += 1
           }
@@ -400,5 +399,18 @@ function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extr
     </table>`
   }
 }
+
+// for debugging only
+// function showLine (svg, coords, color = 'black', note = '') {
+//   const path = 'M' + coords.map(({x, y}) => `${x} ${y}`).join(' L')
+//   svg.append('path')
+//     .classed('debug', true)
+//     .attr('d', path)
+//     .attr('stroke', color)
+//     .attr('stroke-width', 1)
+//     .attr('fill', 'none')
+//     .style('opacity', 1)
+//     .style('display', 'inline')
+// }
 
 module.exports = Colormap
