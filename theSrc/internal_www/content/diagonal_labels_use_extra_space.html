@@ -7,29 +7,46 @@
 <body style="background-color:white">
 
 <div style="position:relative" snapshot-name="diagonal_labels_use_extra_space">
-  <div class="example" data-width="1000" data-height="750" data-config="
-    data.minimal_3x3_standalone|
-    config.minimal_3x3.long_column_labels2"
-  ></div>
+  <div class="row">
+    <div style="display:inline-block" class="example" data-width="300" data-height="500" data-config="
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.xaxis_third_label_is_long"
+    ></div>
 
-  <div class="example" data-width="1000" data-height="750" data-config="
+    <div style="display:inline-block" class="example" data-width="375" data-height="500" data-config="
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.xaxis_third_label_is_long|
+      config.minimal_3x3.right_columns_two_left_align"
+    ></div>
+  </div>
+  <div class="row">
+    <div style="display:inline-block" class="example" data-width="300" data-height="500" data-config="
     data.minimal_3x3_standalone|
-    config.minimal_3x3.long_column_labels2|
-    config.minimal_3x3.right_columns_two_left_align"
-  ></div>
-
-  <div class="example" data-width="1000" data-height="750" data-config="
-    data.minimal_3x3_standalone|
-    config.minimal_3x3.long_column_labels2|
+    config.minimal_3x3.xaxis_third_label_is_long|
     config.xaxis_bottom"
-  ></div>
+    ></div>
 
-  <div class="example" data-width="1000" data-height="750" data-config="
+    <div style="display:inline-block" class="example" data-width="375" data-height="500" data-config="
     data.minimal_3x3_standalone|
-    config.minimal_3x3.long_column_labels2|
+    config.minimal_3x3.xaxis_third_label_is_long|
     config.minimal_3x3.right_columns_two_left_align|
     config.xaxis_bottom"
-  ></div>
+    ></div>
+  </div>
+  <h2>These tests show the 2nd rightmost label can ask for more space too</h2>
+  <div class="row">
+    <div style="display:inline-block" class="example" data-width="300" data-height="800" data-config="
+      data.minimal_3x3_standalone|
+      config.minimal_3x3.second_xaxis_label_is_long"
+    ></div>
+
+    <div style="display:inline-block" class="example" data-width="375" data-height="800" data-config="
+        data.minimal_3x3_standalone|
+        config.minimal_3x3.second_xaxis_label_is_long|
+        config.minimal_3x3.right_columns_two_left_align|
+        config.minimal_3x3.right_columns_subtitles_first_label_is_long"
+    ></div>
+  </div>
 </div>
 
 <script src="/js/renderContentPage.js"></script>

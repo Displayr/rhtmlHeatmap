@@ -73,19 +73,24 @@ class ColumnSubtitles extends BaseComponent {
       height: _(labelDimensions).map('height').max()
     }
 
-    // NB The intent of the conditional.rightmost addition to dimensions:
-    // if Im diagonal labels, and Im the furthest component on the right, then the diagonal label on the rightmost column
-    // will be badly truncated unless extra space is reserved by the layout algorithm, so let it know we want more space
-    // TODO using classNames here is bad, should be an explicit signal to enable this behaviour
-    if (this.horizontalPlacement === 'right' && this.orientation === 'diagonal') {
-      const rightmostLabelWidth = _.last(labelDimensions).width
-      const rightmostColumnWidth = _.last(estimatedColumnWidths)
+    // NB The intent of the conditional.rightmostMargin addition to dimensions:
+    // if Im diagonal labels, and Im the furthest component on the right
+    // then reserved space on the right to avoid truncation
+    // the rightmostMargin conditional will only be added if the columnSubtitles are the rightmost component
+    if (this.orientation === 'diagonal') {
+      const requiredExtraSpaceToRight = _(labelDimensions)
+        .map('width')
+        .map((labelWidth, i) => {
+          const availableWidthToRightOfColumn = _(estimatedColumnWidths.slice(i + 1)).sum()
+          const labelOverflow = Math.max(0, labelWidth - 0.5 * estimatedColumnWidths[i])
+          return Math.max(0, labelOverflow - availableWidthToRightOfColumn)
+        })
+        .max()
 
-      const currentColumnGroupWidth = _.sum(estimatedColumnWidths) + (estimatedColumnWidths.length - 1) * this.padding
-      const extraConditionalWidthOnRightSide = Math.max(0, rightmostLabelWidth - 0.5 * rightmostColumnWidth)
-
-      preferredDimensions.conditional = {
-        rightmost: currentColumnGroupWidth + extraConditionalWidthOnRightSide
+      if (requiredExtraSpaceToRight > 0) {
+        preferredDimensions.conditional = {
+          rightmostMargin: requiredExtraSpaceToRight
+        }
       }
     }
 

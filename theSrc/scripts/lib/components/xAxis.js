@@ -35,6 +35,7 @@ class XAxis extends BaseComponent {
 
     // to deal with superfluous zoom calls at beginning of render
     this.amIZoomed = false
+    this.columnCount = this.labels.length
 
     if (this.orientation === 'horizontal') {
       this.LabelFactory = HorizontalWrappedLabel
@@ -67,10 +68,34 @@ class XAxis extends BaseComponent {
       })
     })
     let labelDimensions = this.labelObjects.map(labelObject => labelObject.computePreferredDimensions())
-    return {
+
+    const preferredDimensions = {
       width: 0, // NB xaxis width takes what is given, and does not force width on the chart
       height: _(labelDimensions).map('height').max()
     }
+
+    // NB The intent of the conditional.rightmostMargin addition to dimensions:
+    // if Im diagonal labels, and Im the furthest component on the right
+    // then reserved space on the right to avoid truncation
+    // the rightmostMargin conditional will only be added if the columnSubtitles are the rightmost component
+    if (this.orientation === 'diagonal') {
+      const requiredExtraSpaceToRight = _(labelDimensions)
+        .map('width')
+        .map((labelWidth, i) => {
+          const availableWidthToRightOfColumn = (this.columnCount - 1 - i) * estimatedColumnWidth
+          const labelOverflow = Math.max(0, labelWidth - 0.5 * estimatedColumnWidth)
+          return Math.max(0, labelOverflow - availableWidthToRightOfColumn)
+        })
+        .max()
+
+      if (requiredExtraSpaceToRight > 0) {
+        preferredDimensions.conditional = {
+          rightmostMargin: requiredExtraSpaceToRight
+        }
+      }
+    }
+
+    return preferredDimensions
   }
 
   draw (bounds) {
@@ -79,11 +104,11 @@ class XAxis extends BaseComponent {
       .classed('axis xaxis', true)
       .attr('transform', this.buildTransform(bounds))
 
-    const columnWidth = bounds.width / this.labels.length
+    const columnWidth = bounds.width / this.columnCount
     this.labelObjects.map((labelObject, i) => {
       // TODO instead of checking for existence of fn, really we should be checking that LabelFactory = DiagonalDownWrappedLabel OR DiagonalDownWrappedLabel
       if (_.isFunction(labelObject.setAvailableSpaceToTheRight)) {
-        const widthOfColumnsToTheRight = ((this.labels.length - 1) - i) * columnWidth
+        const widthOfColumnsToTheRight = ((this.columnCount - 1) - i) * columnWidth
         const widthOfComponentsToTheRight = bounds.canvasWidth - (bounds.left + bounds.width)
         labelObject.setAvailableSpaceToTheRight(widthOfColumnsToTheRight + widthOfComponentsToTheRight)
       }
@@ -146,7 +171,7 @@ class XAxis extends BaseComponent {
   }
 
   resetZoom () {
-    const columnWidth = this.bounds.width / this.labels.length
+    const columnWidth = this.bounds.width / this.columnCount
     this.labelObjects.map((labelObject, i) => labelObject.resetHorizontalZoom({xOffset: columnWidth * i}))
   }
 }

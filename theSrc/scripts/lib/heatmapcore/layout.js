@@ -25,7 +25,8 @@ const cells = {
   TOP_DENDROGRAM: 'TOP_DENDROGRAM',
   LEFT_DENDROGRAM: 'LEFT_DENDROGRAM',
   COLOR_LEGEND: 'COLOR_LEGEND',
-  COLORMAP: 'COLORMAP'
+  COLORMAP: 'COLORMAP',
+  RIGHT_MARGIN: 'RIGHT_MARGIN' // only enabled when requested by another cell
 }
 
 const HeatmapColumns = [
@@ -37,7 +38,8 @@ const HeatmapColumns = [
   { name: 'RIGHT_COLUMN', cells: [cells.RIGHT_COLUMN_TITLE, cells.TOP_RIGHT_COLUMN_SUBTITLE, cells.RIGHT_COLUMN, cells.BOTTOM_RIGHT_COLUMN_SUBTITLE] },
   { name: 'RIGHT_YAXIS', cells: [cells.RIGHT_YAXIS] },
   { name: 'RIGHT_YAXIS_TITLE', cells: [cells.RIGHT_YAXIS_TITLE] },
-  { name: 'COLOR_LEGEND', cells: [cells.COLOR_LEGEND] }
+  { name: 'COLOR_LEGEND', cells: [cells.COLOR_LEGEND] },
+  { name: 'RIGHT_MARGIN', cells: [cells.RIGHT_MARGIN], margin: true }
 ]
 
 const HeatmapRows = [
@@ -46,7 +48,7 @@ const HeatmapRows = [
   { name: 'TOP_DENDROGRAM', cells: [cells.TOP_DENDROGRAM] },
   { name: 'TOP_COLUMN_TITLES', cells: [cells.LEFT_COLUMN_TITLE, cells.TOP_XAXIS_TITLE, cells.RIGHT_COLUMN_TITLE] },
   { name: 'TOP_COLUMN_LABELS', cells: [cells.TOP_LEFT_COLUMN_SUBTITLE, cells.TOP_XAXIS, cells.TOP_RIGHT_COLUMN_SUBTITLE] },
-  { name: 'COLORMAP', cells: [cells.LEFT_DENDROGRAM, cells.LEFT_YAXIS_TITLE, cells.LEFT_YAXIS, cells.LEFT_COLUMN, cells.COLORMAP, cells.RIGHT_COLUMN, cells.RIGHT_YAXIS, cells.RIGHT_YAXIS_TITLE, cells.COLOR_LEGEND] },
+  { name: 'COLORMAP', cells: [cells.LEFT_DENDROGRAM, cells.LEFT_YAXIS_TITLE, cells.LEFT_YAXIS, cells.LEFT_COLUMN, cells.COLORMAP, cells.RIGHT_COLUMN, cells.RIGHT_YAXIS, cells.RIGHT_YAXIS_TITLE, cells.COLOR_LEGEND, cells.RIGHT_MARGIN] },
   { name: 'BOTTOM_COLUMN_LABELS', cells: [cells.BOTTOM_LEFT_COLUMN_SUBTITLE, cells.BOTTOM_XAXIS, cells.BOTTOM_RIGHT_COLUMN_SUBTITLE] },
   { name: 'BOTTOM_COLUMN_TITLES', cells: [cells.BOTTOM_XAXIS_TITLE] },
   { name: 'FOOTER', cells: [cells.FOOTER] }
@@ -69,6 +71,12 @@ class HeatmapLayout {
     this.canvasHeight = canvasHeight
     this.padding = padding
     this.outerPadding = 2
+
+    // non-standard / cant be modelled exceptions, that are run once all components are registered
+    //   contains things where one cell depends on presence or absence of other cells
+    this.specialRules = [
+      this.applyConditionRightmostMargins.bind(this)
+    ]
   }
 
   enable (cell) {
@@ -94,13 +102,13 @@ class HeatmapLayout {
 
   isRightmost (cell) {
     const columnName = this._findColumnFromCell(cell)
-    const enabledColumnsToRight = this._getEnabledColumnsAfterColumn(columnName)
+    const enabledColumnsToRight = this._getEnabledColumnsAfterColumn(columnName, {includeMargins: false})
     return enabledColumnsToRight.length === 0
   }
 
   getSpaceToTheRightOf (cell) {
     const columnName = this._findColumnFromCell(cell)
-    const enabledColumnsToRight = this._getEnabledColumnsAfterColumn(columnName)
+    const enabledColumnsToRight = this._getEnabledColumnsAfterColumn(columnName, {includeMargins: false})
     return _(enabledColumnsToRight).map(this._getColumnWidth.bind(this)).sum()
   }
 
@@ -205,12 +213,7 @@ class HeatmapLayout {
   }
 
   _getWidthOfFixedCell (cellName) {
-    const cellInfo = this.cellInfo[cellName]
-    const result = (_.has(cellInfo, 'conditional.rightmost') && this.isRightmost(cellName))
-      ? cellInfo.conditional.rightmost
-      : this.cellInfo[cellName].width
-    layoutLogger.debug(`layout._getWidthOfFixedCell(${cellName}) ->`, result)
-    return result
+    return this.cellInfo[cellName].width
   }
 
   // TODO for symmetry add _getHeightOfFixedCell
@@ -237,40 +240,67 @@ class HeatmapLayout {
     throw new Error(`Invalid cell name ${cellName} : not in any columns`)
   }
 
-  _getEnabledRowsBeforeRow (rowName) {
+  _getEnabledRowsBeforeRow (rowName, {includeMargins = true} = {}) {
     let foundRowName = false
     return _(HeatmapRows)
       .filter(({name}) => {
         if (name === rowName) { foundRowName = true }
         return !foundRowName
       })
+      .filter(({type}) => includeMargins || type !== 'margin')
       .map('name')
       .filter(rowName => this._rowEnabled(rowName))
       .value()
   }
 
-  _getEnabledColumnsBeforeColumn (columnName) {
+  _getEnabledColumnsBeforeColumn (columnName, {includeMargins = true} = {}) {
     let foundColumnName = false
     return _(HeatmapColumns)
       .filter(({name}) => {
         if (name === columnName) { foundColumnName = true }
         return !foundColumnName
       })
+      .filter(({type}) => includeMargins || type !== 'margin')
       .map('name')
       .filter(columnName => this._columnEnabled(columnName))
       .value()
   }
 
-  _getEnabledColumnsAfterColumn (columnName) {
+  _getEnabledColumnsAfterColumn (columnName, {includeMargins = true} = {}) {
     let foundColumnName = false
     return _(HeatmapColumns)
       .filter(({name}) => {
         if (name === columnName) { foundColumnName = true }
         return foundColumnName && name !== columnName
       })
+      .filter(({type}) => includeMargins || type !== 'margin')
       .map('name')
       .filter(columnName => this._columnEnabled(columnName))
       .value()
+  }
+
+  allComponentsRegistered () {
+    this.applySpecialRules()
+  }
+
+  applySpecialRules () {
+    this.specialRules.forEach(rule => rule())
+  }
+
+  applyConditionRightmostMargins () {
+    _.forEach(this.cellInfo, (celldata, cellName) => {
+      if (this.enabled(cellName) && this.isRightmost(cellName) && _.has(celldata, 'conditional.rightmostMargin')) {
+        layoutLogger.info(`cellName ${cellName} is rightmost and has rightmostMargin, adding right margin of ${celldata.conditional.rightmostMargin}`)
+        this.enable(cells.RIGHT_MARGIN)
+
+        // the "subtract" this.padding is corny but keeps things a lot simpler in other areas of the code
+        const existingRightMarginWidth = _.get(this.cellInfo[cells.RIGHT_MARGIN], 'width', 0)
+        this.setPreferredDimensions(cells.RIGHT_MARGIN, {
+          width: Math.max(existingRightMarginWidth, celldata.conditional.rightmostMargin - this.padding),
+          height: 0
+        })
+      }
+    })
   }
 
   _throwIfNotValidCell (cell) {

@@ -58,7 +58,8 @@ class Heatmap {
       CellNames.RIGHT_COLUMN_TITLE,
       CellNames.TITLE,
       CellNames.SUBTITLE,
-      CellNames.FOOTER
+      CellNames.FOOTER,
+      CellNames.RIGHT_MARGIN // NB do not draw the margin - it just holds space
     ]
     const simpleCells = _.omit(CellNames, cellsRequiringSpecialDrawInstructions)
     _(simpleCells).each(cellName => {
@@ -492,6 +493,8 @@ class Heatmap {
       this.layout.enable(CellNames.FOOTER)
       this.layout.setPreferredDimensions(CellNames.FOOTER, dimensions)
     }
+
+    this.layout.allComponentsRegistered()
   }
 
   normalizeMatrix (matrix) {
