@@ -88,6 +88,7 @@ function _splitIntoLines ({parentContainer, text, fontSize = 12, fontFamily = 's
   const truncationString = '...'
   let token = null
 
+  const horizontalAndOnFirstLine = () => rotation === 0 && lines.length === 0
   const widthExceeded = (width) => !_.isNull(maxWidth) && width > maxWidth
   const heightExceeded = (height) => !_.isNull(maxHeight) && height > maxHeight
   const getDimensionsFromString = (string) => getLabelDimensionsUsingSvgApproximation({
@@ -130,7 +131,7 @@ function _splitIntoLines ({parentContainer, text, fontSize = 12, fontFamily = 's
 
     const { width, height } = getDimensions(currentLine)
 
-    if (heightExceeded(totalHeight + height)) {
+    if (heightExceeded(totalHeight + height) && !horizontalAndOnFirstLine()) {
       if (lines.length === 0) {
         // TODO check if the current line still fits, and if not delete characters
         lines.push(`${currentLine.join(joinCharacter)}`)
