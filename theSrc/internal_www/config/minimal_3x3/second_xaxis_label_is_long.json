@@ -1,0 +1,13 @@
+{
+  "matrix": {
+    "cols": [
+      "C1",
+      "Column 2 has a lot of text and should trigger wrapping at some point depending on the settings",
+      "C3"
+    ]
+  },
+  "options": {
+  }
+}
+
+

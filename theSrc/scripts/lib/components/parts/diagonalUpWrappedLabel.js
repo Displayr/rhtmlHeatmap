@@ -5,9 +5,9 @@ import {splitIntoLinesByCharacter, getLabelDimensionsUsingSvgApproximation} from
 const DEBUG = false
 
 class DiagonalUpWrappedLabel extends BaseComponent {
-  constructor ({parentContainer, text, fontSize, fontFamily, fontColor, maxWidth, maxHeight, classNames}) {
+  constructor ({parentContainer, text, fontSize, fontFamily, fontColor, maxHeight, classNames}) {
     super()
-    _.assign(this, {parentContainer, text, fontSize, fontFamily, fontColor, maxWidth, maxHeight, classNames})
+    _.assign(this, {parentContainer, text, fontSize, fontFamily, fontColor, maxHeight, classNames})
 
     this.maxLines = 1
     this.extraSpaceToRight = 0
