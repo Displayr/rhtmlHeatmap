@@ -2,7 +2,7 @@ import _ from 'lodash'
 import BaseComponent from '../baseComponent'
 import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByWord} from '../../labelUtils'
 
-const DEBUG = false
+const DEBUG = true
 
 class HorizontalWrappedLabel extends BaseComponent {
   constructor ({
@@ -138,7 +138,7 @@ class HorizontalWrappedLabel extends BaseComponent {
     } else if (this.verticalAlignment === 'center') {
       _(this.lines).each((line, i) => {
         this.textSelection.append('tspan')
-          .style('dominant-baseline', 'text-before-edge')
+          .style('dominant-baseline', 'central')
           .attr('x', 0)
           .attr('y', i * (this.fontSize + this.innerLinePadding))
           .text(line)
