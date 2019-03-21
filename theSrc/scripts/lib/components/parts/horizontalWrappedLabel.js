@@ -117,34 +117,42 @@ class HorizontalWrappedLabel extends BaseComponent {
           .attr('transform', `translate(${bounds.width}, ${textYOffset})`)
           .style('text-anchor', 'end')
         break
+      default:
+        throw new Error(`unknown horizontal alignment: '${this.horizontalAlignment}'`)
     }
 
-    if (this.verticalAlignment === 'top') {
-      _(this.lines).each((line, i) => {
-        this.textSelection.append('tspan')
-          .style('dominant-baseline', 'text-before-edge')
-          .attr('x', 0)
-          .attr('y', i * (this.fontSize + this.innerLinePadding))
-          .text(line)
-      })
-    } else if (this.verticalAlignment === 'bottom') {
-      _(this.lines).reverse().each((line, i) => {
-        this.textSelection.append('tspan')
-          .style('dominant-baseline', 'text-after-edge')
-          .attr('x', 0)
-          .attr('y', bounds.height - i * (this.fontSize + this.innerLinePadding))
-          .text(line)
-      })
-    } else if (this.verticalAlignment === 'center') {
-      _(this.lines).each((line, i) => {
-        this.textSelection.append('tspan')
-          .style('dominant-baseline', 'text-before-edge')
-          .attr('x', 0)
-          .attr('y', i * (this.fontSize + this.innerLinePadding))
-          .text(line)
-      })
-    } else {
-      throw new Error(`unknown vertical alignment: '${this.verticalAlignment}'`)
+    const useBoundsIfFirstRowAndFontTooLarge = (i) => (i === 0) ? Math.min(this.bounds.height, this.fontSize) : this.fontSize
+
+    switch (this.verticalAlignment) {
+      case 'top':
+        _(this.lines).each((line, i) => {
+          this.textSelection.append('tspan')
+            .style('dominant-baseline', 'text-before-edge')
+            .attr('x', 0)
+            .attr('y', i * (this.fontSize + this.innerLinePadding))
+            .text(line)
+        })
+        break
+      case 'center':
+        _(this.lines).each((line, i) => {
+          this.textSelection.append('tspan')
+            .style('dominant-baseline', 'central')
+            .attr('x', 0)
+            .attr('y', useBoundsIfFirstRowAndFontTooLarge(i) / 2 + i * (this.fontSize + this.innerLinePadding))
+            .text(line)
+        })
+        break
+      case 'bottom':
+        _(this.lines).reverse().each((line, i) => {
+          this.textSelection.append('tspan')
+            .style('dominant-baseline', 'text-after-edge')
+            .attr('x', 0)
+            .attr('y', bounds.height - i * (this.fontSize + this.innerLinePadding))
+            .text(line)
+        })
+        break
+      default:
+        throw new Error(`unknown vertical alignment: '${this.verticalAlignment}'`)
     }
   }
 
