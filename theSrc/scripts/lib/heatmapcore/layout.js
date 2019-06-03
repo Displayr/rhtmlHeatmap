@@ -29,7 +29,7 @@ const cells = {
   RIGHT_MARGIN: 'RIGHT_MARGIN' // only enabled when requested by another cell
 }
 
-const HeatmapColumns = [
+const LayoutColumns = [
   { name: 'LEFT_DENDROGRAM', cells: [cells.LEFT_DENDROGRAM] },
   { name: 'LEFT_YAXIS_TITLE', cells: [cells.LEFT_YAXIS_TITLE] },
   { name: 'LEFT_YAXIS', cells: [cells.LEFT_YAXIS] },
@@ -42,7 +42,7 @@ const HeatmapColumns = [
   { name: 'RIGHT_MARGIN', cells: [cells.RIGHT_MARGIN], margin: true }
 ]
 
-const HeatmapRows = [
+const LayoutRows = [
   { name: 'TITLE', cells: [cells.TITLE] },
   { name: 'SUBTITLE', cells: [cells.SUBTITLE] },
   { name: 'TOP_DENDROGRAM', cells: [cells.TOP_DENDROGRAM] },
@@ -54,7 +54,7 @@ const HeatmapRows = [
   { name: 'FOOTER', cells: [cells.FOOTER] }
 ]
 
-class HeatmapLayout {
+class Layout {
   constructor (canvasWidth, canvasHeight, padding = 0) {
     this.cellInfo = _.transform(_.keys(cells), (result, key) => {
       result[key] = {
@@ -161,14 +161,14 @@ class HeatmapLayout {
   }
 
   _getRow (rowName) {
-    const match = _.find(HeatmapRows, {name: rowName})
-    if (!match) { throw new Error(`Invalid heatmap row: ${rowName}`) }
+    const match = _.find(LayoutRows, {name: rowName})
+    if (!match) { throw new Error(`Invalid row: ${rowName}`) }
     return match
   }
 
   _getColumn (columnName) {
-    const match = _.find(HeatmapColumns, {name: columnName})
-    if (!match) { throw new Error(`Invalid heatmap column: ${columnName}`) }
+    const match = _.find(LayoutColumns, {name: columnName})
+    if (!match) { throw new Error(`Invalid column: ${columnName}`) }
     return match
   }
 
@@ -195,7 +195,7 @@ class HeatmapLayout {
   }
 
   _getWidthOfFillCell (cellName, columnName) {
-    const otherColumns = _.filter(HeatmapColumns, (column) => column.name !== columnName && this._columnEnabled(column.name))
+    const otherColumns = _.filter(LayoutColumns, (column) => column.name !== columnName && this._columnEnabled(column.name))
     const allocatedWidth = _(otherColumns)
       .map(otherColumn => this._getColumnWidth(otherColumn.name))
       .sum() + otherColumns.length * this.padding + 2 * this.outerPadding
@@ -204,7 +204,7 @@ class HeatmapLayout {
   }
 
   _getHeightOfFillCell (cellName, rowName) {
-    const otherRows = _.filter(HeatmapRows, (row) => row.name !== rowName && this._rowEnabled(row.name))
+    const otherRows = _.filter(LayoutRows, (row) => row.name !== rowName && this._rowEnabled(row.name))
     const allocatedHeight = _(otherRows)
       .map(otherRow => this._getRowHeight(otherRow.name))
       .sum() + otherRows.length * this.padding + 2 * this.outerPadding
@@ -229,20 +229,20 @@ class HeatmapLayout {
   }
 
   _findRowFromCell (cellName) {
-    const match = _.find(HeatmapRows, ({ cells }) => cells.includes(cellName))
+    const match = _.find(LayoutRows, ({ cells }) => cells.includes(cellName))
     if (match) { return match.name }
     throw new Error(`Invalid cell name ${cellName} : not in any rows`)
   }
 
   _findColumnFromCell (cellName) {
-    const match = _.find(HeatmapColumns, ({ cells }) => cells.includes(cellName))
+    const match = _.find(LayoutColumns, ({ cells }) => cells.includes(cellName))
     if (match) { return match.name }
     throw new Error(`Invalid cell name ${cellName} : not in any columns`)
   }
 
   _getEnabledRowsBeforeRow (rowName, {includeMargins = true} = {}) {
     let foundRowName = false
-    return _(HeatmapRows)
+    return _(LayoutRows)
       .filter(({name}) => {
         if (name === rowName) { foundRowName = true }
         return !foundRowName
@@ -255,7 +255,7 @@ class HeatmapLayout {
 
   _getEnabledColumnsBeforeColumn (columnName, {includeMargins = true} = {}) {
     let foundColumnName = false
-    return _(HeatmapColumns)
+    return _(LayoutColumns)
       .filter(({name}) => {
         if (name === columnName) { foundColumnName = true }
         return !foundColumnName
@@ -268,7 +268,7 @@ class HeatmapLayout {
 
   _getEnabledColumnsAfterColumn (columnName, {includeMargins = true} = {}) {
     let foundColumnName = false
-    return _(HeatmapColumns)
+    return _(LayoutColumns)
       .filter(({name}) => {
         if (name === columnName) { foundColumnName = true }
         return foundColumnName && name !== columnName
@@ -304,7 +304,7 @@ class HeatmapLayout {
   }
 
   _throwIfNotValidCell (cell) {
-    if (!_.has(cells, cell)) { throw new Error(`Invalid heatmap cell: ${cell}`) }
+    if (!_.has(cells, cell)) { throw new Error(`Invalid cell: ${cell}`) }
   }
 
   _throwIfNotEnabled (cell) {
@@ -313,4 +313,4 @@ class HeatmapLayout {
   }
 }
 
-module.exports = { HeatmapLayout, CellNames: cells }
+module.exports = { Layout, CellNames: cells }

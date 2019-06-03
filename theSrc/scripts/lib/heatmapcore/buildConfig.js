@@ -1,5 +1,6 @@
 import _ from 'lodash'
 
+// TODO all of the margin config params below can probably be removed
 const defaultConfig = {
   anim_duration: 500,
   axis_padding: 6,
@@ -77,7 +78,7 @@ const defaultConfig = {
 function buildConfig (userConfig, width, height) {
   const config = _.merge({}, defaultConfig, userConfig, { width, height })
 
-  // NB some the following adjustments correct issues in the callee (which we cannot control)
+  // NB the following adjustments correct issues in the callee (which we cannot control)
 
   config.legend_bar_width = (config.legend_width - config.legend_x_padding * 2) / 2
 
