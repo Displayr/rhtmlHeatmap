@@ -10,7 +10,6 @@ import DiagonalDownWrappedLabel from './parts/diagonalDownWrappedLabel'
 
 class XAxis extends BaseComponent {
   constructor ({
-                controller,
                 fontColor,
                 fontFamily,
                 fontSize,
@@ -22,7 +21,6 @@ class XAxis extends BaseComponent {
               }) {
     super()
     _.assign(this, {
-      controller,
       fontColor,
       fontFamily,
       fontSize,

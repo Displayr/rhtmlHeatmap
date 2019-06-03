@@ -12,7 +12,7 @@ import Legend from '../components/legend'
 import XAxis from '../components/xAxis'
 import YAxis from '../components/yAxis'
 import YTitle from '../components/yTitle'
-import { HeatmapLayout, CellNames } from './layout'
+import { Layout, CellNames } from './layout'
 
 class Heatmap {
   constructor ({
@@ -122,7 +122,7 @@ class Heatmap {
   }
 
   buildLayout () {
-    this.layout = new HeatmapLayout(this.options.width, this.options.height, this.options.padding)
+    this.layout = new Layout(this.options.width, this.options.height, this.options.padding)
     const {options, inner} = this
     if (this.dendrogramData.columns) { options.xaxis_location = 'bottom' }
 

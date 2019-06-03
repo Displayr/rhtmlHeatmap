@@ -16,13 +16,15 @@ class Title extends BaseComponent {
       maxWidth: estimatedWidth,
       fontSize: this.fontSize,
       maxLines: this.maxLines,
-      fontFamily: this.fontFamily
+      fontFamily: this.fontFamily,
+      fontWeight: (this.bold) ? 'bold' : 'normal'
     })
     const lineDimensions = lines.map(text => getLabelDimensionsUsingSvgApproximation({
       text,
       parentContainer: this.parentContainer,
       fontSize: this.fontSize,
-      fontFamily: this.fontFamily
+      fontFamily: this.fontFamily,
+      fontWeight: (this.bold) ? 'bold' : 'normal'
     }))
 
     return {
@@ -42,7 +44,8 @@ class Title extends BaseComponent {
       maxWidth: bounds.width,
       fontSize: this.fontSize,
       maxLines: this.maxLines,
-      fontFamily: this.fontFamily
+      fontFamily: this.fontFamily,
+      fontWeight: (this.bold) ? 'bold' : 'normal'
     })
 
     const textElement = titleContainer.append('text')
