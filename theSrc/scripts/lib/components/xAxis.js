@@ -10,15 +10,15 @@ import DiagonalDownWrappedLabel from './parts/diagonalDownWrappedLabel'
 
 class XAxis extends BaseComponent {
   constructor ({
-                fontColor,
-                fontFamily,
-                fontSize,
-                labels,
-                maxHeight,
-                orientation,
-                parentContainer,
-                placement
-              }) {
+    fontColor,
+    fontFamily,
+    fontSize,
+    labels,
+    maxHeight,
+    orientation,
+    parentContainer,
+    placement
+  }) {
     super()
     _.assign(this, {
       fontColor,
@@ -127,7 +127,7 @@ class XAxis extends BaseComponent {
   }
 
   // NB relies on CSS in heatmapcore.less
-  updateHighlights ({column = null} = {}) {
+  updateHighlights ({ column = null } = {}) {
     this.parentContainer.selectAll('.xaxis-label text')
       .classed('highlight', (d, i) => column === i)
   }
@@ -138,7 +138,7 @@ class XAxis extends BaseComponent {
   //   "translate": [ -450.1803455352783, 0 ],
   //   "extent": [ [ 1, 0 ], [ 3, 1 ] ]
   // }
-  updateZoom ({scale, translate, extent, zoom}) {
+  updateZoom ({ scale, translate, extent, zoom }) {
     if (!zoom && !this.amIZoomed) {
       return
     }
@@ -147,13 +147,13 @@ class XAxis extends BaseComponent {
     }
     this.amIZoomed = zoom
     if (this.amIZoomed) {
-      this.applyZoom({scale, translate, extent})
+      this.applyZoom({ scale, translate, extent })
     } else {
       return this.resetZoom()
     }
   }
 
-  applyZoom ({scale, translate, extent}) {
+  applyZoom ({ scale, translate, extent }) {
     const columnsInZoom = _.range(extent[0][0], extent[1][0])
     const inFocusExtent = columnsInZoom.length
     const numberCellsToLeftOutOfFocus = extent[0][0]
@@ -170,7 +170,7 @@ class XAxis extends BaseComponent {
 
   resetZoom () {
     const columnWidth = this.bounds.width / this.columnCount
-    this.labelObjects.map((labelObject, i) => labelObject.resetHorizontalZoom({xOffset: columnWidth * i}))
+    this.labelObjects.map((labelObject, i) => labelObject.resetHorizontalZoom({ xOffset: columnWidth * i }))
   }
 }
 

@@ -5,9 +5,9 @@ import _ from 'lodash'
 const validLabelFormatValues = ['normal', 'percentage']
 
 class Legend extends BaseComponent {
-  constructor ({parentContainer, colors, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat}) {
+  constructor ({ parentContainer, colors, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat }) {
     super()
-    _.assign(this, {parentContainer, colors, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat})
+    _.assign(this, { parentContainer, colors, range, digits, fontSize, fontFamily, fontColor, leftSpace, barWidth, xPadding, labelFormat })
 
     if (!_.includes(validLabelFormatValues, this.labelFormat)) {
       throw new Error(`Invalid labelFormat '${this.labelFormat}: valid values : ${validLabelFormatValues}`)
@@ -16,7 +16,7 @@ class Legend extends BaseComponent {
 
   makeD3Format (digits, labelFormat) {
     // http://bl.ocks.org/zanarmstrong/05c1e95bf7aa16c4768e <-- NB how d3.format works interactive example
-    const formatCodes = {normal: 'f', percentage: '%'}
+    const formatCodes = { normal: 'f', percentage: '%' }
     return d3.format(`,.${digits}${formatCodes[labelFormat]}`)
   }
 

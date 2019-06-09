@@ -16,7 +16,7 @@ module.exports = function (element, x) {
 
   _initLogger(options.logLevel)
 
-  const {width, height} = getContainerDimensions(_.has(element, 'length') ? element[0] : element)
+  const { width, height } = getContainerDimensions(_.has(element, 'length') ? element[0] : element)
   const uniqueClass = `heatmap-${uniqueId()}`
 
   d3.select(element)
@@ -26,7 +26,7 @@ module.exports = function (element, x) {
     .attr('height', height)
 
   loadImage(image)
-    .then(({imgData, width, height}) => processImageData({imgData, width, height, matrix, shownote_in_cell: options.shownote_in_cell}))
+    .then(({ imgData, width, height }) => processImageData({ imgData, width, height, matrix, shownote_in_cell: options.shownote_in_cell }))
     .then(merged => {
       matrix.merged = merged
       return new Heatmap({
@@ -91,13 +91,13 @@ function loadImage (uri) {
       // Done with the canvas, remove it from the page so it can be gc'd.
       document.body.removeChild(imgDataCanvas)
 
-      return resolve({imgData, width, height})
+      return resolve({ imgData, width, height })
     }
     img.src = uri
   })
 }
 
-function processImageData ({imgData, width, height, matrix, shownote_in_cell}) {
+function processImageData ({ imgData, width, height, matrix, shownote_in_cell }) {
   if (width !== matrix.dim[0] || height !== matrix.dim[1]) {
     throw new Error('Color dimensions didn\'t match data dimensions')
   }

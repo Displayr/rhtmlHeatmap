@@ -6,7 +6,7 @@ let uniqueId = 0
 function getUniqueId () { return uniqueId++ }
 function toRadians (degrees) { return degrees * (Math.PI / 180) }
 
-function getLabelDimensionsUsingSvgApproximation ({parentContainer, text, fontSize, fontFamily, fontWeight, rotation = 0}) {
+function getLabelDimensionsUsingSvgApproximation ({ parentContainer, text, fontSize, fontFamily, fontWeight, rotation = 0 }) {
   const uniqueId = `tempLabel-${getUniqueId()}`
 
   const container = parentContainer.append('g')
@@ -28,7 +28,7 @@ function getLabelDimensionsUsingSvgApproximation ({parentContainer, text, fontSi
     .style('dominant-baseline', 'text-before-edge')
     .text(text)
 
-  const {x, y, width: unadjustedWidth, height: unadjustedHeight} = textElement.node().getBBox()
+  const { x, y, width: unadjustedWidth, height: unadjustedHeight } = textElement.node().getBBox()
 
   // NB on some window sizes getBBox will return negative y offsets. Add them to returned value for consistent behaviour
   // across all window sizes
@@ -51,7 +51,7 @@ function wordTokenizer (inputString) {
   return inputString2.split(' ').map(_.trim).filter((token) => !_.isEmpty(token))
 }
 
-function splitIntoLinesByWord ({parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', fontWeight = 'normal', maxWidth, maxHeight, maxLines = null, rotation = 0} = {}) {
+function splitIntoLinesByWord ({ parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', fontWeight = 'normal', maxWidth, maxHeight, maxLines = null, rotation = 0 } = {}) {
   let tokens = wordTokenizer(text)
   return _splitIntoLines({
     parentContainer,
@@ -68,7 +68,7 @@ function splitIntoLinesByWord ({parentContainer, text, fontSize = 12, fontFamily
   })
 }
 
-function splitIntoLinesByCharacter ({parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', fontWeight = 'normal', maxWidth, maxHeight, maxLines = null, rotation = 0} = {}) {
+function splitIntoLinesByCharacter ({ parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', fontWeight = 'normal', maxWidth, maxHeight, maxLines = null, rotation = 0 } = {}) {
   let tokens = text.split('')
   return _splitIntoLines({
     parentContainer,
@@ -85,7 +85,7 @@ function splitIntoLinesByCharacter ({parentContainer, text, fontSize = 12, fontF
   })
 }
 
-function _splitIntoLines ({parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', fontWeight = 'normal', maxWidth = null, maxHeight = null, maxLines = null, tokens, joinCharacter, rotation} = {}) {
+function _splitIntoLines ({ parentContainer, text, fontSize = 12, fontFamily = 'sans-serif', fontWeight = 'normal', maxWidth = null, maxHeight = null, maxLines = null, tokens, joinCharacter, rotation } = {}) {
   if (text.length === 0) { return [text] }
   let currentLine = []
   let lines = []

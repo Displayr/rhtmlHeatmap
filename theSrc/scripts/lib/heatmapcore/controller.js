@@ -127,28 +127,28 @@ class Controller {
     }
   }
 
-  colormapDragReset ({scale, translate, extent}) {
-    if (this.colormap) { this.colormap.updateZoom({scale, translate, extent, zoom: false}) }
-    if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent, zoom: false}) }
-    if (this.yaxis) { this.yaxis.updateZoom({scale, translate, extent, zoom: false}) }
-    if (this.leftColumn) { this.leftColumn.updateZoom({scale, translate, extent, zoom: false}) }
-    if (this.rightColumn) { this.rightColumn.updateZoom({scale, translate, extent, zoom: false}) }
-    if (this.left_dendrogram) { this.left_dendrogram.updateZoom({scale, translate, extent, zoom: false}) }
-    if (this.top_dendrogram) { this.top_dendrogram.updateZoom({scale, translate, extent, zoom: false}) }
+  colormapDragReset ({ scale, translate, extent }) {
+    if (this.colormap) { this.colormap.updateZoom({ scale, translate, extent, zoom: false }) }
+    if (this.xaxis) { this.xaxis.updateZoom({ scale, translate, extent, zoom: false }) }
+    if (this.yaxis) { this.yaxis.updateZoom({ scale, translate, extent, zoom: false }) }
+    if (this.leftColumn) { this.leftColumn.updateZoom({ scale, translate, extent, zoom: false }) }
+    if (this.rightColumn) { this.rightColumn.updateZoom({ scale, translate, extent, zoom: false }) }
+    if (this.left_dendrogram) { this.left_dendrogram.updateZoom({ scale, translate, extent, zoom: false }) }
+    if (this.top_dendrogram) { this.top_dendrogram.updateZoom({ scale, translate, extent, zoom: false }) }
 
     if (this.outer) {
       this.outer.classed('zoomed', false)
     }
   }
 
-  colormapDragSelection ({scale, translate, extent}) {
-    if (this.colormap) { this.colormap.updateZoom({scale, translate, extent, zoom: true}) }
-    if (this.xaxis) { this.xaxis.updateZoom({scale, translate, extent, zoom: true}) }
-    if (this.yaxis) { this.yaxis.updateZoom({scale, translate, extent, zoom: true}) }
-    if (this.leftColumn) { this.leftColumn.updateZoom({scale, translate, extent, zoom: true}) }
-    if (this.rightColumn) { this.rightColumn.updateZoom({scale, translate, extent, zoom: true}) }
-    if (this.left_dendrogram) { this.left_dendrogram.updateZoom({scale, translate, extent, zoom: true}) }
-    if (this.top_dendrogram) { this.top_dendrogram.updateZoom({scale, translate, extent, zoom: true}) }
+  colormapDragSelection ({ scale, translate, extent }) {
+    if (this.colormap) { this.colormap.updateZoom({ scale, translate, extent, zoom: true }) }
+    if (this.xaxis) { this.xaxis.updateZoom({ scale, translate, extent, zoom: true }) }
+    if (this.yaxis) { this.yaxis.updateZoom({ scale, translate, extent, zoom: true }) }
+    if (this.leftColumn) { this.leftColumn.updateZoom({ scale, translate, extent, zoom: true }) }
+    if (this.rightColumn) { this.rightColumn.updateZoom({ scale, translate, extent, zoom: true }) }
+    if (this.left_dendrogram) { this.left_dendrogram.updateZoom({ scale, translate, extent, zoom: true }) }
+    if (this.top_dendrogram) { this.top_dendrogram.updateZoom({ scale, translate, extent, zoom: true }) }
 
     if (this.outer) {
       this.outer.classed('zoomed', true)

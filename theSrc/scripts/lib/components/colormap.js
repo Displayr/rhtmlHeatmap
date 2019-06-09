@@ -131,7 +131,7 @@ class Colormap extends BaseComponent {
       this.placeTextSelection(this.cellNoteSelection, this.cellFontSize, this.cellFontFamily)
     }
 
-    const brushStyle = {fill: this.brushColor, stroke: this.brushColor}
+    const brushStyle = { fill: this.brushColor, stroke: this.brushColor }
     const controller = this.controller
     const brush = d3.svg.brush()
       .x(this.scales.x)
@@ -174,7 +174,7 @@ class Colormap extends BaseComponent {
             extent[0][0] * (width / cols) * scale[0] * -1,
             extent[0][1] * (height / rows) * scale[1] * -1
           ]
-          controller.colormapDragSelection({scale, translate, extent})
+          controller.colormapDragSelection({ scale, translate, extent })
         }
         brush.clear()
         d3.select(this).call(brush).select('.brush .extent')
@@ -234,7 +234,7 @@ class Colormap extends BaseComponent {
       this.tip.hide()
       return
     }
-    var this_tip = this.tip.show({col, row, label}).style({
+    var this_tip = this.tip.show({ col, row, label }).style({
       top: d3.event.clientY + 10 + 'px',
       left: d3.event.clientX + 10 + 'px',
       opacity: 0.9

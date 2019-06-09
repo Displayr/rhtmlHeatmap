@@ -1,13 +1,13 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
-import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByWord} from '../labelUtils'
+import { getLabelDimensionsUsingSvgApproximation, splitIntoLinesByWord } from '../labelUtils'
 import d3 from 'd3'
 
 // TODO preferred dimensions must account for maxes
 class ColumnTitle extends BaseComponent {
-  constructor ({parentContainer, text, classNames, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines}) {
+  constructor ({ parentContainer, text, classNames, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines }) {
     super()
-    _.assign(this, {parentContainer, text, classNames, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines})
+    _.assign(this, { parentContainer, text, classNames, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines })
     this.innerLinePadding = 1 // TODO move up
   }
 

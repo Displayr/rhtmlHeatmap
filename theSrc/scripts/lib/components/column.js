@@ -84,7 +84,7 @@ class Column extends BaseComponent {
       .classed('highlight', (d, i) => (row === i))
   }
 
-  applyZoom ({scale, translate, extent}) {
+  applyZoom ({ scale, translate, extent }) {
     const rowsInZoom = _.range(extent[0][1], extent[1][1])
     const inFocusExtent = rowsInZoom.length
     const numberCellsAboveOutOfFocus = extent[0][1]
@@ -101,7 +101,7 @@ class Column extends BaseComponent {
 
   resetZoom () {
     const rowHeight = this.bounds.height / this.rowCount
-    this.labelObjects.map((labelObject, i) => labelObject.resetVerticalZoom({yOffset: rowHeight * i}))
+    this.labelObjects.map((labelObject, i) => labelObject.resetVerticalZoom({ yOffset: rowHeight * i }))
   }
 }
 

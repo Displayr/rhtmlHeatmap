@@ -1,13 +1,13 @@
 import _ from 'lodash'
 import BaseComponent from '../baseComponent'
-import {splitIntoLinesByCharacter, getLabelDimensionsUsingSvgApproximation} from '../../labelUtils'
+import { splitIntoLinesByCharacter, getLabelDimensionsUsingSvgApproximation } from '../../labelUtils'
 
 const DEBUG = false
 
 class DiagonalUpWrappedLabel extends BaseComponent {
-  constructor ({parentContainer, text, fontSize, fontFamily, fontColor, maxHeight, classNames}) {
+  constructor ({ parentContainer, text, fontSize, fontFamily, fontColor, maxHeight, classNames }) {
     super()
-    _.assign(this, {parentContainer, text, fontSize, fontFamily, fontColor, maxHeight, classNames})
+    _.assign(this, { parentContainer, text, fontSize, fontFamily, fontColor, maxHeight, classNames })
 
     this.maxLines = 1
     this.extraSpaceToRight = 0
@@ -93,7 +93,7 @@ class DiagonalUpWrappedLabel extends BaseComponent {
       .classed('in-zoom', inZoom)
   }
 
-  resetHorizontalZoom ({xOffset}) {
+  resetHorizontalZoom ({ xOffset }) {
     this.container
       .attr('transform', `translate(${xOffset},${this.bounds.top})`)
 

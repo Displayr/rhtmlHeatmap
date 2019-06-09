@@ -22,7 +22,7 @@ class Heatmap {
     dendrogramColumns,
     options,
     width,
-    height}) {
+    height }) {
     const el = d3.select(selector)
     el.classed('rhtmlHeatmap', true)
     el.attr(`rhtmlHeatmap-status`, 'loading')
@@ -123,7 +123,7 @@ class Heatmap {
 
   buildLayout () {
     this.layout = new Layout(this.options.width, this.options.height, this.options.padding)
-    const {options, inner} = this
+    const { options, inner } = this
     if (this.dendrogramData.columns) { options.xaxis_location = 'bottom' }
 
     this.components[CellNames.COLORMAP] = new Colormap({
