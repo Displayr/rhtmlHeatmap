@@ -4,9 +4,9 @@ import BaseComponent from './baseComponent'
 import HorizontalWrappedLabel from './parts/horizontalWrappedLabel'
 
 class YAxis extends BaseComponent {
-  constructor ({parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, controller}) {
+  constructor ({ parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, controller }) {
     super()
-    _.assign(this, {parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, controller})
+    _.assign(this, { parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, controller })
 
     // to deal with superflous zoom calls at beginning of render
     this.amIZoomed = false
@@ -73,13 +73,13 @@ class YAxis extends BaseComponent {
     }
     this.amIZoomed = zoom
     if (this.amIZoomed) {
-      return this.applyZoom({scale, translate, extent})
+      return this.applyZoom({ scale, translate, extent })
     } else {
       return this.resetZoom()
     }
   }
 
-  applyZoom ({scale, translate, extent}) {
+  applyZoom ({ scale, translate, extent }) {
     const rowsInZoom = _.range(extent[0][1], extent[1][1])
     const inFocusExtent = rowsInZoom.length
     const numberCellsAboveOutOfFocus = extent[0][1]
@@ -96,7 +96,7 @@ class YAxis extends BaseComponent {
 
   resetZoom () {
     const rowHeight = this.bounds.height / this.labels.length
-    this.labelObjects.map((labelObject, i) => labelObject.resetVerticalZoom({yOffset: rowHeight * i}))
+    this.labelObjects.map((labelObject, i) => labelObject.resetVerticalZoom({ yOffset: rowHeight * i }))
   }
 }
 

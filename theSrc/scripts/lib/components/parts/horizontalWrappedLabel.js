@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import BaseComponent from '../baseComponent'
-import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByWord} from '../../labelUtils'
+import { getLabelDimensionsUsingSvgApproximation, splitIntoLinesByWord } from '../../labelUtils'
 
 const DEBUG = false
 
@@ -192,7 +192,7 @@ class HorizontalWrappedLabel extends BaseComponent {
     }
   }
 
-  resetHorizontalZoom ({xOffset}) {
+  resetHorizontalZoom ({ xOffset }) {
     this.container
       .attr('transform', `translate(${xOffset},${this.bounds.top})`)
 
@@ -262,7 +262,7 @@ class HorizontalWrappedLabel extends BaseComponent {
     }
   }
 
-  resetVerticalZoom ({yOffset}) {
+  resetVerticalZoom ({ yOffset }) {
     const extraVerticalSpace = this.bounds.height -
       (this.fontSize * this.lines.length + this.innerLinePadding * (this.lines.length - 1))
 

@@ -1,12 +1,12 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
-import {CellNames} from '../heatmapcore/layout'
+import { CellNames } from '../heatmapcore/layout'
 
 // TODO preferred dimensions must account for maxes
 class YTitle extends BaseComponent {
-  constructor ({parentContainer, text, type, fontSize, fontFamily, fontColor, bold, maxWidth, maxHeight}) {
+  constructor ({ parentContainer, text, type, fontSize, fontFamily, fontColor, bold, maxWidth, maxHeight }) {
     super()
-    _.assign(this, {parentContainer, text, type, fontSize, fontFamily, fontColor, bold, maxWidth, maxHeight})
+    _.assign(this, { parentContainer, text, type, fontSize, fontFamily, fontColor, bold, maxWidth, maxHeight })
   }
 
   computePreferredDimensions () {
@@ -31,7 +31,7 @@ class YTitle extends BaseComponent {
     // note inversion of width / height here
     return {
       width: bbox.height + this.extraLeftPadding,
-      height: bbox.width}
+      height: bbox.width }
   }
 
   draw (bounds) {

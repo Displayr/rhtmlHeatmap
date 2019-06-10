@@ -1,12 +1,12 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
-import {getLabelDimensionsUsingSvgApproximation, splitIntoLinesByWord} from '../labelUtils'
+import { getLabelDimensionsUsingSvgApproximation, splitIntoLinesByWord } from '../labelUtils'
 
 // TODO preferred dimensions must account for maxes
 class Title extends BaseComponent {
-  constructor ({parentContainer, text, fontSize, fontFamily, fontColor, bold = false, maxWidth, maxLines, innerPadding}) {
+  constructor ({ parentContainer, text, fontSize, fontFamily, fontColor, bold = false, maxWidth, maxLines, innerPadding }) {
     super()
-    _.assign(this, {parentContainer, text, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines, innerPadding})
+    _.assign(this, { parentContainer, text, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines, innerPadding })
   }
 
   computePreferredDimensions (estimatedWidth) {

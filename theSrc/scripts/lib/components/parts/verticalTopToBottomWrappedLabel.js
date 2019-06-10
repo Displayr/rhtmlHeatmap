@@ -1,13 +1,13 @@
 import _ from 'lodash'
 import BaseComponent from '../baseComponent'
-import {splitIntoLinesByCharacter, getLabelDimensionsUsingSvgApproximation} from '../../labelUtils'
+import { splitIntoLinesByCharacter, getLabelDimensionsUsingSvgApproximation } from '../../labelUtils'
 
 const DEBUG = false
 
 class VerticalBottomToTopWrappedLabel extends BaseComponent {
-  constructor ({verticalAlignment, parentContainer, text, fontSize, fontFamily, fontColor, maxWidth, maxHeight, classNames}) {
+  constructor ({ verticalAlignment, parentContainer, text, fontSize, fontFamily, fontColor, maxWidth, maxHeight, classNames }) {
     super()
-    _.assign(this, {verticalAlignment, parentContainer, text, fontSize, fontFamily, fontColor, maxWidth, maxHeight, classNames})
+    _.assign(this, { verticalAlignment, parentContainer, text, fontSize, fontFamily, fontColor, maxWidth, maxHeight, classNames })
 
     this.maxLines = 1
   }
@@ -83,7 +83,7 @@ class VerticalBottomToTopWrappedLabel extends BaseComponent {
       .classed('in-zoom', inZoom)
   }
 
-  resetHorizontalZoom ({xOffset}) {
+  resetHorizontalZoom ({ xOffset }) {
     this.container
       .attr('transform', `translate(${xOffset},${this.bounds.top})`)
 

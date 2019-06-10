@@ -9,9 +9,9 @@ const horizontalAlignmentMap = {
 }
 
 class ColumnGroup extends BaseComponent {
-  constructor ({parentContainer, classNames, labelMatrix = [[]], alignments = [], fontSize, fontColor, fontFamily, padding = 0, maxSingleColumnWidth, maxHeight}) {
+  constructor ({ parentContainer, classNames, labelMatrix = [[]], alignments = [], fontSize, fontColor, fontFamily, padding = 0, maxSingleColumnWidth, maxHeight }) {
     super()
-    _.assign(this, {parentContainer, classNames, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth, maxHeight})
+    _.assign(this, { parentContainer, classNames, labelMatrix, alignments, fontSize, fontColor, fontFamily, padding, maxSingleColumnWidth, maxHeight })
 
     // to deal with superflous zoom calls at beginning of render
     this.amIZoomed = false
@@ -80,14 +80,14 @@ class ColumnGroup extends BaseComponent {
     }
     this.amIZoomed = zoom
     if (this.amIZoomed) {
-      return this.applyZoom({scale, translate, extent})
+      return this.applyZoom({ scale, translate, extent })
     } else {
       return this.resetZoom()
     }
   }
 
-  applyZoom ({scale, translate, extent}) {
-    this.columns.forEach(column => column.applyZoom({scale, translate, extent}))
+  applyZoom ({ scale, translate, extent }) {
+    this.columns.forEach(column => column.applyZoom({ scale, translate, extent }))
   }
 
   resetZoom () {

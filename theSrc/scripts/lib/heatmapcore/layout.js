@@ -102,19 +102,19 @@ class Layout {
 
   isRightmost (cell) {
     const columnName = this._findColumnFromCell(cell)
-    const enabledColumnsToRight = this._getEnabledColumnsAfterColumn(columnName, {includeMargins: false})
+    const enabledColumnsToRight = this._getEnabledColumnsAfterColumn(columnName, { includeMargins: false })
     return enabledColumnsToRight.length === 0
   }
 
   getSpaceToTheRightOf (cell) {
     const columnName = this._findColumnFromCell(cell)
-    const enabledColumnsToRight = this._getEnabledColumnsAfterColumn(columnName, {includeMargins: false})
+    const enabledColumnsToRight = this._getEnabledColumnsAfterColumn(columnName, { includeMargins: false })
     return _(enabledColumnsToRight).map(this._getColumnWidth.bind(this)).sum()
   }
 
   setFillCell (cell) {
     this._throwIfNotValidCell(cell)
-    const existingFillCell = _.find(this.cellInfo, {fill: true}, null)
+    const existingFillCell = _.find(this.cellInfo, { fill: true }, null)
     if (existingFillCell) { throw new Error('Can only have one fill cell') }
     this.cellInfo[cell].fill = true
   }
@@ -156,18 +156,18 @@ class Layout {
     if (width === 0) { console.warn(`returning zero width for getCellBounds(${cellName})`) }
     if (height === 0) { console.warn(`returning zero height for getCellBounds(${cellName})`) }
 
-    layoutLogger.debug(`layout.getCellBounds(${cellName}) ->`, {width, height, top, left})
-    return {width, height, top, left, canvasWidth: this.canvasWidth, canvasHeight: this.canvasHeight}
+    layoutLogger.debug(`layout.getCellBounds(${cellName}) ->`, { width, height, top, left })
+    return { width, height, top, left, canvasWidth: this.canvasWidth, canvasHeight: this.canvasHeight }
   }
 
   _getRow (rowName) {
-    const match = _.find(LayoutRows, {name: rowName})
+    const match = _.find(LayoutRows, { name: rowName })
     if (!match) { throw new Error(`Invalid row: ${rowName}`) }
     return match
   }
 
   _getColumn (columnName) {
-    const match = _.find(LayoutColumns, {name: columnName})
+    const match = _.find(LayoutColumns, { name: columnName })
     if (!match) { throw new Error(`Invalid column: ${columnName}`) }
     return match
   }
@@ -240,40 +240,40 @@ class Layout {
     throw new Error(`Invalid cell name ${cellName} : not in any columns`)
   }
 
-  _getEnabledRowsBeforeRow (rowName, {includeMargins = true} = {}) {
+  _getEnabledRowsBeforeRow (rowName, { includeMargins = true } = {}) {
     let foundRowName = false
     return _(LayoutRows)
-      .filter(({name}) => {
+      .filter(({ name }) => {
         if (name === rowName) { foundRowName = true }
         return !foundRowName
       })
-      .filter(({type}) => includeMargins || type !== 'margin')
+      .filter(({ type }) => includeMargins || type !== 'margin')
       .map('name')
       .filter(rowName => this._rowEnabled(rowName))
       .value()
   }
 
-  _getEnabledColumnsBeforeColumn (columnName, {includeMargins = true} = {}) {
+  _getEnabledColumnsBeforeColumn (columnName, { includeMargins = true } = {}) {
     let foundColumnName = false
     return _(LayoutColumns)
-      .filter(({name}) => {
+      .filter(({ name }) => {
         if (name === columnName) { foundColumnName = true }
         return !foundColumnName
       })
-      .filter(({type}) => includeMargins || type !== 'margin')
+      .filter(({ type }) => includeMargins || type !== 'margin')
       .map('name')
       .filter(columnName => this._columnEnabled(columnName))
       .value()
   }
 
-  _getEnabledColumnsAfterColumn (columnName, {includeMargins = true} = {}) {
+  _getEnabledColumnsAfterColumn (columnName, { includeMargins = true } = {}) {
     let foundColumnName = false
     return _(LayoutColumns)
-      .filter(({name}) => {
+      .filter(({ name }) => {
         if (name === columnName) { foundColumnName = true }
         return foundColumnName && name !== columnName
       })
-      .filter(({type}) => includeMargins || type !== 'margin')
+      .filter(({ type }) => includeMargins || type !== 'margin')
       .map('name')
       .filter(columnName => this._columnEnabled(columnName))
       .value()

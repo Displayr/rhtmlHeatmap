@@ -4,13 +4,13 @@ import d3 from 'd3'
 import _ from 'lodash'
 
 class Dendrogram extends BaseComponent {
-  constructor ({parentContainer, data, width, height, type, linkColor, controller, animDuration}) {
+  constructor ({ parentContainer, data, width, height, type, linkColor, controller, animDuration }) {
     super()
-    _.assign(this, {parentContainer, data, width, height, type, linkColor, controller, animDuration})
+    _.assign(this, { parentContainer, data, width, height, type, linkColor, controller, animDuration })
   }
 
   computePreferredDimensions () {
-    return {width: this.width || 0, height: this.height || 0}
+    return { width: this.width || 0, height: this.height || 0 }
   }
 
   draw (bounds) {
@@ -37,7 +37,7 @@ class Dendrogram extends BaseComponent {
       .domain([0, height])
       .range([0, height])
 
-    this.scales = {x, y}
+    this.scales = { x, y }
 
     const cluster = d3.layout.cluster()
       .separation(function (a, b) { return 1 })
@@ -66,8 +66,8 @@ class Dendrogram extends BaseComponent {
     // the parts we want.
     const links1 = links.map(function (link, i) {
       return {
-        source: {x: link.source.x, y: link.source.height},
-        target: {x: link.target.x, y: link.target.height},
+        source: { x: link.source.x, y: link.source.height },
+        target: { x: link.target.x, y: link.target.height },
         edgePar: link.target.edgePar
       }
     })
