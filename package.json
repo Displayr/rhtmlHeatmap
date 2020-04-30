@@ -10,7 +10,7 @@
   "devDependencies": {
     "gulp": "^4.0.2",
     "husky": "0.13.3",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "lodash": "^4.17.4",
     "rhtmlBuildUtils": "github:Displayr/rhtmlBuildUtils#4.0.0"
   },
