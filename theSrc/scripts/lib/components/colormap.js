@@ -205,48 +205,47 @@ class Colormap extends BaseComponent {
 
     this.cellSelection.call(this.tip)
 
+    const showToolTip = this.showToolTip.bind(this)
     this.brushSelection.select('rect.background')
-      .on('mouseenter', () => { this.showToolTip() })
-      .on('mousemove', () => { this.showToolTip() })
+      .on('mouseenter', function () {
+        const [mouseX, mouseY] = d3.mouse(this)
+        showToolTip(mouseX, mouseY)
+      })
+      .on('mousemove', function () {
+        const [mouseX, mouseY] = d3.mouse(this)
+        showToolTip(mouseX, mouseY)
+      })
       .on('mouseleave', () => { this.tip.hide() })
 
     // temp code, move to BDD
     // showLine(this.container, [{ x: 27.54156494140625 / 2, y: 0 }, { x: 27.54156494140625 / 2, y: this.bounds.height }], 'black', 'foo')
   }
 
-  showToolTip () {
-    var e = d3.event
-    var offsetX = d3.event.offsetX
-    var offsetY = d3.event.offsetY
-    if (typeof (offsetX) === 'undefined') {
-      // Firefox 38 and earlier
-      var target = e.target || e.srcElement
-      var rect = target.getBoundingClientRect()
-      offsetX = e.clientX - rect.left
-      offsetY = e.clientY - rect.top
-    }
+  showToolTip (mouseX, mouseY) {
+    const col = Math.floor(this.scales.x.invert(mouseX))
+    const row = Math.floor(this.scales.y.invert(mouseY))
+    const cell = _.get(this, `matrix.merged[${row * this.counts.column + col}]`, {})
 
-    const col = Math.floor(this.scales.x.invert(offsetX - this.bounds.left))
-    const row = Math.floor(this.scales.y.invert(offsetY - this.bounds.top))
-    const label = this.matrix.merged[row * this.counts.column + col].label
+    const label = cell.label
 
-    if (this.matrix.merged[row * this.counts.column + col].hide) {
+    if (cell.hide) {
       this.tip.hide()
       return
     }
-    var this_tip = this.tip.show({ col, row, label }).style({
+
+    const this_tip = this.tip.show({ col, row, label }).style({
       top: d3.event.clientY + 10 + 'px',
       left: d3.event.clientX + 10 + 'px',
       opacity: 0.9
     })
 
-    var tipHeight = parseFloat(this_tip.style('height'))
-    var tipWidth = parseFloat(this_tip.style('width'))
-    var tipLeft = parseFloat(this_tip.style('left'))
-    var tipTop = parseFloat(this_tip.style('top'))
+    const tipHeight = parseFloat(this_tip.style('height'))
+    const tipWidth = parseFloat(this_tip.style('width'))
+    const tipLeft = parseFloat(this_tip.style('left'))
+    const tipTop = parseFloat(this_tip.style('top'))
 
-    var mouseTop = d3.event.clientY
-    var mouseLeft = d3.event.clientX
+    const mouseTop = d3.event.clientY
+    const mouseLeft = d3.event.clientX
 
     if (tipLeft + tipWidth > this.bounds.width) {
       // right edge out of bound
