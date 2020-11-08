@@ -1,0 +1,36 @@
+type: multi_widget_single_page
+width: 400
+height: 400
+rowSize: 4
+widgets:
+#  Left and Right Column + Y Axis Interactions
+  - title: Left and Right Columns + Top X Axis. Left Y Axis
+    config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_left|config.yaxis_title
+
+  - title: Left and Right Columns + Top X Axis. Left Y Axis No Title
+    config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_left
+
+  - title: Left and Right Columns + Top X Axis. Right Y Axis
+    config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_right|config.yaxis_title
+
+  - title: Left and Right Columns + Top X Axis. Right Y Axis No Title
+    config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_right
+
+  - title: Left and Right Columns + Bottom X Axis. Left Y Axis
+    config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_left|config.yaxis_title
+
+  - title: Left and Right Columns + Bottom X Axis. Left Y Axis No Title
+    config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_left
+
+  - title: Left and Right Columns + Bottom X Axis. Right Y Axis
+    config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_right|config.yaxis_title
+
+  - title: Left and Right Columns + Bottom X Axis. Right Y Axis No Title
+    config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_right
+
+#  Top X Axis Title + Left and Right Column SubTitle
+  - title: Left and Right Columns + No Y Axis Title. Chart has subtitle
+    config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.subtitle_enabled|config.footer_none|config.xaxis_bottom|config.yaxis_left|config.yaxis_title
+
+  - title: Left and Right Columns + Y Axis Title. Chart has subtitle
+    config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.subtitle_enabled|config.footer_none|config.xaxis_top|config.xaxis_title|config.yaxis_left|config.yaxis_title

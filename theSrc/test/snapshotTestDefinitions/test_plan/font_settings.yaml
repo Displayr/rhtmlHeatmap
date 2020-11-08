@@ -1,0 +1,6 @@
+type: multi_widget_single_page
+width: 1000
+height: 1000
+rowSize: 1
+widgets:
+  - config: data.fontSettings

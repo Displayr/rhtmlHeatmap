@@ -1,0 +1,11 @@
+type: multi_widget_single_page
+width: 800
+height: 600
+rowSize: 2
+widgets:
+
+  - title: base case
+    config: 'data.minimal_3x3.data|config.xaxis_font_size_12|config.column_label_orientation_horizontal|data.minimal_3x3.left_columns_two_left_align|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.long_labels'
+
+  - title: max proportions set to 0.2
+    config: 'data.minimal_3x3.data|config.xaxis_font_size_12|config.column_label_orientation_horizontal|data.minimal_3x3.left_columns_two_left_align|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.long_labels|{ "options": { "column_label_max_height": 0.2, "row_label_max_width": 0.2, "heatmap_max_height": 0.2, "heatmap_max_width": 0.2 } }'

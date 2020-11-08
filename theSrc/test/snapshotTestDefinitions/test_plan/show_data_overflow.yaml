@@ -1,0 +1,5 @@
+type: multi_widget_single_page
+width: 1000
+height: 1000
+widgets:
+  - config: data.minimal_3x3.data_standalone|data.minimal_3x3.long_cellnotes

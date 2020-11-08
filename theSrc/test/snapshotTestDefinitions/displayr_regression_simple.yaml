@@ -1,0 +1,11 @@
+version: 1
+groupname: displayr_regressions
+data_directory: data/displayr_regression
+width: 1000
+height: 1000
+type: for_each_data_in_directory
+comments: []
+# excluded_files are covered in displayr_regression_mods.yaml as they require mods such as config variations or specific dimensions
+excluded_files:
+  - single_column
+  - single_row

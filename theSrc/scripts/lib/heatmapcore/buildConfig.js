@@ -5,6 +5,7 @@ const defaultConfig = {
   anim_duration: 500,
   axis_padding: 6,
   brush_color: '#0000FF',
+  cell_font_family: 'sans-serif',
   cell_font_size: 15,
   column_label_max_height: 0.25,
   column_label_orientation: 'diagonal', // ['horizontal', 'vertical', 'diagonal'],

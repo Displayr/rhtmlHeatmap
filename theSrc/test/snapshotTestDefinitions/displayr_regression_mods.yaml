@@ -1,0 +1,46 @@
+type: multi_widget_multi_page
+groupname: displayr_regressions
+width: 1000
+height: 1000
+configs:
+  - title: "correlation matrix with % in legend"
+    config: data.displayr_regression.correlation_matrix|config.legend_format_percentage
+  - title: "space constrained correlation matrix"
+    config: data.displayr_regression.large_correlation_matrix
+    width: 701
+    height: 531
+
+  - title: font_size_24
+    config: data.displayr_regression.show_data_values|config.font_size_24
+    width: 750
+    height: 750
+  - title: font_size_28
+    config: data.displayr_regression.show_data_values|config.font_size_28
+    width: 750
+    height: 750
+  - title: font_size_30
+    config: data.displayr_regression.show_data_values|config.font_size_30
+    width: 750
+    height: 750
+  - title: font_size_32
+    config: data.displayr_regression.show_data_values|config.font_size_32
+    width: 750
+    height: 750
+  - title: font_size_32_constrained
+    config: data.displayr_regression.show_data_values|config.font_size_32
+    width: 545
+    height: 465
+
+  - title: single_column
+    config: data.displayr_regression.single_column
+    width: 300
+  - title: single_column_right_yaxis
+    config: data.displayr_regression.single_column|config.yaxis_right
+    width: 300
+
+  - title: single_row
+    config: data.displayr_regression.single_row|config.xaxis_font_size_12
+    height: 300
+  - title: single_row_bottom_xaxis
+    config: data.displayr_regression.single_row|config.xaxis_font_size_12|config.xaxis_bottom
+    height: 300

@@ -1,0 +1,23 @@
+type: multi_widget_single_page
+title: 'Each row has different padding: [5,10,15,20]. Left column left yaxis, right column right yaxis'
+width: 600
+height: 600
+rowSize: 2
+widgets:
+  - title: 'cell_padding_5_yaxis_left'
+    config: data.minimal_3x3.data|config.xaxis_top|config.xaxis_title|config.yaxis_left|config.yaxis_title|config.title_enabled|config.subtitle_enabled|config.footer_enabled|data.minimal_3x3.legend|data.minimal_3x3.left_columns_two_center_align_uniform_widths|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.cell_padding_5
+  - title: 'cell_padding_5_yaxis_right'
+    config: data.minimal_3x3.data|config.xaxis_top|config.xaxis_title|config.yaxis_right|config.yaxis_title|config.title_enabled|config.subtitle_enabled|config.footer_enabled|data.minimal_3x3.legend|data.minimal_3x3.left_columns_two_center_align_uniform_widths|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.cell_padding_5
+  - title: 'cell_padding_10_yaxis_left'
+    config: data.minimal_3x3.data|config.xaxis_top|config.xaxis_title|config.yaxis_left|config.yaxis_title|config.title_enabled|config.subtitle_enabled|config.footer_enabled|data.minimal_3x3.legend|data.minimal_3x3.left_columns_two_center_align_uniform_widths|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.cell_padding_10
+  - title: 'cell_padding_10_yaxis_right'
+    config: data.minimal_3x3.data|config.xaxis_top|config.xaxis_title|config.yaxis_right|config.yaxis_title|config.title_enabled|config.subtitle_enabled|config.footer_enabled|data.minimal_3x3.legend|data.minimal_3x3.left_columns_two_center_align_uniform_widths|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.cell_padding_10
+  - title: 'cell_padding_15_yaxis_left'
+    config: data.minimal_3x3.data|config.xaxis_top|config.xaxis_title|config.yaxis_left|config.yaxis_title|config.title_enabled|config.subtitle_enabled|config.footer_enabled|data.minimal_3x3.legend|data.minimal_3x3.left_columns_two_center_align_uniform_widths|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.cell_padding_20
+  - title: 'cell_padding_15_yaxis_right'
+    config: data.minimal_3x3.data|config.xaxis_top|config.xaxis_title|config.yaxis_right|config.yaxis_title|config.title_enabled|config.subtitle_enabled|config.footer_enabled|data.minimal_3x3.legend|data.minimal_3x3.left_columns_two_center_align_uniform_widths|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.cell_padding_20
+  - title: 'cell_padding_20_yaxis_left'
+    config: data.minimal_3x3.data|config.xaxis_top|config.xaxis_title|config.yaxis_left|config.yaxis_title|config.title_enabled|config.subtitle_enabled|config.footer_enabled|data.minimal_3x3.legend|data.minimal_3x3.left_columns_two_center_align_uniform_widths|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.cell_padding_30
+  - title: 'cell_padding_20_yaxis_right'
+    config: data.minimal_3x3.data|config.xaxis_top|config.xaxis_title|config.yaxis_right|config.yaxis_title|config.title_enabled|config.subtitle_enabled|config.footer_enabled|data.minimal_3x3.legend|data.minimal_3x3.left_columns_two_center_align_uniform_widths|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.cell_padding_30
+

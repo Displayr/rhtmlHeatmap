@@ -1,0 +1,10 @@
+type: multi_widget_single_page
+width: 1000
+height: 1000
+rowSize: 1
+widgets:
+  - title: Every element including dendogram
+    config: data.minimal_3x3.data|config.xaxis_top|config.xaxis_title|config.yaxis_left|config.yaxis_title|config.title_enabled|config.subtitle_enabled|config.footer_enabled|data.minimal_3x3.legend|data.minimal_3x3.left_columns_two_center_align|data.minimal_3x3.right_columns_two_center_align|data.minimal_3x3.dendrograms
+
+  - title: Every element no dendogram
+    config: data.minimal_3x3.data|config.xaxis_top|config.xaxis_title|config.yaxis_left|config.yaxis_title|config.title_enabled|config.subtitle_enabled|config.footer_enabled|data.minimal_3x3.legend|data.minimal_3x3.left_columns_two_center_align|data.minimal_3x3.right_columns_two_center_align
