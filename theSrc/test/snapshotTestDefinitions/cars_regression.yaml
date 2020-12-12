@@ -11,7 +11,7 @@ configs:
     config: data.cars_regression.data_no_cellnote|config.shownote_in_cell|config.left_columns_none|config.right_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.yaxis_left
 
   - title: no_cell_note_yaxis_right_xaxis_bottom
-    config: data.cars_no_cellnote|config.shownote_in_cell|config.left_columns_none|config.right_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_bottom|config.yaxis_right
+    config: data.cars_regression.data_no_cellnote|config.shownote_in_cell|config.left_columns_none|config.right_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_bottom|config.yaxis_right
 
   - title: three_both_columns_center_align_no_axis
     config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.left_columns_three_center_align|data.cars_regression.right_columns_three_center_align|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.xaxis_title|config.yaxis_none

@@ -3,9 +3,9 @@ groupname: displayr_regressions
 width: 1000
 height: 1000
 configs:
-  - title: "correlation matrix with % in legend"
+  - title: "correlation_matrix_with_percentage_in_legend"
     config: data.displayr_regression.correlation_matrix|config.legend_format_percentage
-  - title: "space constrained correlation matrix"
+  - title: "space_constrained_correlation_matrix"
     config: data.displayr_regression.large_correlation_matrix
     width: 701
     height: 531

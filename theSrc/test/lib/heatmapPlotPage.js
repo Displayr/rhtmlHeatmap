@@ -12,9 +12,9 @@ class HeatmapPlotPage {
 
   legendBarsSelector () { return `.legendBars` }
 
-  async clickCell (row, col) { return this.page.click(this.cellSelector(row,col)) }
+  async clickCell (row, col) { return this.page.click(this.cellSelector(row, col)) }
 
-  async hoverCell (row, col) { return this.page.hover(this.cellSelector(row,col)) }
+  async hoverCell (row, col) { return this.page.hover(this.cellSelector(row, col)) }
 
   async clickRowName (row) { return this.page.click(this.rowNameSelector(row)) }
 
@@ -22,13 +22,13 @@ class HeatmapPlotPage {
 
   async clickLegendBar () { return this.page.click(this.legendBarsSelector()) }
 
-  async zoom (sourceCellRow,sourceCellCol,targetCellRow,targetCellCol) {
+  async zoom (sourceCellRow, sourceCellCol, targetCellRow, targetCellCol) {
     const getCoords = async (selector) => {
-      const element = await this.page.$(selector);
+      const element = await this.page.$(selector)
       const rect = await this.page.evaluate(element => {
-        const {top, left, bottom, right} = element.getBoundingClientRect()
-        return {top, left, bottom, right}
-      }, element);
+        const { top, left, bottom, right } = element.getBoundingClientRect()
+        return { top, left, bottom, right }
+      }, element)
       return rect
     }
 
@@ -36,7 +36,7 @@ class HeatmapPlotPage {
 
     await this.hoverCell(sourceCellRow, sourceCellCol)
     await this.page.mouse.down()
-    await this.page.mouse.move(targetCoords.left + 25, targetCoords.top + 25, {steps: 50})
+    await this.page.mouse.move(targetCoords.left + 25, targetCoords.top + 25, { steps: 50 })
     await this.page.mouse.up()
   }
 }

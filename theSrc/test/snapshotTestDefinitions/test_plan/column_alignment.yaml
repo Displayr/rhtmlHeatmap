@@ -1,5 +1,5 @@
 type: multi_widget_single_page
-title: shows column alignment applied to both columns and y axis labels
+title: shows column alignment applied to columns
 width: 800
 height: 400
 rowSize: 1

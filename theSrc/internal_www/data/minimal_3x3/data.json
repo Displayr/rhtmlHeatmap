@@ -19,12 +19,12 @@
     ],
     "rows": [
       "Row-1",
-      "Row-2",
+      "R2",
       "Row-3"
     ],
     "cols": [
       "Col-1",
-      "Col-2",
+      "C2",
       "Col-3"
     ],
     "cells_to_hide": [

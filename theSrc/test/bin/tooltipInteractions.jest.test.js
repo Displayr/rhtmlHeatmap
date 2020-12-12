@@ -31,9 +31,9 @@ describe('tooltip_interaction', () => {
       height: 650,
     })
 
-    await heatmapPlot.hoverCell(0,0)
+    await heatmapPlot.hoverCell(0, 0)
     await page.waitFor(2000)
-    await testSnapshots({ page, testName: "tooltip_interaction_hover_on_cell" })
+    await testSnapshots({ page, testName: 'tooltip_interaction_hover_on_cell' })
 
     await page.close()
   })
@@ -46,9 +46,9 @@ describe('tooltip_interaction', () => {
       height: 650,
     })
 
-    await heatmapPlot.hoverCell(0,0)
+    await heatmapPlot.hoverCell(0, 0)
     await page.waitFor(2000)
-    await testSnapshots({ page, testName: "tooltip_interaction_custom_font" })
+    await testSnapshots({ page, testName: 'tooltip_interaction_custom_font' })
 
     await page.close()
   })
@@ -61,11 +61,10 @@ describe('tooltip_interaction', () => {
       height: 1000,
     })
 
-    await heatmapPlot.hoverCell(5,0)
+    await heatmapPlot.hoverCell(5, 0)
     await page.waitFor(2000)
-    await testSnapshots({ page, testName: "tooltip_interaction_extra_info" })
+    await testSnapshots({ page, testName: 'tooltip_interaction_extra_info' })
 
     await page.close()
   })
-
 })
