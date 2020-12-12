@@ -73,7 +73,7 @@ const defaultConfig = {
   yaxis_location: null,
   yaxis_offset: 20,
   yaxis_title: null,
-  yaxis_title_font_size: 15
+  yaxis_title_font_size: 15,
 }
 
 function buildConfig (userConfig, width, height) {

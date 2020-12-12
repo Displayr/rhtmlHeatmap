@@ -68,7 +68,7 @@ class Dendrogram extends BaseComponent {
       return {
         source: { x: link.source.x, y: link.source.height },
         target: { x: link.target.x, y: link.target.height },
-        edgePar: link.target.edgePar
+        edgePar: link.target.edgePar,
       }
     })
 

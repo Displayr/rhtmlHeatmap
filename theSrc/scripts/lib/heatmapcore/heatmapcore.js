@@ -38,7 +38,7 @@ class Heatmap {
     this.matrix = this.normalizeMatrix(matrix)
     this.dendrogramData = {
       rows: dendrogramRows,
-      columns: dendrogramColumns
+      columns: dendrogramColumns,
     }
 
     // rename to this.container
@@ -59,7 +59,7 @@ class Heatmap {
       CellNames.TITLE,
       CellNames.SUBTITLE,
       CellNames.FOOTER,
-      CellNames.RIGHT_MARGIN // NB do not draw the margin - it just holds space
+      CellNames.RIGHT_MARGIN, // NB do not draw the margin - it just holds space
     ]
     const simpleCells = _.omit(CellNames, cellsRequiringSpecialDrawInstructions)
     _(simpleCells).each(cellName => {
@@ -140,7 +140,7 @@ class Heatmap {
       animDuration: options.anim_duration,
       showGrid: options.show_grid,
       shownoteInCell: options.shownote_in_cell,
-      controller: this.controller
+      controller: this.controller,
     })
     this.layout.enable(CellNames.COLORMAP)
     this.layout.setFillCell(CellNames.COLORMAP)
@@ -156,7 +156,7 @@ class Heatmap {
         fontFamily: options.left_columns_font_family,
         padding: options.axis_padding,
         maxSingleColumnWidth: parseFloat(options.row_label_max_width) * options.width,
-        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height
+        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height,
       })
 
       const dimensions = this.components[CellNames.LEFT_COLUMN].computePreferredDimensions()
@@ -180,7 +180,7 @@ class Heatmap {
         maxHeight: parseFloat(options.column_label_max_height) * this.options.height,
         orientation: options.column_label_orientation,
         verticalPlacement: options.xaxis_location,
-        horizontalPlacement: 'left'
+        horizontalPlacement: 'left',
       })
 
       const dimensions = this.components[columnSubtitleCellName].computePreferredDimensions(this.components[CellNames.LEFT_COLUMN].getColumnWidths())
@@ -201,7 +201,7 @@ class Heatmap {
         fontColor: options.left_columns_title_font_color,
         maxWidth: availableWidth,
         maxLines: 3,
-        bold: options.left_columns_title_bold
+        bold: options.left_columns_title_bold,
       })
 
       const dimensions = this.components[CellNames.LEFT_COLUMN_TITLE].computePreferredDimensions()
@@ -220,7 +220,7 @@ class Heatmap {
         fontFamily: options.right_columns_font_family,
         padding: options.axis_padding,
         maxSingleColumnWidth: parseFloat(options.row_label_max_width) * this.options.width,
-        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height
+        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height,
       })
 
       const dimensions = this.components[CellNames.RIGHT_COLUMN].computePreferredDimensions(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
@@ -244,7 +244,7 @@ class Heatmap {
         maxHeight: parseFloat(options.column_label_max_height) * this.options.height,
         orientation: options.column_label_orientation,
         verticalPlacement: options.xaxis_location,
-        horizontalPlacement: 'right'
+        horizontalPlacement: 'right',
       })
 
       this.components[columnSubtitleCellName].setColumnWidths(this.components[CellNames.RIGHT_COLUMN].getColumnWidths())
@@ -266,7 +266,7 @@ class Heatmap {
         fontColor: options.right_columns_title_font_color,
         maxWidth: availableWidth,
         maxLines: 3,
-        bold: options.right_columns_title_bold
+        bold: options.right_columns_title_bold,
       })
 
       const dimensions = this.components[CellNames.RIGHT_COLUMN_TITLE].computePreferredDimensions()
@@ -281,7 +281,7 @@ class Heatmap {
         type: CellNames.TOP_DENDROGRAM,
         height: options.xclust_height || options.height * 0.12,
         linkColor: this.options.link_color,
-        animDuration: this.options.anim_duration
+        animDuration: this.options.anim_duration,
       })
 
       const dimensions = this.components[CellNames.TOP_DENDROGRAM].computePreferredDimensions()
@@ -296,7 +296,7 @@ class Heatmap {
         type: CellNames.LEFT_DENDROGRAM,
         width: options.yclust_width || options.width * 0.12,
         linkColor: this.options.link_color,
-        animDuration: this.options.anim_duration
+        animDuration: this.options.anim_duration,
       })
 
       const dimensions = this.components[CellNames.LEFT_DENDROGRAM].computePreferredDimensions()
@@ -316,7 +316,7 @@ class Heatmap {
         leftSpace: options.legend_left_space,
         barWidth: options.legend_bar_width,
         xPadding: options.legend_x_padding,
-        labelFormat: options.legend_label_format
+        labelFormat: options.legend_label_format,
       })
 
       const dimensions = this.components[CellNames.COLOR_LEGEND].computePreferredDimensions()
@@ -339,33 +339,12 @@ class Heatmap {
         fontFamily: options.yaxis_font_family,
         fontColor: options.yaxis_font_color,
         maxWidth: parseFloat(options.row_label_max_width) * options.width,
-        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height
+        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height,
       })
 
       const dimensions = this.components[yaxisCellName].computePreferredDimensions()
       this.layout.enable(yaxisCellName)
       this.layout.setPreferredDimensions(yaxisCellName, dimensions)
-    }
-
-    if (!_.isEmpty(options.yaxis_title)) {
-      const yaxisTitleCellName = this.layout.enabled(CellNames.RIGHT_YAXIS)
-        ? CellNames.RIGHT_YAXIS_TITLE
-        : CellNames.LEFT_YAXIS_TITLE
-
-      this.components[yaxisTitleCellName] = new YTitle({
-        parentContainer: inner,
-        text: options.yaxis_title,
-        type: yaxisTitleCellName,
-        fontFamily: options.yaxis_title_font_family,
-        fontSize: options.yaxis_title_font_size,
-        fontColor: options.yaxis_title_font_color,
-        maxHeight: Math.min(1, parseFloat(options.heatmap_max_height)) * options.height,
-        bold: options.yaxis_title_bold
-      })
-
-      const dimensions = this.components[yaxisTitleCellName].computePreferredDimensions()
-      this.layout.enable(yaxisTitleCellName)
-      this.layout.setPreferredDimensions(yaxisTitleCellName, dimensions)
     }
 
     // NB Xaxis, title, subtitle, and footer complication: wrapping.
@@ -389,7 +368,7 @@ class Heatmap {
         fontColor: options.xaxis_title_font_color,
         maxLines: 3,
         bold: options.xaxis_title_bold,
-        innerPadding: 2 // TODO make configurable
+        innerPadding: 2, // TODO make configurable
       })
 
       const dimensions = this.components[xaxisTitleCellName].computePreferredDimensions(estimatedWidth)
@@ -423,7 +402,7 @@ class Heatmap {
         fontColor: options.xaxis_font_color,
         maxHeight: parseFloat(options.column_label_max_height) * this.options.height,
         orientation: options.column_label_orientation,
-        placement: (xaxisCellName === CellNames.BOTTOM_XAXIS) ? 'bottom' : 'top'
+        placement: (xaxisCellName === CellNames.BOTTOM_XAXIS) ? 'bottom' : 'top',
       })
 
       const dimensions = this.components[xaxisCellName].computePreferredDimensions(estimatedColormapColumnWidth)
@@ -441,7 +420,7 @@ class Heatmap {
         fontSize: options.title_font_size,
         fontFamily: options.title_font_family,
         bold: false,
-        innerPadding: 2 // TODO make configurable
+        innerPadding: 2, // TODO make configurable
       })
 
       const midpoint = estimatedLeftBound + 0.5 * estimatedWidth
@@ -462,7 +441,7 @@ class Heatmap {
         fontSize: options.subtitle_font_size,
         fontFamily: options.subtitle_font_family,
         bold: false,
-        innerPadding: 2 // TODO make configurable
+        innerPadding: 2, // TODO make configurable
       })
 
       const midpoint = estimatedLeftBound + 0.5 * estimatedWidth
@@ -483,7 +462,7 @@ class Heatmap {
         fontSize: options.footer_font_size,
         fontFamily: options.footer_font_family,
         bold: false,
-        innerPadding: 2 // TODO make configurable
+        innerPadding: 2, // TODO make configurable
       })
 
       const midpoint = estimatedLeftBound + 0.5 * estimatedWidth
@@ -492,6 +471,41 @@ class Heatmap {
       const dimensions = this.components[CellNames.FOOTER].computePreferredDimensions(2 * shorterSide)
       this.layout.enable(CellNames.FOOTER)
       this.layout.setPreferredDimensions(CellNames.FOOTER, dimensions)
+    }
+
+    if (!_.isEmpty(options.yaxis_title)) {
+      // NB Ytitle complication: wrapping.
+      // To know the required width (due to wrapping),
+      // we need to know the available height. (this is why it is done at end)
+
+      // doing this after the Xaxis, title, subtitle, and footer may invalidate some of their math, this is a tradeoff
+      // that is not yet properly addressed in this library
+      // by placing this last we are favoring yaxis title wrapping
+
+      const yaxisTitleCellName = this.layout.enabled(CellNames.RIGHT_YAXIS)
+        ? CellNames.RIGHT_YAXIS_TITLE
+        : CellNames.LEFT_YAXIS_TITLE
+
+      const estimatedHeight = _([
+        options.heatmap_max_height * options.height,
+        this.layout.getEstimatedCellBounds(yaxisTitleCellName).height,
+      ]).min()
+
+      this.components[yaxisTitleCellName] = new YTitle({
+        parentContainer: inner,
+        text: options.yaxis_title,
+        type: yaxisTitleCellName,
+        fontFamily: options.yaxis_title_font_family,
+        fontSize: options.yaxis_title_font_size,
+        fontColor: options.yaxis_title_font_color,
+        maxLines: 3,
+        maxHeight: estimatedHeight,
+        bold: options.yaxis_title_bold,
+      })
+
+      const dimensions = this.components[yaxisTitleCellName].computePreferredDimensions()
+      this.layout.enable(yaxisTitleCellName)
+      this.layout.setPreferredDimensions(yaxisTitleCellName, dimensions)
     }
 
     this.layout.allComponentsRegistered()

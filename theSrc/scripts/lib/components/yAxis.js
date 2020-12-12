@@ -2,6 +2,11 @@ import _ from 'lodash'
 import d3 from 'd3'
 import BaseComponent from './baseComponent'
 import HorizontalWrappedLabel from './parts/horizontalWrappedLabel'
+import { enums } from 'rhtmlLabelUtils'
+const {
+  verticalAlignment: { CENTER },
+  horizontalAlignment: { LEFT, RIGHT },
+} = enums
 
 class YAxis extends BaseComponent {
   constructor ({ parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, controller }) {
@@ -23,14 +28,14 @@ class YAxis extends BaseComponent {
         maxWidth: this.maxWidth,
         parentContainer: this.parentContainer,
         text: text,
-        verticalAlignment: 'center',
-        horizontalAlignment: (this.placement === 'left') ? 'right' : 'left'
+        verticalAlignment: CENTER,
+        horizontalAlignment: (this.placement === 'left') ? RIGHT : LEFT,
       })
     })
     let labelDimensions = this.labelObjects.map(labelObject => labelObject.computePreferredDimensions())
     return {
       width: _(labelDimensions).map('width').max(),
-      height: 0 // NB take what is provided
+      height: 0, // NB take what is provided
     }
   }
 
@@ -48,12 +53,12 @@ class YAxis extends BaseComponent {
           top: i * rowHeight,
           left: 0,
           height: rowHeight,
-          width: bounds.width
+          width: bounds.width,
         },
         onClick: () => {
           this.controller.yaxisClick(i)
           d3.event.stopPropagation()
-        }
+        },
       })
     })
   }
@@ -90,7 +95,7 @@ class YAxis extends BaseComponent {
     this.labelObjects.map((labelObject, i) => labelObject.applyVerticalZoom({
       yOffset: newStartingPoint + newCellHeight * i,
       newCellHeight,
-      inZoom: _.includes(rowsInZoom, i)
+      inZoom: _.includes(rowsInZoom, i),
     }))
   }
 

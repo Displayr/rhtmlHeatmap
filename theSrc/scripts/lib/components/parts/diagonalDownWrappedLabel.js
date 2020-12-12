@@ -26,14 +26,14 @@ class DiagonalDownWrappedLabel extends BaseComponent {
       maxLines: this.maxLines,
       fontSize: this.fontSize,
       fontFamily: this.fontFamily,
-      rotation: 45
+      rotation: 45,
     })
     const dimensions = getLabelDimensionsUsingSvgApproximation({
       text: lines[0],
       parentContainer: this.parentContainer,
       fontSize: this.fontSize,
       fontFamily: this.fontFamily,
-      rotation: 45
+      rotation: 45,
     })
 
     return dimensions
@@ -52,7 +52,7 @@ class DiagonalDownWrappedLabel extends BaseComponent {
       maxLines: this.maxLines,
       fontSize: this.fontSize,
       fontFamily: this.fontFamily,
-      rotation: 45
+      rotation: 45,
     })[0]
 
     this.container = parentContainer.append('g')

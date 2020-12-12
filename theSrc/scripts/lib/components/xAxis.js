@@ -7,6 +7,11 @@ import VerticalBottomToTopWrappedLabel from './parts/verticalBottomToTopWrappedL
 import VerticalTopToBottomWrappedLabel from './parts/verticalTopToBottomWrappedLabel'
 import DiagonalUpWrappedLabel from './parts/diagonalUpWrappedLabel'
 import DiagonalDownWrappedLabel from './parts/diagonalDownWrappedLabel'
+import { enums } from 'rhtmlLabelUtils'
+const {
+  verticalAlignment: { TOP, BOTTOM },
+  horizontalAlignment: { CENTER },
+} = enums
 
 class XAxis extends BaseComponent {
   constructor ({
@@ -17,7 +22,7 @@ class XAxis extends BaseComponent {
     maxHeight,
     orientation,
     parentContainer,
-    placement
+    placement,
   }) {
     super()
     _.assign(this, {
@@ -28,7 +33,7 @@ class XAxis extends BaseComponent {
       maxHeight,
       orientation,
       parentContainer,
-      placement
+      placement,
     })
 
     // to deal with superfluous zoom calls at beginning of render
@@ -61,15 +66,15 @@ class XAxis extends BaseComponent {
         maxWidth: estimatedColumnWidth,
         parentContainer: this.parentContainer,
         text: text,
-        verticalAlignment: this.placement === 'top' ? 'bottom' : 'top',
-        horizontalAlignment: 'center'
+        verticalAlignment: this.placement === 'top' ? BOTTOM : TOP,
+        horizontalAlignment: CENTER,
       })
     })
     let labelDimensions = this.labelObjects.map(labelObject => labelObject.computePreferredDimensions())
 
     const preferredDimensions = {
       width: 0, // NB xaxis width takes what is given, and does not force width on the chart
-      height: _(labelDimensions).map('height').max()
+      height: _(labelDimensions).map('height').max(),
     }
 
     // NB The intent of the conditional.rightmostMargin addition to dimensions:
@@ -88,7 +93,7 @@ class XAxis extends BaseComponent {
 
       if (requiredExtraSpaceToRight > 0) {
         preferredDimensions.conditional = {
-          rightmostMargin: requiredExtraSpaceToRight
+          rightmostMargin: requiredExtraSpaceToRight,
         }
       }
     }
@@ -116,12 +121,12 @@ class XAxis extends BaseComponent {
           top: 0,
           left: i * columnWidth,
           height: bounds.height,
-          width: columnWidth
+          width: columnWidth,
         },
         onClick: () => {
           this.controller.xaxisClick(i)
           d3.event.stopPropagation()
-        }
+        },
       })
     })
   }
@@ -164,7 +169,7 @@ class XAxis extends BaseComponent {
     this.labelObjects.map((labelObject, i) => labelObject.applyHorizontalZoom({
       xOffset: newStartingPoint + newCellWidth * i,
       newCellWidth,
-      inZoom: _.includes(columnsInZoom, i)
+      inZoom: _.includes(columnsInZoom, i),
     }))
   }
 

@@ -10,7 +10,7 @@ const {
   RIGHT_YAXIS,
   COLORMAP,
   TOP_DENDROGRAM,
-  LEFT_DENDROGRAM
+  LEFT_DENDROGRAM,
 } = CellNames
 
 class Controller {
@@ -18,8 +18,8 @@ class Controller {
     this.state = {
       highlighted: {
         row: null,
-        column: null
-      }
+        column: null,
+      },
     }
   }
 
@@ -28,8 +28,8 @@ class Controller {
   get yaxis () { return this.components[LEFT_YAXIS] || this.components[RIGHT_YAXIS] }
   get leftColumn () { return this.components[LEFT_COLUMN] }
   get rightColumn () { return this.components[RIGHT_COLUMN] }
-  get top_dendrogram () { return this.components[TOP_DENDROGRAM] }
-  get left_dendrogram () { return this.components[LEFT_DENDROGRAM] }
+  get topDendrogram () { return this.components[TOP_DENDROGRAM] }
+  get leftDendrogram () { return this.components[LEFT_DENDROGRAM] }
 
   addComponents (components) {
     this.components = components
@@ -133,8 +133,8 @@ class Controller {
     if (this.yaxis) { this.yaxis.updateZoom({ scale, translate, extent, zoom: false }) }
     if (this.leftColumn) { this.leftColumn.updateZoom({ scale, translate, extent, zoom: false }) }
     if (this.rightColumn) { this.rightColumn.updateZoom({ scale, translate, extent, zoom: false }) }
-    if (this.left_dendrogram) { this.left_dendrogram.updateZoom({ scale, translate, extent, zoom: false }) }
-    if (this.top_dendrogram) { this.top_dendrogram.updateZoom({ scale, translate, extent, zoom: false }) }
+    if (this.leftDendrogram) { this.leftDendrogram.updateZoom({ scale, translate, extent, zoom: false }) }
+    if (this.topDendrogram) { this.topDendrogram.updateZoom({ scale, translate, extent, zoom: false }) }
 
     if (this.outer) {
       this.outer.classed('zoomed', false)
@@ -147,8 +147,8 @@ class Controller {
     if (this.yaxis) { this.yaxis.updateZoom({ scale, translate, extent, zoom: true }) }
     if (this.leftColumn) { this.leftColumn.updateZoom({ scale, translate, extent, zoom: true }) }
     if (this.rightColumn) { this.rightColumn.updateZoom({ scale, translate, extent, zoom: true }) }
-    if (this.left_dendrogram) { this.left_dendrogram.updateZoom({ scale, translate, extent, zoom: true }) }
-    if (this.top_dendrogram) { this.top_dendrogram.updateZoom({ scale, translate, extent, zoom: true }) }
+    if (this.leftDendrogram) { this.leftDendrogram.updateZoom({ scale, translate, extent, zoom: true }) }
+    if (this.topDendrogram) { this.topDendrogram.updateZoom({ scale, translate, extent, zoom: true }) }
 
     if (this.outer) {
       this.outer.classed('zoomed', true)

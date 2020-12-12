@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import BaseComponent from '../baseComponent'
-import { splitIntoLinesByCharacter, getLabelDimensionsUsingSvgApproximation } from '../../labelUtils'
+import { addLabel, enums, getDimensions } from 'rhtmlLabelUtils'
 
 const DEBUG = false
 
@@ -8,90 +8,97 @@ class VerticalBottomToTopWrappedLabel extends BaseComponent {
   constructor ({ verticalAlignment, parentContainer, text, fontSize, fontFamily, fontColor, maxWidth, maxHeight, classNames }) {
     super()
     _.assign(this, { verticalAlignment, parentContainer, text, fontSize, fontFamily, fontColor, maxWidth, maxHeight, classNames })
-
-    this.maxLines = 1
   }
 
   computePreferredDimensions () {
-    const lines = splitIntoLinesByCharacter({
+    return getDimensions({
       parentContainer: this.parentContainer,
       text: this.text,
+      maxWidth: this.maxWidth,
       maxHeight: this.maxHeight,
-      maxLines: this.maxLines,
       fontSize: this.fontSize,
       fontFamily: this.fontFamily,
-      rotation: 90
+      orientation: enums.orientation.TOP_TO_BOTTOM,
     })
-    const dimensions = getLabelDimensionsUsingSvgApproximation({
-      text: lines[0],
-      parentContainer: this.parentContainer,
-      fontSize: this.fontSize,
-      fontFamily: this.fontFamily,
-      rotation: 90
-    })
-
-    return dimensions
   }
 
   draw ({ container: parentContainer, bounds, onClick }) {
     this.bounds = bounds
-
-    const text = splitIntoLinesByCharacter({
-      parentContainer,
-      text: this.text,
-      maxHeight: this.maxHeight,
-      maxLines: this.maxLines,
-      fontSize: this.fontSize,
-      fontFamily: this.fontFamily,
-      rotation: 90
-    })[0]
+    this.onClick = onClick
 
     this.container = parentContainer.append('g')
-      .classed(this.classNames, true)
-      .attr('transform', this.buildTransform(bounds))
+    .classed(this.classNames, true)
+    .attr('transform', this.buildTransform(bounds))
 
     this.rectSelection = this.container.append('rect')
-      .classed('click-rect', true)
-      .attr('width', bounds.width)
-      .attr('height', bounds.height)
-      .attr('fill', 'transparent')
-      .attr('stroke', (DEBUG) ? 'lightgrey' : 'transparent')
-      .on('click', onClick)
+    .classed('click-rect', true)
+    .attr('width', bounds.width)
+    .attr('height', bounds.height)
+    .attr('fill', 'transparent')
+    .attr('stroke', (DEBUG) ? 'lightgrey' : 'transparent')
+    .on('click', onClick)
 
-    this.textSelection = this.container.append('text')
-      .attr('transform', `translate(${bounds.width / 2}, 0),rotate(90)`)
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('dy', 0)
-      .style('text-anchor', 'start')
-      .style('font-family', this.fontFamily)
-      .style('font-size', this.fontSize)
-      .style('fill', this.fontColor)
-      .text(text)
-      .on('click', onClick)
+    this.textSelection = addLabel({
+      parentContainer: this.container,
+      text: this.text,
+      bounds,
+      fontColor: this.fontColor,
+      fontSize: this.fontSize,
+      fontFamily: this.fontFamily,
+      fontWeight: (this.bold) ? 'bold' : 'normal',
+      orientation: enums.orientation.TOP_TO_BOTTOM,
+      verticalAlignment: this.verticalAlignment, // TODO seems this could safely be hard code to top aligned ?
+      horizontalAlignment: enums.horizontalAlignment.CENTER,
+    })
+
+    this.textSelection.on('click', onClick)
   }
 
   applyHorizontalZoom ({ newCellWidth, xOffset, inZoom }) {
-    this.container
-      .attr('transform', `translate(${xOffset},${this.bounds.top})`)
+    this.container.attr('transform', `translate(${xOffset},${this.bounds.top})`)
 
-    this.rectSelection
-      .attr('width', newCellWidth)
+    this.rectSelection.attr('width', newCellWidth)
+
+    this.textSelection.remove()
+
+    this.textSelection = addLabel({
+      parentContainer: this.container,
+      text: this.text,
+      bounds: { width: newCellWidth, height: this.bounds.height },
+      fontColor: this.fontColor,
+      fontSize: this.fontSize,
+      fontFamily: this.fontFamily,
+      fontWeight: (this.bold) ? 'bold' : 'normal',
+      orientation: enums.orientation.TOP_TO_BOTTOM,
+      verticalAlignment: this.verticalAlignment,
+      horizontalAlignment: enums.horizontalAlignment.CENTER,
+    })
 
     this.textSelection
-      .attr('transform', `translate(${newCellWidth / 2}, 0),rotate(90)`)
+      .on('click', this.onClick)
       .classed('in-zoom', inZoom)
   }
 
   resetHorizontalZoom ({ xOffset }) {
-    this.container
-      .attr('transform', `translate(${xOffset},${this.bounds.top})`)
+    this.container.attr('transform', `translate(${xOffset},${this.bounds.top})`)
 
-    this.rectSelection
-      .attr('width', this.bounds.width)
+    this.rectSelection.attr('width', this.bounds.width)
+
+    this.textSelection = addLabel({
+      parentContainer: this.container,
+      text: this.text,
+      bounds: this.bounds,
+      fontColor: this.fontColor,
+      fontSize: this.fontSize,
+      fontFamily: this.fontFamily,
+      fontWeight: (this.bold) ? 'bold' : 'normal',
+      orientation: enums.orientation.TOP_TO_BOTTOM,
+      verticalAlignment: this.verticalAlignment,
+      horizontalAlignment: enums.horizontalAlignment.CENTER,
+    })
 
     this.textSelection
-      .attr('transform', `translate(${this.bounds.width / 2}, 0),rotate(90)`)
+      .on('click', this.onClick)
       .classed('in-zoom', false)
   }
 }

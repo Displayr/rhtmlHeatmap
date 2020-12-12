@@ -2,6 +2,7 @@ import BaseComponent from './baseComponent'
 import _ from 'lodash'
 import d3 from 'd3'
 import HorizontalWrappedLabel from './parts/horizontalWrappedLabel'
+import { enums } from 'rhtmlLabelUtils'
 
 class Column extends BaseComponent {
   constructor ({
@@ -14,7 +15,7 @@ class Column extends BaseComponent {
     fontColor,
     fontFamily,
     maxWidth,
-    maxHeight
+    maxHeight,
   }) {
     super()
     _.assign(this, {
@@ -27,7 +28,7 @@ class Column extends BaseComponent {
       fontColor,
       fontFamily,
       maxWidth,
-      maxHeight
+      maxHeight,
     })
 
     this.rowCount = this.labels.length
@@ -44,14 +45,14 @@ class Column extends BaseComponent {
         maxWidth: this.maxWidth,
         parentContainer: this.parentContainer,
         text: text,
-        verticalAlignment: 'center',
-        horizontalAlignment: this.horizontalAlignment
+        verticalAlignment: enums.verticalAlignment.CENTER,
+        horizontalAlignment: this.horizontalAlignment,
       })
     })
     let labelDimensions = this.labelObjects.map(labelObject => labelObject.computePreferredDimensions())
     return {
       width: _(labelDimensions).map('width').max(),
-      height: 0 // NB take what is provided
+      height: 0, // NB take what is provided
     }
   }
 
@@ -69,12 +70,12 @@ class Column extends BaseComponent {
           top: i * rowHeight,
           left: 0,
           height: rowHeight,
-          width: bounds.width
+          width: bounds.width,
         },
         onClick: () => {
           this.controller.columnCellClick(i)
           d3.event.stopPropagation()
-        }
+        },
       })
     })
   }
@@ -95,7 +96,7 @@ class Column extends BaseComponent {
     this.labelObjects.map((labelObject, i) => labelObject.applyVerticalZoom({
       yOffset: newStartingPoint + newCellHeight * i,
       newCellHeight,
-      inZoom: _.includes(rowsInZoom, i)
+      inZoom: _.includes(rowsInZoom, i),
     }))
   }
 

@@ -1,11 +1,13 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
 import Column from './column'
+import { enums } from 'rhtmlLabelUtils'
+const { horizontalAlignment: { LEFT, CENTER, RIGHT } } = enums
 
 const horizontalAlignmentMap = {
-  l: 'left',
-  c: 'center',
-  r: 'right'
+  l: LEFT,
+  c: CENTER,
+  r: RIGHT,
 }
 
 class ColumnGroup extends BaseComponent {
@@ -27,7 +29,7 @@ class ColumnGroup extends BaseComponent {
         fontColor: this.fontColor,
         fontFamily: this.fontFamily,
         maxWidth: this.maxSingleColumnWidth,
-        maxHeight: this.maxHeight
+        maxHeight: this.maxHeight,
       })
     })
   }
@@ -46,7 +48,7 @@ class ColumnGroup extends BaseComponent {
     this.columnWidths = _(preferredColumnDimensions).map('width').value() // NB I take the "preferred" here and then use it as actual
     return {
       width: _(preferredColumnDimensions).map('width').sum() + this.padding * this.columns.length - 1,
-      height: 0 // accept what height we are given
+      height: 0, // accept what height we are given
     }
   }
 
@@ -60,7 +62,7 @@ class ColumnGroup extends BaseComponent {
         top: columnGroupBounds.top,
         left: columnGroupBounds.left + cumulativeWidth,
         width: individualWidth,
-        height: columnGroupBounds.height
+        height: columnGroupBounds.height,
       }
       cumulativeWidth += individualWidth + this.padding
       this.columns[columnIndex].draw(columnBounds)
