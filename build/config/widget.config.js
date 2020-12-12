@@ -11,10 +11,10 @@ const config = {
     includeDimensionsOnWidgetDiv: true,
     default_border: true,
     css: [
-      '/styles/heatmapcore.css'
+      '/styles/heatmapcore.css',
     ],
     isReadySelector: 'svg[rhtmlHeatmap-status=ready]',
-    singleWidgetSnapshotSelector: '#widget-container'
+    singleWidgetSnapshotSelector: '#widget-container',
   },
   snapshotTesting: {
     puppeteer: {
