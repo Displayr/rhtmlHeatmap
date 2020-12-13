@@ -4,9 +4,9 @@ import d3 from 'd3'
 import _ from 'lodash'
 
 class Dendrogram extends BaseComponent {
-  constructor ({ parentContainer, data, width, height, type, linkColor, controller, animDuration }) {
+  constructor ({ parentContainer, data, width, height, type, linkColor, animDuration }) {
     super()
-    _.assign(this, { parentContainer, data, width, height, type, linkColor, controller, animDuration })
+    _.assign(this, { parentContainer, data, width, height, type, linkColor, animDuration })
   }
 
   computePreferredDimensions () {

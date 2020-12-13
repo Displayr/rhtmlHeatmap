@@ -1,27 +1,28 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
-import { enums, getDimensions, addLabel } from 'rhtmlLabelUtils'
+import HorizontalWrappedLabel from './parts/horizontalWrappedLabel'
 import d3 from 'd3'
 
 // TODO preferred dimensions must account for maxes
 class ColumnTitle extends BaseComponent {
   constructor ({ parentContainer, text, classNames, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines }) {
     super()
-    _.assign(this, { parentContainer, text, classNames, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines })
+    _.assign(this, { parentContainer })
+    this.label = new HorizontalWrappedLabel({
+      classNames: `title ${classNames}`,
+      fontColor: fontColor,
+      fontFamily: fontFamily,
+      fontSize: fontSize,
+      fontWeight: (bold) ? 'bold' : 'normal',
+      maxLines: maxLines,
+      maxWidth: maxWidth,
+      canvas: parentContainer,
+      text: text,
+    })
   }
 
   computePreferredDimensions () {
-    const dimensions = getDimensions({
-      parentContainer: this.parentContainer,
-      text: this.text,
-      maxWidth: this.maxWidth,
-      fontSize: this.fontSize,
-      maxLines: this.maxLines,
-      fontFamily: this.fontFamily,
-      fontWeight: (this.bold) ? 'bold' : 'normal',
-      orientation: enums.orientation.HORIZONTAL,
-    })
-    return dimensions
+    return this.label.computePreferredDimensions()
   }
 
   forceWidth (forcedWidth) {
@@ -33,29 +34,14 @@ class ColumnTitle extends BaseComponent {
       ? _.merge({}, bounds, { width: this.forcedWidth })
       : bounds
 
-    const titleContainer = this.parentContainer
-      .append('g')
-      .classed('title', true)
-      .classed(this.classNames, true)
-      .attr('transform', this.buildTransform(adjustedBounds))
-
-    const textSelection = addLabel({
-      parentContainer: titleContainer,
-      text: this.text,
-      bounds,
-      fontColor: this.fontColor,
-      fontSize: this.fontSize,
-      maxLines: this.maxLines,
-      fontFamily: this.fontFamily,
-      fontWeight: (this.bold) ? 'bold' : 'normal',
-      orientation: enums.orientation.HORIZONTAL,
-    })
-
-    textSelection
-      .on('click', (d, i) => {
-        this.controller.xaxisClick(i)
+    this.label.draw({
+      container: this.parentContainer,
+      bounds: adjustedBounds,
+      onClick: (d, i) => {
+        this.controller.xaxisClick(i) // TODO this is an odd action for clicking on a column title, and i is always 0
         d3.event.stopPropagation()
-      })
+      },
+    })
   }
 }
 

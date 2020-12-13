@@ -63,7 +63,7 @@ class ColumnSubtitles extends BaseComponent {
         fontSize: this.fontSize,
         maxHeight: this.maxHeight,
         maxWidth: estimatedColumnWidths[i],
-        parentContainer: this.parentContainer,
+        canvas: this.parentContainer,
         text: text,
         verticalAlignment: this.verticalPlacement === 'top' ? BOTTOM : TOP,
       })

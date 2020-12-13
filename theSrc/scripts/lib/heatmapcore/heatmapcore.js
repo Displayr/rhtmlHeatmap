@@ -368,7 +368,6 @@ class Heatmap {
         fontColor: options.xaxis_title_font_color,
         maxLines: 3,
         bold: options.xaxis_title_bold,
-        innerPadding: 2, // TODO make configurable
       })
 
       const dimensions = this.components[xaxisTitleCellName].computePreferredDimensions(estimatedWidth)
@@ -420,7 +419,6 @@ class Heatmap {
         fontSize: options.title_font_size,
         fontFamily: options.title_font_family,
         bold: false,
-        innerPadding: 2, // TODO make configurable
       })
 
       const midpoint = estimatedLeftBound + 0.5 * estimatedWidth
@@ -441,7 +439,6 @@ class Heatmap {
         fontSize: options.subtitle_font_size,
         fontFamily: options.subtitle_font_family,
         bold: false,
-        innerPadding: 2, // TODO make configurable
       })
 
       const midpoint = estimatedLeftBound + 0.5 * estimatedWidth
@@ -462,7 +459,6 @@ class Heatmap {
         fontSize: options.footer_font_size,
         fontFamily: options.footer_font_family,
         bold: false,
-        innerPadding: 2, // TODO make configurable
       })
 
       const midpoint = estimatedLeftBound + 0.5 * estimatedWidth

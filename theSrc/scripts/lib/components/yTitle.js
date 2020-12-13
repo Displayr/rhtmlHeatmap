@@ -1,25 +1,29 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
-import { enums, getDimensions, addLabel } from 'rhtmlLabelUtils'
+import { enums } from 'rhtmlLabelUtils'
+import VerticalBottomToTopWrappedLabel from './parts/verticalBottomToTopWrappedLabel'
 
 class YTitle extends BaseComponent {
   constructor ({ parentContainer, text, type, fontSize, fontFamily, fontColor, bold, maxHeight, maxLines }) {
     super()
-    _.assign(this, { parentContainer, text, type, fontSize, fontFamily, fontColor, bold, maxHeight, maxLines })
+    _.assign(this, { parentContainer })
+    this.label = new VerticalBottomToTopWrappedLabel({
+      classNames: 'ytitle',
+      fontColor: fontColor,
+      fontFamily: fontFamily,
+      fontSize: fontSize,
+      fontWeight: (bold) ? 'bold' : 'normal',
+      maxLines: maxLines,
+      maxHeight: maxHeight,
+      canvas: parentContainer,
+      text: text,
+      verticalAlignment: enums.verticalAlignment.CENTER,
+      horizontalAlignment: enums.horizontalAlignment.LEFT,
+    })
   }
 
   computePreferredDimensions () {
-    const dimensions = getDimensions({
-      parentContainer: this.parentContainer,
-      text: this.text,
-      maxHeight: this.maxHeight,
-      maxLines: this.maxLines,
-      fontSize: this.fontSize,
-      fontFamily: this.fontFamily,
-      fontWeight: (this.bold) ? 'bold' : 'normal',
-      orientation: enums.orientation.BOTTOM_TO_TOP,
-    })
-
+    const dimensions = this.label.computePreferredDimensions()
     return {
       width: dimensions.width,
       height: 0, // NB title takes what height is given, and does not force height on the chart
@@ -27,22 +31,9 @@ class YTitle extends BaseComponent {
   }
 
   draw (bounds) {
-    const titleContainer = this.parentContainer.append('g')
-      .classed('ytitle', true)
-      .attr('transform', this.buildTransform(bounds))
-
-    addLabel({
-      parentContainer: titleContainer,
-      text: this.text,
+    this.label.draw({
+      container: this.parentContainer,
       bounds,
-      maxLines: this.maxLines,
-      fontColor: this.fontColor,
-      fontSize: this.fontSize,
-      fontFamily: this.fontFamily,
-      fontWeight: (this.bold) ? 'bold' : 'normal',
-      orientation: enums.orientation.BOTTOM_TO_TOP,
-      verticalAlignment: enums.verticalAlignment.CENTER,
-      horizontalAlignment: enums.horizontalAlignment.LEFT,
     })
   }
 }

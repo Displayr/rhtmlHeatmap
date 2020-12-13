@@ -1,25 +1,28 @@
 import BaseComponent from './baseComponent'
 import _ from 'lodash'
-import { enums, getDimensions, addLabel } from 'rhtmlLabelUtils'
+import HorizontalWrappedLabel from './parts/horizontalWrappedLabel'
 
 // TODO preferred dimensions must account for maxes
 class Title extends BaseComponent {
-  constructor ({ parentContainer, text, fontSize, fontFamily, fontColor, bold = false, maxWidth, maxLines, innerPadding }) {
+  constructor ({ parentContainer, text, fontSize, fontFamily, fontColor, bold = false, maxWidth, maxLines }) {
     super()
-    _.assign(this, { parentContainer, text, fontSize, fontFamily, fontColor, bold, maxWidth, maxLines, innerPadding })
+    _.assign(this, { parentContainer })
+    this.label = new HorizontalWrappedLabel({
+      classNames: 'title',
+      fontColor: fontColor,
+      fontFamily: fontFamily,
+      fontSize: fontSize,
+      fontWeight: (bold) ? 'bold' : 'normal',
+      maxLines: maxLines,
+      maxWidth: maxWidth,
+      canvas: parentContainer,
+      text: text,
+    })
   }
 
   computePreferredDimensions (estimatedWidth) {
-    const dimensions = getDimensions({
-      parentContainer: this.parentContainer,
-      text: this.text,
-      maxWidth: estimatedWidth,
-      fontSize: this.fontSize,
-      maxLines: this.maxLines,
-      fontFamily: this.fontFamily,
-      fontWeight: (this.bold) ? 'bold' : 'normal',
-      orientation: enums.orientation.HORIZONTAL,
-    })
+    if (estimatedWidth) { this.label.setMaxWidth(estimatedWidth) }
+    const dimensions = this.label.computePreferredDimensions()
     return {
       width: 0, // NB title width takes what is given, and does not force width on the chart
       height: dimensions.height,
@@ -27,20 +30,9 @@ class Title extends BaseComponent {
   }
 
   draw (bounds) {
-    const titleContainer = this.parentContainer.append('g')
-      .classed('title', true)
-      .attr('transform', this.buildTransform(bounds))
-
-    addLabel({
-      parentContainer: titleContainer,
-      text: this.text,
+    this.label.draw({
+      container: this.parentContainer,
       bounds,
-      fontColor: this.fontColor,
-      fontSize: this.fontSize,
-      maxLines: this.maxLines,
-      fontFamily: this.fontFamily,
-      fontWeight: (this.bold) ? 'bold' : 'normal',
-      orientation: enums.orientation.HORIZONTAL,
     })
   }
 }

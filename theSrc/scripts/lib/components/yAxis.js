@@ -9,9 +9,9 @@ const {
 } = enums
 
 class YAxis extends BaseComponent {
-  constructor ({ parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, controller }) {
+  constructor ({ parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight }) {
     super()
-    _.assign(this, { parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight, controller })
+    _.assign(this, { parentContainer, placement, labels, fontSize, fontFamily, fontColor, maxWidth, maxHeight })
 
     // to deal with superflous zoom calls at beginning of render
     this.amIZoomed = false
@@ -26,7 +26,7 @@ class YAxis extends BaseComponent {
         fontSize: this.fontSize,
         maxHeight: this.maxHeight / this.labels.length,
         maxWidth: this.maxWidth,
-        parentContainer: this.parentContainer,
+        canvas: this.parentContainer,
         text: text,
         verticalAlignment: CENTER,
         horizontalAlignment: (this.placement === 'left') ? RIGHT : LEFT,
@@ -48,7 +48,7 @@ class YAxis extends BaseComponent {
     const rowHeight = bounds.height / this.labels.length
     this.labelObjects.map((labelObject, i) => {
       labelObject.draw({
-        container, // this is odd given we already supply parentContainer to constructor
+        container,
         bounds: {
           top: i * rowHeight,
           left: 0,

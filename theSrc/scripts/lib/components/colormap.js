@@ -20,7 +20,6 @@ class Colormap extends BaseComponent {
     showGrid,
     animDuration,
     shownoteInCell,
-    controller,
   }) {
     super()
     _.assign(this, {
@@ -37,7 +36,6 @@ class Colormap extends BaseComponent {
       showGrid,
       animDuration,
       shownoteInCell,
-      controller,
     })
 
     this.counts = {

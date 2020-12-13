@@ -7,7 +7,6 @@ import { enums } from 'rhtmlLabelUtils'
 class Column extends BaseComponent {
   constructor ({
     parentContainer,
-    controller,
     classNames,
     labels,
     horizontalAlignment,
@@ -20,7 +19,6 @@ class Column extends BaseComponent {
     super()
     _.assign(this, {
       parentContainer,
-      controller,
       classNames,
       labels,
       horizontalAlignment,
@@ -43,7 +41,7 @@ class Column extends BaseComponent {
         fontSize: this.fontSize,
         maxHeight: this.maxHeight,
         maxWidth: this.maxWidth,
-        parentContainer: this.parentContainer,
+        canvas: this.parentContainer,
         text: text,
         verticalAlignment: enums.verticalAlignment.CENTER,
         horizontalAlignment: this.horizontalAlignment,
@@ -65,7 +63,7 @@ class Column extends BaseComponent {
     const rowHeight = bounds.height / this.labels.length
     this.labelObjects.map((labelObject, i) => {
       labelObject.draw({
-        container: this.container, // this is odd given we already supply parentContainer to constructor
+        container: this.container,
         bounds: {
           top: i * rowHeight,
           left: 0,

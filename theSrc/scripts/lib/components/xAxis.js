@@ -64,7 +64,7 @@ class XAxis extends BaseComponent {
         fontSize: this.fontSize,
         maxHeight: this.maxHeight,
         maxWidth: estimatedColumnWidth,
-        parentContainer: this.parentContainer,
+        canvas: this.parentContainer,
         text: text,
         verticalAlignment: this.placement === 'top' ? BOTTOM : TOP,
         horizontalAlignment: CENTER,
