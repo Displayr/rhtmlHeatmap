@@ -28,7 +28,7 @@
     "lodash": "^4.17.15",
     "loglevel": "^1.6.1",
     "only": "0.0.2",
-    "rhtmlLabelUtils": "github:Displayr/rhtmlLabelUtils#2.0.0",
+    "rhtmlLabelUtils": "github:Displayr/rhtmlLabelUtils#2.1.0",
     "yargs": "^16.1.0"
   }
 }
