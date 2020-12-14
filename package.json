@@ -25,7 +25,7 @@
     "d3-tip": "Displayr/d3-tip#v3.0.0",
     "idempotent-babel-polyfill": "^7.4.4",
     "jquery": "^3.5.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "loglevel": "^1.6.1",
     "only": "0.0.2",
     "rhtmlLabelUtils": "github:Displayr/rhtmlLabelUtils#2.1.0",
