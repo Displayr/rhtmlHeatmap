@@ -6,6 +6,8 @@ import VerticalBottomToTopWrappedLabel from './parts/verticalBottomToTopWrappedL
 import VerticalTopToBottomWrappedLabel from './parts/verticalTopToBottomWrappedLabel'
 import DiagonalUpWrappedLabel from './parts/diagonalUpWrappedLabel'
 import DiagonalDownWrappedLabel from './parts/diagonalDownWrappedLabel'
+import { enums } from 'rhtmlLabelUtils'
+const { verticalAlignment: { TOP, BOTTOM } } = enums
 
 // TODO preferred dimensions must account for maxes
 class ColumnSubtitles extends BaseComponent {
@@ -20,7 +22,7 @@ class ColumnSubtitles extends BaseComponent {
     padding,
     parentContainer,
     verticalPlacement,
-    horizontalPlacement
+    horizontalPlacement,
   }) {
     super()
     _.assign(this, {
@@ -34,7 +36,7 @@ class ColumnSubtitles extends BaseComponent {
       padding,
       parentContainer,
       verticalPlacement,
-      horizontalPlacement
+      horizontalPlacement,
     })
 
     if (this.orientation === 'horizontal') {
@@ -61,16 +63,16 @@ class ColumnSubtitles extends BaseComponent {
         fontSize: this.fontSize,
         maxHeight: this.maxHeight,
         maxWidth: estimatedColumnWidths[i],
-        parentContainer: this.parentContainer,
+        canvas: this.parentContainer,
         text: text,
-        verticalAlignment: this.verticalPlacement === 'top' ? 'bottom' : 'top'
+        verticalAlignment: this.verticalPlacement === 'top' ? BOTTOM : TOP,
       })
     })
     let labelDimensions = this.labelObjects.map(labelObject => labelObject.computePreferredDimensions())
 
     const preferredDimensions = {
       width: 0, // NB accept column width
-      height: _(labelDimensions).map('height').max()
+      height: _(labelDimensions).map('height').max(),
     }
 
     // NB The intent of the conditional.rightmostMargin addition to dimensions:
@@ -89,7 +91,7 @@ class ColumnSubtitles extends BaseComponent {
 
       if (requiredExtraSpaceToRight > 0) {
         preferredDimensions.conditional = {
-          rightmostMargin: requiredExtraSpaceToRight
+          rightmostMargin: requiredExtraSpaceToRight,
         }
       }
     }
@@ -125,10 +127,10 @@ class ColumnSubtitles extends BaseComponent {
           top: 0,
           left: previousColumnsWidth,
           height: bounds.height,
-          width: this.columnWidths[i]
+          width: this.columnWidths[i],
         },
         onClick: (d, i) => {},
-        classNames: 'column-title'
+        classNames: 'column-title',
       })
     })
   }

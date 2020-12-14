@@ -1,0 +1,12 @@
+type: multi_widget_single_page
+title: shows column alignment applied to columns
+width: 800
+height: 400
+rowSize: 1
+widgets:
+  - title: left_aligned
+    config: '{ "options": { "title": "left aligned" } }| data.minimal_3x3.data|data.minimal_3x3.left_columns_two_left_align|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.disable_column_subtitle_and_title'
+  - title: center_aligned
+    config: '{ "options": { "title": "center aligned" } }| data.minimal_3x3.data|data.minimal_3x3.left_columns_two_center_align|data.minimal_3x3.right_columns_two_center_align|data.minimal_3x3.disable_column_subtitle_and_title'
+  - title: right_aligned
+    config: '{ "options": { "title": "right aligned" } }| data.minimal_3x3.data|data.minimal_3x3.left_columns_two_right_align|data.minimal_3x3.right_columns_two_right_align|data.minimal_3x3.disable_column_subtitle_and_title'

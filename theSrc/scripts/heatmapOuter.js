@@ -11,8 +11,8 @@ function uniqueId () {
   return uniqueInstanceCount++
 }
 
-module.exports = function (element, x) {
-  const { options, image, matrix, rows, cols } = x
+module.exports = function (element, config) {
+  const { options, image, matrix, rows, cols } = config
 
   _initLogger(options.logLevel)
 
@@ -26,7 +26,7 @@ module.exports = function (element, x) {
     .attr('height', height)
 
   loadImage(image)
-    .then(({ imgData, width, height }) => processImageData({ imgData, width, height, matrix, shownote_in_cell: options.shownote_in_cell }))
+    .then(({ imgData, width, height }) => processImageData({ imgData, width, height, matrix, cellNotes: options.shownote_in_cell }))
     .then(merged => {
       matrix.merged = merged
       return new Heatmap({
@@ -36,7 +36,7 @@ module.exports = function (element, x) {
         dendrogramRows: rows,
         dendrogramColumns: cols,
         width,
-        height
+        height,
       })
     })
     .catch(error => {
@@ -97,7 +97,7 @@ function loadImage (uri) {
   })
 }
 
-function processImageData ({ imgData, width, height, matrix, shownote_in_cell }) {
+function processImageData ({ imgData, width, height, matrix, cellNotes }) {
   if (width !== matrix.dim[0] || height !== matrix.dim[1]) {
     throw new Error('Color dimensions didn\'t match data dimensions')
   }
@@ -118,7 +118,7 @@ function processImageData ({ imgData, width, height, matrix, shownote_in_cell })
       hide = 1
       cellnoteColor = 'transparent'
     } else {
-      if (shownote_in_cell) {
+      if (cellNotes) {
         if (matrix.cellnote_in_cell[i] === 'No data') {
           cellnoteColor = 'transparent'
         } else {
@@ -137,7 +137,7 @@ function processImageData ({ imgData, width, height, matrix, shownote_in_cell })
       color: color,
       cellnote_in_cell: matrix.cellnote_in_cell[i],
       cellnote_color: cellnoteColor,
-      hide: hide
+      hide: hide,
     })
   }
 

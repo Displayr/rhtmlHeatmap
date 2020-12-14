@@ -2,11 +2,11 @@ import BaseComponent from './baseComponent'
 import _ from 'lodash'
 import d3 from 'd3'
 import HorizontalWrappedLabel from './parts/horizontalWrappedLabel'
+import { enums } from 'rhtmlLabelUtils'
 
 class Column extends BaseComponent {
   constructor ({
     parentContainer,
-    controller,
     classNames,
     labels,
     horizontalAlignment,
@@ -14,12 +14,11 @@ class Column extends BaseComponent {
     fontColor,
     fontFamily,
     maxWidth,
-    maxHeight
+    maxHeight,
   }) {
     super()
     _.assign(this, {
       parentContainer,
-      controller,
       classNames,
       labels,
       horizontalAlignment,
@@ -27,7 +26,7 @@ class Column extends BaseComponent {
       fontColor,
       fontFamily,
       maxWidth,
-      maxHeight
+      maxHeight,
     })
 
     this.rowCount = this.labels.length
@@ -42,16 +41,16 @@ class Column extends BaseComponent {
         fontSize: this.fontSize,
         maxHeight: this.maxHeight,
         maxWidth: this.maxWidth,
-        parentContainer: this.parentContainer,
+        canvas: this.parentContainer,
         text: text,
-        verticalAlignment: 'center',
-        horizontalAlignment: this.horizontalAlignment
+        verticalAlignment: enums.verticalAlignment.CENTER,
+        horizontalAlignment: this.horizontalAlignment,
       })
     })
     let labelDimensions = this.labelObjects.map(labelObject => labelObject.computePreferredDimensions())
     return {
       width: _(labelDimensions).map('width').max(),
-      height: 0 // NB take what is provided
+      height: 0, // NB take what is provided
     }
   }
 
@@ -64,17 +63,17 @@ class Column extends BaseComponent {
     const rowHeight = bounds.height / this.labels.length
     this.labelObjects.map((labelObject, i) => {
       labelObject.draw({
-        container: this.container, // this is odd given we already supply parentContainer to constructor
+        container: this.container,
         bounds: {
           top: i * rowHeight,
           left: 0,
           height: rowHeight,
-          width: bounds.width
+          width: bounds.width,
         },
         onClick: () => {
           this.controller.columnCellClick(i)
           d3.event.stopPropagation()
-        }
+        },
       })
     })
   }
@@ -95,7 +94,7 @@ class Column extends BaseComponent {
     this.labelObjects.map((labelObject, i) => labelObject.applyVerticalZoom({
       yOffset: newStartingPoint + newCellHeight * i,
       newCellHeight,
-      inZoom: _.includes(rowsInZoom, i)
+      inZoom: _.includes(rowsInZoom, i),
     }))
   }
 

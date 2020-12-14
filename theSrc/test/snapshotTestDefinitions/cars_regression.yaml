@@ -1,0 +1,50 @@
+type: multi_widget_multi_page
+groupname: cars_regression
+width: 1000
+height: 1000
+configs:
+
+  - title: custom_legend
+    config: data.cars_regression.data|data.cars_regression.legend_custom|config.shownote_in_cell|config.left_columns_none|config.right_columns_none|config.title_none|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_left
+
+  - title: no_cell_note_no_columns
+    config: data.cars_regression.data_no_cellnote|config.shownote_in_cell|config.left_columns_none|config.right_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.yaxis_left
+
+  - title: no_cell_note_yaxis_right_xaxis_bottom
+    config: data.cars_regression.data_no_cellnote|config.shownote_in_cell|config.left_columns_none|config.right_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_bottom|config.yaxis_right
+
+  - title: three_both_columns_center_align_no_axis
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.left_columns_three_center_align|data.cars_regression.right_columns_three_center_align|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.xaxis_title|config.yaxis_none
+
+  - title: three_left_right_column_center_align_no_axis
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.left_columns_three_center_align|data.cars_regression.right_columns_three_center_align|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_none|config.yaxis_none
+
+  - title: three_both_columns_center_align_no_axis_long_columns
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.left_columns_three_center_align|data.cars_regression.right_columns_three_center_align|config.long_column_titles|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.long_xaxis_title|config.yaxis_none
+
+  - title: three_both_columns_long_xaxis_values_and_col_subtitles
+    config: data.cars_regression.data|data.cars_regression.long_xaxis_labels|config.shownote_in_cell|data.cars_regression.left_columns_three_center_align|data.cars_regression.right_columns_three_center_align|data.cars_regression.long_left_and_right_column_subtitles|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.yaxis_none
+
+  - title: three_left_columns_and_yaxis
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.left_columns_three_center_align|config.right_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.yaxis_left
+
+  - title: three_left_columns_center_align
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.left_columns_three_center_align|config.right_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.yaxis_none
+
+  - title: three_left_columns_left_align
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.left_columns_three_left_align|config.right_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.yaxis_none
+
+  - title: three_left_columns_left_align_no_xaxis
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.left_columns_three_left_align|config.right_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_none|config.yaxis_none
+
+  - title: three_left_columns_mixed_align
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.left_columns_three_mixed_align|config.right_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.yaxis_none
+
+  - title: three_right_column_center_align
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.right_columns_three_center_align|config.left_columns_none|config.title_none|config.subtitle_none|config.legend_none|config.footer_none|config.xaxis_top|config.yaxis_none
+
+  - title: three_right_column_with_long_strings
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.right_columns_three_center_align|config.left_columns_none|config.title_enabled|config.subtitle_enabled|config.footer_enabled|config.legend_none|config.xaxis_top|config.yaxis_none|config.long_strings
+
+  - title: three_right_column_with_title_sub_title_and_footer
+    config: data.cars_regression.data|config.shownote_in_cell|data.cars_regression.right_columns_three_center_align|config.left_columns_none|config.title_enabled|config.subtitle_enabled|config.legend_none|config.footer_enabled|config.xaxis_top|config.yaxis_none

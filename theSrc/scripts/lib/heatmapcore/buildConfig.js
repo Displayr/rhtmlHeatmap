@@ -5,6 +5,7 @@ const defaultConfig = {
   anim_duration: 500,
   axis_padding: 6,
   brush_color: '#0000FF',
+  cell_font_family: 'sans-serif',
   cell_font_size: 15,
   column_label_max_height: 0.25,
   column_label_orientation: 'diagonal', // ['horizontal', 'vertical', 'diagonal'],
@@ -72,7 +73,7 @@ const defaultConfig = {
   yaxis_location: null,
   yaxis_offset: 20,
   yaxis_title: null,
-  yaxis_title_font_size: 15
+  yaxis_title_font_size: 15,
 }
 
 function buildConfig (userConfig, width, height) {

@@ -1,0 +1,29 @@
+type: multi_widget_single_page
+title: shows column alignment applied to both columns and y axis labels
+width: 800
+height: 600
+rowSize: 2
+widgets:
+
+#Horizontal Orientation
+  - title: horizontal, xaxis top
+    config: data.minimal_3x3.data|config.xaxis_font_size_12|config.column_label_orientation_horizontal|data.minimal_3x3.left_columns_two_left_align|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.long_labels
+  - title: horizontal, xaxis bottom
+    config: data.minimal_3x3.data|config.xaxis_font_size_12|config.column_label_orientation_horizontal|data.minimal_3x3.left_columns_two_left_align|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.long_labels|config.xaxis_bottom
+
+#Vertical Orientation
+  - title: vertical, xaxis top
+    config: data.minimal_3x3.data|config.xaxis_font_size_12|config.column_label_orientation_vertical|data.minimal_3x3.left_columns_two_left_align|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.long_labels
+  - title: vertical, xaxis bottom
+    config: data.minimal_3x3.data|config.xaxis_font_size_12|config.column_label_orientation_vertical|data.minimal_3x3.left_columns_two_left_align|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.long_labels|config.xaxis_bottom
+
+#Diagonal Orientation
+  - title: diagonal, xaxis top
+    config: data.minimal_3x3.data|config.xaxis_font_size_12|config.column_label_orientation_diagonal|data.minimal_3x3.left_columns_two_left_align|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.long_labels
+  - title: diagonal, xaxis bottom
+    config: data.minimal_3x3.data|config.xaxis_font_size_12|config.column_label_orientation_diagonal|data.minimal_3x3.left_columns_two_left_align|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.long_labels|config.xaxis_bottom
+
+#Y Axis Variations
+  - title: horizontal, yaxis right
+    config: data.minimal_3x3.data|config.xaxis_font_size_12|config.column_label_orientation_horizontal|data.minimal_3x3.left_columns_two_left_align|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.long_labels|config.yaxis_right|config.yaxis_font_size_15
+

@@ -26,7 +26,7 @@ const cells = {
   LEFT_DENDROGRAM: 'LEFT_DENDROGRAM',
   COLOR_LEGEND: 'COLOR_LEGEND',
   COLORMAP: 'COLORMAP',
-  RIGHT_MARGIN: 'RIGHT_MARGIN' // only enabled when requested by another cell
+  RIGHT_MARGIN: 'RIGHT_MARGIN', // only enabled when requested by another cell
 }
 
 const LayoutColumns = [
@@ -39,7 +39,7 @@ const LayoutColumns = [
   { name: 'RIGHT_YAXIS', cells: [cells.RIGHT_YAXIS] },
   { name: 'RIGHT_YAXIS_TITLE', cells: [cells.RIGHT_YAXIS_TITLE] },
   { name: 'COLOR_LEGEND', cells: [cells.COLOR_LEGEND] },
-  { name: 'RIGHT_MARGIN', cells: [cells.RIGHT_MARGIN], margin: true }
+  { name: 'RIGHT_MARGIN', cells: [cells.RIGHT_MARGIN], margin: true },
 ]
 
 const LayoutRows = [
@@ -51,7 +51,7 @@ const LayoutRows = [
   { name: 'COLORMAP', cells: [cells.LEFT_DENDROGRAM, cells.LEFT_YAXIS_TITLE, cells.LEFT_YAXIS, cells.LEFT_COLUMN, cells.COLORMAP, cells.RIGHT_COLUMN, cells.RIGHT_YAXIS, cells.RIGHT_YAXIS_TITLE, cells.COLOR_LEGEND, cells.RIGHT_MARGIN] },
   { name: 'BOTTOM_COLUMN_LABELS', cells: [cells.BOTTOM_LEFT_COLUMN_SUBTITLE, cells.BOTTOM_XAXIS, cells.BOTTOM_RIGHT_COLUMN_SUBTITLE] },
   { name: 'BOTTOM_COLUMN_TITLES', cells: [cells.BOTTOM_XAXIS_TITLE] },
-  { name: 'FOOTER', cells: [cells.FOOTER] }
+  { name: 'FOOTER', cells: [cells.FOOTER] },
 ]
 
 class Layout {
@@ -63,7 +63,7 @@ class Layout {
         fill: false,
         width: 0,
         height: 0,
-        meta: {}
+        meta: {},
       }
     }, {})
 
@@ -75,7 +75,7 @@ class Layout {
     // non-standard / cant be modelled exceptions, that are run once all components are registered
     //   contains things where one cell depends on presence or absence of other cells
     this.specialRules = [
-      this.applyConditionRightmostMargins.bind(this)
+      this.applyConditionRightmostMargins.bind(this),
     ]
   }
 
@@ -281,6 +281,8 @@ class Layout {
 
   allComponentsRegistered () {
     this.applySpecialRules()
+    layoutLogger.debug(`allComponentsRegistered. Cell info:`)
+    layoutLogger.debug(JSON.stringify(this.cellInfo, {}, 2))
   }
 
   applySpecialRules () {
@@ -297,7 +299,7 @@ class Layout {
         const existingRightMarginWidth = _.get(this.cellInfo[cells.RIGHT_MARGIN], 'width', 0)
         this.setPreferredDimensions(cells.RIGHT_MARGIN, {
           width: Math.max(existingRightMarginWidth, celldata.conditional.rightmostMargin - this.padding),
-          height: 0
+          height: 0,
         })
       }
     })

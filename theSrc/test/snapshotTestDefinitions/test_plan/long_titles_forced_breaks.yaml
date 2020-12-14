@@ -1,0 +1,6 @@
+type: multi_widget_single_page
+width: 1000
+height: 1000
+rowSize: 6
+widgets:
+  - config: data.minimal_3x3.data_standalone|config.title_enabled|config.subtitle_enabled|config.footer_enabled|config.long_title_with_forced_breaks

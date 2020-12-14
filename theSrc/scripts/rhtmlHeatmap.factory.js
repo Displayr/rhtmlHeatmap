@@ -3,7 +3,7 @@ const heatmapOuter = require('./heatmapOuter')
 
 module.exports = function (element) {
   const instance = {
-    lastValue: null
+    lastValue: null,
   }
 
   // Need dedicated helper function that can be called by both renderValue
@@ -27,6 +27,6 @@ module.exports = function (element) {
       if (instance.lastValue) {
         doRenderValue(instance.lastValue)
       }
-    }
+    },
   }
 }

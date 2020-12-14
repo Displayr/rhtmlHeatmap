@@ -1,0 +1,35 @@
+type: multi_widget_single_page
+rowSize: 2
+widgets:
+
+
+  - title: Top X axis labels can use extra space
+    width: 300
+    height: 500
+    config: data.minimal_3x3.data_standalone|data.minimal_3x3.xaxis_third_label_is_long
+
+  - title: Top column title can use extra space
+    width: 375
+    height: 500
+    config: data.minimal_3x3.data_standalone|data.minimal_3x3.xaxis_third_label_is_long|data.minimal_3x3.right_columns_two_left_align
+
+  - title: Bottom X Axis labels can use extra space
+    width: 300
+    height: 500
+    config: data.minimal_3x3.data_standalone|data.minimal_3x3.xaxis_third_label_is_long|config.xaxis_bottom
+
+  - title: Bottom column title can use extra space
+    width: 375
+    height: 500
+    config: data.minimal_3x3.data_standalone|data.minimal_3x3.xaxis_third_label_is_long|data.minimal_3x3.right_columns_two_left_align|config.xaxis_bottom
+
+  # <h2>These tests show the 2nd rightmost label can ask for more space too</h2>
+  - title: Non rightmost X axis labels can use extra space
+    width: 300
+    height: 800
+    config: data.minimal_3x3.data_standalone|data.minimal_3x3.second_xaxis_label_is_long
+
+  - title: Non rightmost top column title can use extra space
+    width: 375
+    height: 800
+    config: data.minimal_3x3.data_standalone|data.minimal_3x3.second_xaxis_label_is_long|data.minimal_3x3.right_columns_two_left_align|data.minimal_3x3.right_columns_subtitles_first_label_is_long

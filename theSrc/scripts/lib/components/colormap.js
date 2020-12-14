@@ -20,7 +20,6 @@ class Colormap extends BaseComponent {
     showGrid,
     animDuration,
     shownoteInCell,
-    controller
   }) {
     super()
     _.assign(this, {
@@ -37,12 +36,11 @@ class Colormap extends BaseComponent {
       showGrid,
       animDuration,
       shownoteInCell,
-      controller
     })
 
     this.counts = {
       row: this.matrix.dim[0],
-      column: this.matrix.dim[1]
+      column: this.matrix.dim[1],
     }
   }
 
@@ -75,7 +73,7 @@ class Colormap extends BaseComponent {
       x: d3.scale.linear().domain([0, this.counts.column]).range([0, width]),
       y: d3.scale.linear().domain([0, this.counts.row]).range([0, height]),
       originalX: d3.scale.linear().domain([0, this.counts.column]).range([0, width]),
-      originalY: d3.scale.linear().domain([0, this.counts.row]).range([0, height])
+      originalY: d3.scale.linear().domain([0, this.counts.row]).range([0, height]),
     }
 
     this.cellSelection = this.container.selectAll('rect').data(merged)
@@ -162,17 +160,17 @@ class Colormap extends BaseComponent {
           controller.colormapDragReset({
             scale: [1, 1],
             translate: [0, 0],
-            extent: [[0, 0], [cols, rows]]
+            extent: [[0, 0], [cols, rows]],
           })
         } else {
           const extent = brush.extent()
           const scale = [
             cols / (extent[1][0] - extent[0][0]),
-            rows / (extent[1][1] - extent[0][1])
+            rows / (extent[1][1] - extent[0][1]),
           ]
           const translate = [
             extent[0][0] * (width / cols) * scale[0] * -1,
-            extent[0][1] * (height / rows) * scale[1] * -1
+            extent[0][1] * (height / rows) * scale[1] * -1,
           ]
           controller.colormapDragSelection({ scale, translate, extent })
         }
@@ -194,7 +192,7 @@ class Colormap extends BaseComponent {
       xaxisTitle: this.xaxisTitle,
       extraTooltipInfo: this.extraTooltipInfo,
       fontSize: this.tipFontSize,
-      fontFamily: this.tipFontFamily
+      fontFamily: this.tipFontFamily,
     })
 
     this.tip = d3Tip()
@@ -233,16 +231,16 @@ class Colormap extends BaseComponent {
       return
     }
 
-    const this_tip = this.tip.show({ col, row, label }).style({
+    const thisTip = this.tip.show({ col, row, label }).style({
       top: d3.event.clientY + 10 + 'px',
       left: d3.event.clientX + 10 + 'px',
-      opacity: 0.9
+      opacity: 0.9,
     })
 
-    const tipHeight = parseFloat(this_tip.style('height'))
-    const tipWidth = parseFloat(this_tip.style('width'))
-    const tipLeft = parseFloat(this_tip.style('left'))
-    const tipTop = parseFloat(this_tip.style('top'))
+    const tipHeight = parseFloat(thisTip.style('height'))
+    const tipWidth = parseFloat(thisTip.style('width'))
+    const tipLeft = parseFloat(thisTip.style('left'))
+    const tipTop = parseFloat(thisTip.style('top'))
 
     const mouseTop = d3.event.clientY
     const mouseLeft = d3.event.clientX
@@ -252,24 +250,24 @@ class Colormap extends BaseComponent {
       if (mouseLeft - tipWidth - 10 < 0) {
         // left edge out of bound if adjusted
         if (Math.abs(mouseLeft - tipWidth - 10) > Math.abs(this.bounds.width - tipLeft - tipWidth)) {
-          this_tip.style('left', tipLeft + 'px')
+          thisTip.style('left', tipLeft + 'px')
         } else {
-          this_tip.style('left', mouseLeft - tipWidth - 10 + 'px')
+          thisTip.style('left', mouseLeft - tipWidth - 10 + 'px')
         }
       } else {
-        this_tip.style('left', mouseLeft - tipWidth - 10 + 'px')
+        thisTip.style('left', mouseLeft - tipWidth - 10 + 'px')
       }
     }
 
     if (tipTop + tipHeight > this.bounds.height) {
       if (mouseTop - tipHeight - 10 < 0) {
         if (Math.abs(mouseTop - tipHeight - 10) > Math.abs(this.bounds.height - tipTop - tipHeight)) {
-          this_tip.style('top', tipTop + 'px')
+          thisTip.style('top', tipTop + 'px')
         } else {
-          this_tip.style('top', mouseTop - tipHeight - 10 + 'px')
+          thisTip.style('top', mouseTop - tipHeight - 10 + 'px')
         }
       } else {
-        this_tip.style('top', mouseTop - tipHeight - 10 + 'px')
+        thisTip.style('top', mouseTop - tipHeight - 10 + 'px')
       }
     }
   }
@@ -316,45 +314,45 @@ class Colormap extends BaseComponent {
   }
 
   placeTextSelection (selection, cellFontSize, cellFontFamily) {
-    var x_scale, y_scale
+    var xScale, yScale
     if (this.scales.originalX && this.scales.originalY) {
-      x_scale = this.scales.originalX
-      y_scale = this.scales.originalY
+      xScale = this.scales.originalX
+      yScale = this.scales.originalY
     } else {
-      x_scale = this.scales.x
-      y_scale = this.scales.y
+      xScale = this.scales.x
+      yScale = this.scales.y
     }
 
-    var box_w = x_scale(1) - x_scale(0) - this.spacing
-    var box_h = y_scale(1) - y_scale(0) - this.spacing
-    var ft_size = Math.min(Math.floor(box_h / 1.5), cellFontSize)
+    var boxWidth = xScale(1) - xScale(0) - this.spacing
+    var boxHeight = yScale(1) - yScale(0) - this.spacing
+    var fontSize = Math.min(Math.floor(boxHeight / 1.5), cellFontSize)
 
     selection
-      .attr('x', (d, i) => x_scale(i % this.counts.column) + (box_w) / 2)
-      .attr('y', (d, i) => y_scale(Math.floor(i / this.counts.column)) + (box_h) / 2)
-      .style('font-size', ft_size)
+      .attr('x', (d, i) => xScale(i % this.counts.column) + (boxWidth) / 2)
+      .attr('y', (d, i) => yScale(Math.floor(i / this.counts.column)) + (boxHeight) / 2)
+      .style('font-size', fontSize)
       .style('font-family', cellFontFamily)
 
-    var out_of_bounds
+    var isOutOfBounds
     do {
-      out_of_bounds = 0
+      isOutOfBounds = 0
 
       selection
         .each(function () {
-          if (this.getBBox().width > box_w - 4) {
-            out_of_bounds += 1
+          if (this.getBBox().width > boxWidth - 4) {
+            isOutOfBounds += 1
           }
         })
 
-      if (out_of_bounds > 0) {
-        ft_size -= 1
-        console.log(`out of bounds count: ${out_of_bounds}. Decresased font to ${ft_size}`)
+      if (isOutOfBounds > 0) {
+        fontSize -= 1
+        console.log(`out of bounds count: ${isOutOfBounds}. Decreased font to ${fontSize}`)
       }
 
-      selection.style('font-size', ft_size)
-    } while (out_of_bounds > 0 && ft_size > 3)
+      selection.style('font-size', fontSize)
+    } while (isOutOfBounds > 0 && fontSize > 3)
 
-    return ft_size
+    return fontSize
   }
 }
 
@@ -398,18 +396,5 @@ function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extr
     </table>`
   }
 }
-
-// for debugging only
-// function showLine (svg, coords, color = 'black', note = '') {
-//   const path = 'M' + coords.map(({x, y}) => `${x} ${y}`).join(' L')
-//   svg.append('path')
-//     .classed('debug', true)
-//     .attr('d', path)
-//     .attr('stroke', color)
-//     .attr('stroke-width', 1)
-//     .attr('fill', 'none')
-//     .style('opacity', 1)
-//     .style('display', 'inline')
-// }
 
 module.exports = Colormap

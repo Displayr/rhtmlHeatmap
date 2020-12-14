@@ -1,0 +1,8 @@
+version: 1
+type: single_page_one_example_per_config
+use_config_as_title: true
+width: 1000
+height: 1000
+rowSize: 2
+config:
+  - data.minimal_3x3.data_standalone

@@ -47,17 +47,17 @@ class Legend extends BaseComponent {
     legendAxis.tickFormat(this.legend_format)
     legendAxisG.call(legendAxis)
 
-    let text_widths = []
+    let textWidths = []
     legendAxisG.selectAll('text')
       .style('font-size', this.fontSize + 'px')
       .style('font-family', this.fontFamily)
       .style('fill', this.fontColor)
-      .each(function () { text_widths.push(this.getComputedTextLength()) })
+      .each(function () { textWidths.push(this.getComputedTextLength()) })
 
     const totalWidth = this.leftSpace +
       this.barWidth +
       this.xPadding +
-      d3.max(text_widths)
+      d3.max(textWidths)
 
     dummySvg.remove()
     return { width: totalWidth, height: 0 } // we just accept whatever height is given
@@ -101,8 +101,8 @@ class Legend extends BaseComponent {
   }
 
   computeLegendDigits (legendTicksCount) {
-    const legend_step = (d3.max(this.range) - d3.min(this.range)) / (legendTicksCount - 1)
-    let digits = Math.max(0, -1 * Math.floor(Math.log(legend_step) / Math.log(10)))
+    const legendStep = (d3.max(this.range) - d3.min(this.range)) / (legendTicksCount - 1)
+    let digits = Math.max(0, -1 * Math.floor(Math.log(legendStep) / Math.log(10)))
     if (this.labelFormat === 'percentage') {
       digits = Math.max(0, digits - 2)
     }
