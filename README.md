@@ -74,6 +74,29 @@ $ git commit -a -m 'fix the style'
 $ git push origin head
 ```
 
+### Layout considerations
+
+#### wrapping complications
+
+The xaxis, title, subtitle, footer, and yaxis_title components all support text wrapping when needed, but this complicates the layout.
+If wrapping is required then these components take up extra height (or width in the case of the vertically oriented yaxis title).
+
+For the xaxis, title, subtitle, footer : To know the required height (due to wrapping), we need to know the available width to determine if wrapping is required.
+
+For the yaxis_title : To know the required width (due to wrapping), we need to know the available height to determine if wrapping is required.
+
+But the height available to the yaxis_title is partially determined by how much wrapping occurs in the title, subtitle, and footer.
+And the amount of wrapping in the title/subtitle/footer depends on the width available, which is partially determined by the amount of wrapping in the yaxis_title.
+
+As you can see this is a cyclic dependency. The chosen solution is a tradeoff which favors the wrapping of the title/subtitle/footer over the wrapping of the yaxis_title
+    
+### Title/Subtitle/Footer Alignment and wrapping complications
+    
+We center align the title/subtitle/footer with the midpoint of the heatmap,
+ but we want to wrap these text components using the canvas boundaries, not the colormap boundaries. 
+
+The layout component does not currently support that use case, so there are some manual steps performed in heatmapcore.js to accomodate this use case.
+
 License
 -------
 GPL-3
