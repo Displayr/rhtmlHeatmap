@@ -347,11 +347,22 @@ class Heatmap {
       this.layout.setPreferredDimensions(yaxisCellName, dimensions)
     }
 
-    // NB Xaxis, title, subtitle, and footer complication: wrapping.
-    // To know the required height (due to wrapping),
-    // we need to know the available width. (this is why it is done near end)
+    // NB WRAPPING COMPLICATIONS
+    // Xaxis, title, subtitle, footer, yaxis_title complication all wrap when needed, which complicates layout.
+    // this is why these layout steps are done near the end.
 
-    // NB title/subtitle/footer : we want to center align with the colormap midpoint,
+    // For Xaxis, title, subtitle, footer : To know the required height (due to wrapping), we need to know the available width.
+    // For yaxis_title : To know the required width (due to wrapping), we need to know the available height.
+
+    // An added complication is that yaxis_title and title/subtitle are not independent,
+    // The one that goes last will have the most accurate information about the available space.
+
+    // We choose to compute yaxis_title before title, subtitle, and footer, this means the yaxis_title preferred dimensions math
+    // may be inaccurate. This is a tradeoff that is not yet properly addressed in this library
+    // The current order favors title, subtitle, and footer wrapping.
+
+    // NB COLORMAP ALIGNMENT COMPLICATIONS
+    // title/subtitle/footer : extra complication : we want to center align with the colormap midpoint,
     // but we want to wrap using the canvas boundaries, not the colormap boundaries.
     // we cannot currently express this in the layout component, so we need to do a bit of manual work here
     if (!_.isEmpty(options.xaxis_title)) {
@@ -407,6 +418,35 @@ class Heatmap {
       const dimensions = this.components[xaxisCellName].computePreferredDimensions(estimatedColormapColumnWidth)
       this.layout.enable(xaxisCellName)
       this.layout.setPreferredDimensions(xaxisCellName, dimensions)
+    }
+
+    if (!_.isEmpty(options.yaxis_title)) {
+      // NB Ytitle complication: wrapping. See comment above title WRAPPING COMPLICATIONS
+
+      const yaxisTitleCellName = this.layout.enabled(CellNames.RIGHT_YAXIS)
+        ? CellNames.RIGHT_YAXIS_TITLE
+        : CellNames.LEFT_YAXIS_TITLE
+
+      const estimatedHeight = _([
+        options.heatmap_max_height * options.height,
+        this.layout.getEstimatedCellBounds(yaxisTitleCellName).height,
+      ]).min()
+
+      this.components[yaxisTitleCellName] = new YTitle({
+        parentContainer: inner,
+        text: options.yaxis_title,
+        type: yaxisTitleCellName,
+        fontFamily: options.yaxis_title_font_family,
+        fontSize: options.yaxis_title_font_size,
+        fontColor: options.yaxis_title_font_color,
+        maxLines: 3,
+        maxHeight: estimatedHeight,
+        bold: options.yaxis_title_bold,
+      })
+
+      const dimensions = this.components[yaxisTitleCellName].computePreferredDimensions()
+      this.layout.enable(yaxisTitleCellName)
+      this.layout.setPreferredDimensions(yaxisTitleCellName, dimensions)
     }
 
     if (!_.isEmpty(options.title)) {
@@ -467,41 +507,6 @@ class Heatmap {
       const dimensions = this.components[CellNames.FOOTER].computePreferredDimensions(2 * shorterSide)
       this.layout.enable(CellNames.FOOTER)
       this.layout.setPreferredDimensions(CellNames.FOOTER, dimensions)
-    }
-
-    if (!_.isEmpty(options.yaxis_title)) {
-      // NB Ytitle complication: wrapping.
-      // To know the required width (due to wrapping),
-      // we need to know the available height. (this is why it is done at end)
-
-      // doing this after the Xaxis, title, subtitle, and footer may invalidate some of their math, this is a tradeoff
-      // that is not yet properly addressed in this library
-      // by placing this last we are favoring yaxis title wrapping
-
-      const yaxisTitleCellName = this.layout.enabled(CellNames.RIGHT_YAXIS)
-        ? CellNames.RIGHT_YAXIS_TITLE
-        : CellNames.LEFT_YAXIS_TITLE
-
-      const estimatedHeight = _([
-        options.heatmap_max_height * options.height,
-        this.layout.getEstimatedCellBounds(yaxisTitleCellName).height,
-      ]).min()
-
-      this.components[yaxisTitleCellName] = new YTitle({
-        parentContainer: inner,
-        text: options.yaxis_title,
-        type: yaxisTitleCellName,
-        fontFamily: options.yaxis_title_font_family,
-        fontSize: options.yaxis_title_font_size,
-        fontColor: options.yaxis_title_font_color,
-        maxLines: 3,
-        maxHeight: estimatedHeight,
-        bold: options.yaxis_title_bold,
-      })
-
-      const dimensions = this.components[yaxisTitleCellName].computePreferredDimensions()
-      this.layout.enable(yaxisTitleCellName)
-      this.layout.setPreferredDimensions(yaxisTitleCellName, dimensions)
     }
 
     this.layout.allComponentsRegistered()
