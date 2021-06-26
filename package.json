@@ -1,10 +1,12 @@
 {
+  "name": "rhtmlHeatmap",
   "private": true,
   "engines": {
-    "node": ">=6.9.5"
+    "node": ">=12.9.0"
   },
   "scripts": {
     "prepush": "node ./bin/prepush",
+    "preinstall": "([ \"$CI\" != true ] && npx npm-force-resolutions) || true",
     "test": "npm run localTest",
     "localTest": "gulp testSpecs && gulp testVisual --env=local --branch=`git rev-parse --abbrev-ref HEAD`",
     "travisTest": "gulp testSpecs && gulp testVisual --env=travis --branch=$BRANCH",
@@ -17,18 +19,25 @@
   },
   "devDependencies": {
     "gulp": "^4.0.2",
-    "husky": "0.13.3",
-    "rhtmlBuildUtils": "github:Displayr/rhtmlBuildUtils#7.0.0"
+    "npm-force-resolutions": "0.0.10",
+    "rhtmlBuildUtils": "github:Displayr/rhtmlBuildUtils#7.1.1"
   },
   "dependencies": {
     "d3": "3.5.11",
     "d3-tip": "Displayr/d3-tip#v3.0.0",
     "idempotent-babel-polyfill": "^7.4.4",
     "jquery": "^3.5.1",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "loglevel": "^1.6.1",
     "only": "0.0.2",
-    "rhtmlLabelUtils": "github:Displayr/rhtmlLabelUtils#2.1.0",
-    "yargs": "^16.1.0"
+    "rhtmlLabelUtils": "github:Displayr/rhtmlLabelUtils#2.1.0"
+  },
+  "resolutions": {
+    "glob-parent": "5.1.2",
+    "hosted-git-info": "3.0.8",
+    "ini": "1.3.8",
+    "minimist": "1.2.5",
+    "y18n": "4.0.3",
+    "yargs-parser": "18.1.3"
   }
 }
