@@ -30,7 +30,7 @@
     "lodash": "^4.17.21",
     "loglevel": "^1.6.1",
     "only": "0.0.2",
-    "rhtmlLabelUtils": "github:Displayr/rhtmlLabelUtils#2.1.0"
+    "rhtmlLabelUtils": "github:Displayr/rhtmlLabelUtils#2.1.1"
   },
   "resolutions": {
     "glob-parent": "5.1.2",
