@@ -13,7 +13,7 @@ const config = {
     css: [
       '/styles/heatmapcore.css',
     ],
-    isReadySelector: 'svg[rhtmlwidget-status=ready]',
+    isReadySelector: 'div[rhtmlwidget-status=ready]',
     singleWidgetSnapshotSelector: '#widget-container',
   },
   snapshotTesting: {
