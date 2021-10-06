@@ -25,7 +25,7 @@ class Heatmap {
     height }) {
     const el = d3.select(selector)
     el.classed('rhtmlHeatmap', true)
-    el[0][0].parentElement.attr(`rhtmlwidget-status`, 'loading')
+    el[0][0].parentElement.setAttribute('rhtmlwidget-status', 'loading')
 
     let controller = new Controller()
     this.controller = controller
@@ -112,7 +112,7 @@ class Heatmap {
       this.components[CellNames.RIGHT_COLUMN_TITLE].draw(this.layout.getCellBounds(CellNames.RIGHT_COLUMN_TITLE))
     }
 
-    el[0][0].parentElement.attr(`rhtmlwidget-status`, 'ready')
+    el[0][0].parentElement.setAttribute('rhtmlwidget-status', 'ready')
   }
 
   wireupController () {
