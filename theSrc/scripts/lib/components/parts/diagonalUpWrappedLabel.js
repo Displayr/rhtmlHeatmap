@@ -77,7 +77,7 @@ class DiagonalUpWrappedLabel extends BaseComponent {
       .attr('dy', 0)
       .style('text-anchor', 'start')
       .style('font-family', this.fontFamily)
-      .style('font-size', this.fontSize)
+      .style('font-size', this.fontSize + 'px')
       .style('fill', this.fontColor)
       .text(text)
       .on('click', onClick)
