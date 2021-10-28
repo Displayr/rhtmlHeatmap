@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import BaseComponent from '../baseComponent'
+import Utils from '../utils'
 import { enums, splitIntoLines, getSingleLineLabelDimensions } from 'rhtmlLabelUtils'
 
 const DEBUG = false
@@ -77,7 +78,7 @@ class DiagonalDownWrappedLabel extends BaseComponent {
       .attr('dy', 0)
       .style('text-anchor', 'start')
       .style('font-family', this.fontFamily)
-      .style('font-size', this.fontSize)
+      .style('font-size', Utils.fontSizeInPx(this.fontSize))
       .style('fill', this.fontColor)
       .text(text)
       .on('click', onClick)

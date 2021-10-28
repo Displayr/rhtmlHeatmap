@@ -1,4 +1,5 @@
 import BaseComponent from './baseComponent'
+import Utils from './utils'
 import d3 from 'd3'
 import _ from 'lodash'
 
@@ -49,7 +50,7 @@ class Legend extends BaseComponent {
 
     let textWidths = []
     legendAxisG.selectAll('text')
-      .style('font-size', this.fontSize + 'px')
+      .style('font-size', Utils.fontSizeInPx(this.fontSize))
       .style('font-family', this.fontFamily)
       .style('fill', this.fontColor)
       .each(function () { textWidths.push(this.getComputedTextLength()) })
@@ -95,7 +96,7 @@ class Legend extends BaseComponent {
     legendLabels.call(legendAxis)
     legendLabels.selectAll('text')
       .attr('x', 0)
-      .style('font-size', this.fontSize + 'px')
+      .style('font-size', Utils.fontSizeInPx(this.fontSize))
       .style('font-family', this.fontFamily)
       .style('fill', this.fontColor)
   }
