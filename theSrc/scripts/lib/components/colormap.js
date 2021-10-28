@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import BaseComponent from './baseComponent'
+import Utils from './utils'
 import d3 from 'd3'
 
 const d3Tip = require('d3-tip')
@@ -121,7 +122,7 @@ class Colormap extends BaseComponent {
         .attr('text-anchor', 'middle')
         .attr('alignment-baseline', 'central')
         .style('font-family', this.cellFontFamily)
-        .style('font-size', this.cellFontSize)
+        .style('font-size', Utils.fontSizeInPx(this.cellFontSize))
         .style('fill', function (d) {
           return d.cellnote_color
         })
@@ -330,7 +331,7 @@ class Colormap extends BaseComponent {
     selection
       .attr('x', (d, i) => xScale(i % this.counts.column) + (boxWidth) / 2)
       .attr('y', (d, i) => yScale(Math.floor(i / this.counts.column)) + (boxHeight) / 2)
-      .style('font-size', fontSize)
+      .style('font-size', Utils.fontSizeInPx(fontSize))
       .style('font-family', cellFontFamily)
 
     var isOutOfBounds
@@ -349,7 +350,7 @@ class Colormap extends BaseComponent {
         console.log(`out of bounds count: ${isOutOfBounds}. Decreased font to ${fontSize}`)
       }
 
-      selection.style('font-size', fontSize)
+      selection.style('font-size', Utils.fontSizeInPx(fontSize))
     } while (isOutOfBounds > 0 && fontSize > 3)
 
     return fontSize
