@@ -5,51 +5,51 @@ rowSize: 4
 widgets:
 
 #  Left Column + Y Axis Interactions
-  - title: Left Columns, Top X Axis, Left Y Axis, Long Title
+  - title: Left Col, Top X Axis, Left Y Axis, Long Title
     config: '{ "options": { "title": "Extra long title to show the title wrapping with an off center colormap.", "title_font_size": 12 } }|data.minimal_3x3.data|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.right_columns_none|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_left|config.yaxis_title'
 
-  - title: Left Columns, Top X Axis, Left Y Axis, No Y Axis Title
+  - title: Left Col, Top X Axis, Left Y Axis, No Y Axis Title
     config: data.minimal_3x3.data|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.right_columns_none|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_left
 
-  - title: Left Columns, Top X Axis, Right Y Axis
+  - title: Left Col, Top X Axis, Right Y Axis
     config: data.minimal_3x3.data|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.right_columns_none|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_right|config.yaxis_title
 
-  - title: Left Columns, Top X Axis, Right Y Axis, No Y Axis Title
+  - title: Left Col, Top X Axis, Right Y Axis, No Y Axis Title
     config: data.minimal_3x3.data|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.right_columns_none|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_right
 
-  - title: Left Columns, Bottom X Axis, Left Y Axis
+  - title: Left Col, Bottom X Axis, Left Y Axis
     config: data.minimal_3x3.data|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.right_columns_none|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_left|config.yaxis_title
 
-  - title: Left Columns, Bottom X Axis, Left Y Axis No Title
+  - title: Left Col, Bottom X Axis, Left Y Axis No Title
     config: data.minimal_3x3.data|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.right_columns_none|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_left
 
-  - title: Left Columns, Bottom X Axis, Right Y Axis
+  - title: Left Col, Bottom X Axis, Right Y Axis
     config: data.minimal_3x3.data|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.right_columns_none|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_right|config.yaxis_title
 
-  - title: Left Columns, Bottom X Axis, Right Y Axis No Title
+  - title: Left Col, Bottom X Axis, Right Y Axis No Title
     config: data.minimal_3x3.data|data.minimal_3x3.left_columns_two_center_align_uniform_widths|config.right_columns_none|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_right
 
 #  Right Column + Y Axis Interactions
-  - title: Right Columns + Top X Axis. Left Y Axis
+  - title: Right Col + Top X Axis. Left Y Axis
     config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.left_columns_none|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_left|config.yaxis_title
 
-  - title: Right Columns + Top X Axis. Left Y Axis No Title
+  - title: Right Col + Top X Axis. Left Y Axis No Title
     config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.left_columns_none|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_left
 
-  - title: Right Columns + Top X Axis. Right Y Axis
+  - title: Right Col + Top X Axis. Right Y Axis
     config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.left_columns_none|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_right|config.yaxis_title
 
-  - title: Right Columns + Top X Axis. Right Y Axis No Title
+  - title: Right Col + Top X Axis. Right Y Axis No Title
     config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.left_columns_none|config.subtitle_none|config.footer_none|config.xaxis_top|config.yaxis_right
 
-  - title: Right Columns + Bottom X Axis. Left Y Axis
+  - title: Right Col + Bottom X Axis. Left Y Axis
     config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.left_columns_none|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_left|config.yaxis_title
 
-  - title: Right Columns + Bottom X Axis. Left Y Axis No Title
+  - title: Right Col + Bottom X Axis. Left Y Axis No Title
     config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.left_columns_none|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_left
 
-  - title: Right Columns + Bottom X Axis. Right Y Axis
+  - title: Right Col + Bottom X Axis. Right Y Axis
     config: data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.left_columns_none|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_right|config.yaxis_title
 
-  - title: Right Columns + Bottom X Axis. Right Y Axis No Title. Long Title
+  - title: Right Col + Bottom X Axis. Right Y Axis No Title. Long Title
     config: '{ "options": { "title": "Extra long title to show the title wrapping with an off center colormap.", "title_font_size": 12 } }|data.minimal_3x3.data|data.minimal_3x3.right_columns_two_center_align_uniform_widths|config.left_columns_none|config.subtitle_none|config.footer_none|config.xaxis_bottom|config.yaxis_right'
