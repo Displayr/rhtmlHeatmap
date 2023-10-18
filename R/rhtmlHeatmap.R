@@ -318,6 +318,8 @@ Heatmap <- function(x,
   ...
 ) {
 
+  if (inherits(x, "QTable"))
+    x <- unclass(x)
   ## x is a matrix!
   ##====================
   if(!is.matrix(x)) {
