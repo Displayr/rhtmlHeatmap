@@ -6,8 +6,8 @@ pkgs.rPackages.buildRPackage {
   src = ./.;
   description = ''An improved heatmap package based on d3heatmap.'';
   propagatedBuildInputs = with pkgs.rPackages; [ 
+    png
     htmlwidgets
     base64enc
-    png
   ];
 }
