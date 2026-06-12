@@ -44,7 +44,7 @@ NULL
 #' @param distfun function used to compute the distance (dissimilarity) between both rows and columns. Defaults to dist.
 #' @param hclustfun function used to compute the hierarchical clustering when Rowv or Colv are not dendrograms. Defaults to hclust.
 #' @param dendrogram character string indicating whether to draw 'none', 'row', 'column' or 'both' dendrograms. Defaults to 'both'. However, if Rowv (or Colv) is FALSE or NULL and dendrogram is 'both', then a warning is issued and Rowv (or Colv) arguments are honoured.
-#' @param reorderfun function(d, w) of dendrogram and weights for reordering the row and column dendrograms. The default uses stats{reorder.dendrogram}
+#' @param reorderfun function(d, w) of dendrogram and weights for reordering the row and column dendrograms. The default uses \code{\link[stats]{reorder.dendrogram}}
 #'
 #' @param k_row an integer scalar with the desired number of groups by which to color the dendrogram's branches in the rows (uses \link[dendextend]{color_branches})
 #' @param k_col an integer scalar with the desired number of groups by which to color the dendrogram's branches in the columns (uses \link[dendextend]{color_branches})
@@ -104,11 +104,11 @@ NULL
 #' @param footer_font_family character. Font family of the chart footer_font_family, defaults to "sans-serif".
 #' @param footer_font_color An RGB character to set the color of the chart footer_font_color. Defaults to "#000000".
 #'
-#' @param column_label_orientation. Enum ['horizontal', 'vertical', 'diagonal']. Defaults to 'diagonal'.
-#' @param column_label_max_height. Max height used by column labels (xaxis and column subtitles). Specified as proportion of total height. Defaults to 0.25.
-#' @param row_label_max_width. Max width used by row labels (yaxis and column labels). Specified as proportion of total height. Defaults to 0.25.
-#' @param heatmap_max_height. Max height used by heatmap grid. Specified as proportion of total height. Defaults to 1.
-#' @param heatmap_max_width. Max width used by heatmap grid. Specified as proportion of total width. Defaults to 1.
+#' @param column_label_orientation Enum ['horizontal', 'vertical', 'diagonal']. Defaults to 'diagonal'.
+#' @param column_label_max_height Max height used by column labels (xaxis and column subtitles). Specified as proportion of total height. Defaults to 0.25.
+#' @param row_label_max_width Max width used by row labels (yaxis and column labels). Specified as proportion of total height. Defaults to 0.25.
+#' @param heatmap_max_height Max height used by heatmap grid. Specified as proportion of total height. Defaults to 1.
+#' @param heatmap_max_width Max width used by heatmap grid. Specified as proportion of total width. Defaults to 1.
 #'
 #' @param xaxis_hidden Boolean variable to hide x axis. Defaults to FALSE.
 #' @param xaxis_location Location of the x axis, c("bottom", "top"). Defaults to "bottom". "top" only works when dendrogram is "none".
@@ -169,17 +169,17 @@ NULL
 #'
 #' @export
 #' @source
-#' The interface was designed based on \link{heatmap} and \link[gplots]{heatmap.2}
+#' The interface was designed based on \link{heatmap} and \code{gplots::heatmap.2}
 #'
 #' @seealso
-#' \link{heatmap}, \link[gplots]{heatmap.2}
+#' \link{heatmap}, \code{gplots::heatmap.2}
 #'
 #' @examples
 #' library(rhtmlHeatmap)
 #' Heatmap(mtcars, scale = "column", colors = "Blues")
 #'
-#' For more examples see the /examples/examples.R file
-#' in the source package
+#' # For more examples see the /examples/examples.R file
+#' # in the source package
 #'
 #'
 Heatmap <- function(x,
@@ -318,6 +318,8 @@ Heatmap <- function(x,
   ...
 ) {
 
+  if (inherits(x, "QTable"))
+    x <- unclass(x)
   ## x is a matrix!
   ##====================
   if(!is.matrix(x)) {

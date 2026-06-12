@@ -1,18 +1,21 @@
 Package: rhtmlHeatmap
 Type: Package
 Title: An improved heatmap package based on d3heatmap
-Version: 1.0.3
+Version: 1.0.4
 Author: Displayr <opensource@displayr.com>
 Maintainer: Displayr <opensource@displayr.com>
 Description: An improved heatmap package based on d3heatmap.
 License: GPL-3 + file LICENSE
+Encoding: UTF-8
 LazyData: TRUE
 Imports:
     png,
     base64enc,
+    dendextend,
     htmlwidgets,
     grDevices,
+    scales,
     stats
 Remotes:
     Displayr/htmlwidgets
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.3
