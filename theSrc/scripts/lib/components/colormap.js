@@ -362,8 +362,8 @@ function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extr
     return (str + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   }
 
-  const commonStyleWithAlign = `text-align:right;font-size:${fontSize}px;font-family:${fontFamily};color:white`
-  const commonStyle = `font-size:${fontSize}px;font-family:${fontFamily};color:white`
+  const commonStyleWithAlign = `text-align:right;font-size:${fontSize}px;font-family:${htmlEscape(fontFamily)};color:white`
+  const commonStyle = `font-size:${fontSize}px;font-family:${htmlEscape(fontFamily)};color:white`
 
   return (d, i) => {
     var rowTitle = htmlEscape(yaxisTitle || 'Row')
