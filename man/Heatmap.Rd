@@ -4,7 +4,7 @@
 \alias{Heatmap}
 \title{rhtmlHeatmap widget}
 \source{
-The interface was designed based on \link{heatmap} and \link[gplots]{heatmap.2}
+The interface was designed based on \link{heatmap} and \code{gplots::heatmap.2}
 }
 \usage{
 Heatmap(
@@ -129,7 +129,7 @@ Defaults to \code{TRUE} unless \code{x} contains any \code{NA}s.}
 
 \item{dendrogram}{character string indicating whether to draw 'none', 'row', 'column' or 'both' dendrograms. Defaults to 'both'. However, if Rowv (or Colv) is FALSE or NULL and dendrogram is 'both', then a warning is issued and Rowv (or Colv) arguments are honoured.}
 
-\item{reorderfun}{function(d, w) of dendrogram and weights for reordering the row and column dendrograms. The default uses stats{reorder.dendrogram}}
+\item{reorderfun}{function(d, w) of dendrogram and weights for reordering the row and column dendrograms. The default uses \code{\link[stats]{reorder.dendrogram}}}
 
 \item{k_row}{an integer scalar with the desired number of groups by which to color the dendrogram's branches in the rows (uses \link[dendextend]{color_branches})}
 
@@ -229,6 +229,16 @@ should cellnote be scaled if x is also scaled?}
 \item{footer_font_family}{character. Font family of the chart footer_font_family, defaults to "sans-serif".}
 
 \item{footer_font_color}{An RGB character to set the color of the chart footer_font_color. Defaults to "#000000".}
+
+\item{column_label_orientation}{Enum ['horizontal', 'vertical', 'diagonal']. Defaults to 'diagonal'.}
+
+\item{column_label_max_height}{Max height used by column labels (xaxis and column subtitles). Specified as proportion of total height. Defaults to 0.25.}
+
+\item{row_label_max_width}{Max width used by row labels (yaxis and column labels). Specified as proportion of total height. Defaults to 0.25.}
+
+\item{heatmap_max_height}{Max height used by heatmap grid. Specified as proportion of total height. Defaults to 1.}
+
+\item{heatmap_max_width}{Max width used by heatmap grid. Specified as proportion of total width. Defaults to 1.}
 
 \item{xaxis_hidden}{Boolean variable to hide x axis. Defaults to FALSE.}
 
@@ -330,16 +340,6 @@ non-integer).}
 For large \code{x} it may help performance to set this value to \code{0}.}
 
 \item{...}{currently ignored}
-
-\item{column_label_orientation.}{Enum ['horizontal', 'vertical', 'diagonal']. Defaults to 'diagonal'.}
-
-\item{column_label_max_height.}{Max height used by column labels (xaxis and column subtitles). Specified as proportion of total height. Defaults to 0.25.}
-
-\item{row_label_max_width.}{Max width used by row labels (yaxis and column labels). Specified as proportion of total height. Defaults to 0.25.}
-
-\item{heatmap_max_height.}{Max height used by heatmap grid. Specified as proportion of total height. Defaults to 1.}
-
-\item{heatmap_max_width.}{Max width used by heatmap grid. Specified as proportion of total width. Defaults to 1.}
 }
 \description{
 Creates a D3.js-based heatmap widget. Modified from d3heatmap package.
@@ -348,11 +348,11 @@ Creates a D3.js-based heatmap widget. Modified from d3heatmap package.
 library(rhtmlHeatmap)
 Heatmap(mtcars, scale = "column", colors = "Blues")
 
-For more examples see the /examples/examples.R file
-in the source package
+# For more examples see the /examples/examples.R file
+# in the source package
 
 
 }
 \seealso{
-\link{heatmap}, \link[gplots]{heatmap.2}
+\link{heatmap}, \code{gplots::heatmap.2}
 }
