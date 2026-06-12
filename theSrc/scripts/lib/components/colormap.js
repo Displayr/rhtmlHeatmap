@@ -366,15 +366,15 @@ function makeTipContentGenerator ({ values, rowNames, columnNames, numCols, extr
   const commonStyle = `font-size:${fontSize}px;font-family:${fontFamily};color:white`
 
   return (d, i) => {
-    var rowTitle = yaxisTitle || 'Row'
-    var colTitle = xaxisTitle || 'Column'
+    var rowTitle = htmlEscape(yaxisTitle || 'Row')
+    var colTitle = htmlEscape(xaxisTitle || 'Column')
 
     let extraInfoHtml = ''
     if (extraTooltipInfo) {
       extraInfoHtml = _.map(extraTooltipInfo, (value, key) => {
         return `
           <tr>
-            <th style="${commonStyleWithAlign}">${key}</th>
+            <th style="${commonStyleWithAlign}">${htmlEscape(key)}</th>
             <td style="${commonStyle}">${htmlEscape(value[d.row * numCols + d.col])}</td>
           </tr>`
       }).join('')
