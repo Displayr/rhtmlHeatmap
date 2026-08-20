@@ -4,6 +4,7 @@ import _ from 'lodash'
 import d3 from 'd3'
 import * as rootLog from 'loglevel'
 
+const { waitForFonts } = require('./lib/fonts')
 const Heatmap = require('./lib/heatmapcore/heatmapcore')
 
 let uniqueInstanceCount = 0
@@ -16,8 +17,14 @@ module.exports = function (element, config) {
 
   _initLogger(options.logLevel)
 
-  const { width, height } = getContainerDimensions(_.has(element, 'length') ? element[0] : element)
+  const rootElement = _.has(element, 'length') ? element[0] : element
+  const { width, height } = getContainerDimensions(rootElement)
   const uniqueClass = `heatmap-${uniqueId()}`
+
+  // NB the status is also set by the Heatmap constructor, but it must be set before the async work
+  // below, otherwise Displayr can treat the widget as rendered and screenshot it while it is still
+  // waiting on fonts or on the image data
+  rootElement.setAttribute('rhtmlwidget-status', 'loading')
 
   d3.select(element)
     .append('svg')
@@ -25,8 +32,10 @@ module.exports = function (element, config) {
     .attr('width', width)
     .attr('height', height)
 
-  loadImage(image)
-    .then(({ imgData, width, height }) => processImageData({ imgData, width, height, matrix, cellNotes: options.shownote_in_cell }))
+  // NB fonts are waited on alongside the image load, not after it, so this costs no extra time
+  // when the fonts are already available
+  Promise.all([loadImage(image), waitForFonts(options)])
+    .then(([{ imgData, width, height }]) => processImageData({ imgData, width, height, matrix, cellNotes: options.shownote_in_cell }))
     .then(merged => {
       matrix.merged = merged
       return new Heatmap({
@@ -40,6 +49,9 @@ module.exports = function (element, config) {
       })
     })
     .catch(error => {
+      // NB the status must not be left as loading, or Displayr waits on a chart that will never
+      // arrive, which for an image export means waiting out its screenshot timeout
+      rootElement.setAttribute('rhtmlwidget-status', 'ready')
       throw error
     })
 }
