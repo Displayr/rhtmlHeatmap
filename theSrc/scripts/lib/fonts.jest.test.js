@@ -57,8 +57,20 @@ describe('waitForFonts', () => {
 
     await waitForFonts({ title_font_family: 'Circular', xaxis_font_family: 'Circular' })
 
-    expect(requested).toEqual(['12px Circular', 'bold 12px Circular'])
+    expect(requested).toEqual(['12px "Circular"', 'bold 12px "Circular"'])
     expect(readyHasResolved).toBe(true)
+  })
+
+  test('quotes the family so a multi word name stays a parseable font shorthand', async () => {
+    const requested = []
+    withFontSet({
+      load: (fontSpecification) => { requested.push(fontSpecification); return Promise.resolve([]) },
+      ready: Promise.resolve(),
+    })
+
+    await waitForFonts({ title_font_family: 'Open Sans' })
+
+    expect(requested).toEqual(['12px "Open Sans"', 'bold 12px "Open Sans"'])
   })
 
   test('resolves when a font cannot be loaded', async () => {
@@ -68,15 +80,6 @@ describe('waitForFonts', () => {
     })
 
     await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
-  })
-
-  test('resolves when loading a font throws synchronously', async () => {
-    withFontSet({
-      load: () => { throw new Error('invalid font shorthand') },
-      ready: Promise.resolve(),
-    })
-
-    await expect(waitForFonts({ title_font_family: '!invalid' })).resolves.toBeUndefined()
   })
 
   test('resolves without waiting for a font set the browser does not provide', async () => {

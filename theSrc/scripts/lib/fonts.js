@@ -12,6 +12,10 @@ const FONT_FAMILY_OPTION_SUFFIX = '_font_family'
 // NB the font size is irrelevant to which font file is loaded, but the CSS font shorthand needs one
 const FONT_VARIANTS_TO_LOAD = ['12px', 'bold 12px']
 
+// NB quoting the family keeps the shorthand parseable whatever the family is named. A generic
+// family such as sans-serif then reads as a name and matches nothing, which is harmless
+const fontToLoad = (fontVariant, fontFamily) => `${fontVariant} "${fontFamily}"`
+
 // NB a font we cannot load must delay the chart, not prevent it
 const FONT_LOAD_TIMEOUT_IN_MILLISECONDS = 3000
 
@@ -32,15 +36,11 @@ function waitForFonts (options) {
     return Promise.resolve()
   }
 
-  _(fontFamiliesInUse(options)).each(fontFamily => {
-    _(FONT_VARIANTS_TO_LOAD).each(fontVariant => {
-      try {
-        fontSet.load(`${fontVariant} ${fontFamily}`).catch(() => {})
-      } catch (error) {
-        // NB an unusable font family in the config throws synchronously, and must be ignored
-      }
-    })
-  })
+  const fontsToLoad = _.flatMap(fontFamiliesInUse(options),
+    fontFamily => FONT_VARIANTS_TO_LOAD.map(fontVariant => fontToLoad(fontVariant, fontFamily)))
+
+  // NB a font that cannot be loaded must be ignored, not allowed to stop the chart rendering
+  fontsToLoad.forEach(font => fontSet.load(font).catch(() => {}))
 
   // NB fontSet.ready also waits on stylesheets that are still loading, which is how a font that
   // arrives via an @import (as it does in the Displayr export page) gets waited on at all
@@ -56,5 +56,4 @@ function waitForFonts (options) {
 module.exports = {
   fontFamiliesInUse,
   waitForFonts,
-  FONT_LOAD_TIMEOUT_IN_MILLISECONDS,
 }
