@@ -27,16 +27,23 @@ describe('fontFamiliesInUse', () => {
 })
 
 describe('waitForFonts', () => {
-  const documentWasDefined = 'document' in global
-  const originalDocument = global.document
+  // NB document cannot be replaced wholesale under jsdom, so only the font set is stubbed, and
+  // a document is only invented when the test environment provides none
+  const documentWasInvented = (typeof document === 'undefined')
+  const originalFontSet = documentWasInvented ? undefined : document.fonts
 
-  const withFontSet = (fontSet) => { global.document = { fonts: fontSet } }
+  const withFontSet = (fontSet) => {
+    if (documentWasInvented) {
+      global.document = {}
+    }
+    document.fonts = fontSet
+  }
 
   afterEach(() => {
-    if (documentWasDefined) {
-      global.document = originalDocument
-    } else {
+    if (documentWasInvented) {
       delete global.document
+    } else {
+      document.fonts = originalFontSet
     }
   })
 
