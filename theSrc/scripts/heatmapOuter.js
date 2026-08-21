@@ -31,6 +31,11 @@ module.exports = function (element, config) {
     .attr('width', width)
     .attr('height', height)
 
+  // A resize renders from scratch and does not cancel the render it interrupts, so a chain can
+  // still be in flight after its svg has been discarded. Only the render whose svg is still in
+  // the container may report the status, or a stale chain marks a newer, unfinished chart ready
+  const isCurrentRender = () => Boolean(rootElement.querySelector(`.svgContent.${uniqueClass}`))
+
   // Fonts are waited on alongside the image load, not after it, so this costs no extra time
   // when the fonts are already available
   Promise.all([loadImage(image), waitForFonts(options)])
@@ -47,11 +52,17 @@ module.exports = function (element, config) {
         height,
       })
     })
-    .then(() => { rootElement.setAttribute('rhtmlwidget-status', 'ready') })
+    .then(() => {
+      if (isCurrentRender()) {
+        rootElement.setAttribute('rhtmlwidget-status', 'ready')
+      }
+    })
     .catch(error => {
       // The status must not be left as loading, or Displayr waits on a chart that will never
       // arrive, which for an image export means waiting out its screenshot timeout
-      rootElement.setAttribute('rhtmlwidget-status', 'ready')
+      if (isCurrentRender()) {
+        rootElement.setAttribute('rhtmlwidget-status', 'ready')
+      }
       throw error
     })
 }
