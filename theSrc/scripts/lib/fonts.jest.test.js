@@ -82,6 +82,21 @@ describe('waitForFonts', () => {
     await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
   })
 
+  test('resolves when loading a font throws synchronously, as Blink does on an unparseable shorthand', async () => {
+    withFontSet({
+      load: () => { throw new Error('Could not resolve as a font') },
+      ready: Promise.resolve(),
+    })
+
+    await expect(waitForFonts({ title_font_family: 'a "quoted" name' })).resolves.toBeUndefined()
+  })
+
+  test('resolves when the font set has no load method', async () => {
+    withFontSet({ ready: Promise.resolve() })
+
+    await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
+  })
+
   test('resolves without waiting for a font set the browser does not provide', async () => {
     withFontSet(undefined)
 

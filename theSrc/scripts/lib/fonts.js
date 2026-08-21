@@ -34,8 +34,16 @@ function waitForFonts (options) {
   const fontsToLoad = _.flatMap(fontFamiliesInUse(options),
     fontFamily => FONT_VARIANTS_TO_LOAD.map(fontVariant => fontToLoad(fontVariant, fontFamily)))
 
-  // A font that cannot be loaded must be ignored, not allowed to stop the chart rendering
-  fontsToLoad.forEach(font => fontSet.load(font).catch(() => {}))
+  // A font that cannot be loaded must be ignored, not allowed to stop the chart rendering.
+  // Blink throws instead of rejecting when it cannot parse the shorthand, and this runs before
+  // the caller has anywhere to catch, so the synchronous path needs a guard of its own
+  fontsToLoad.forEach(font => {
+    try {
+      fontSet.load(font).catch(() => {})
+    } catch (error) {
+      // Deliberately ignored: a font we cannot even ask for is one we render without
+    }
+  })
 
   // fontSet.ready also waits on stylesheets that are still loading, which is how a font that
   // arrives via an @import (as it does in the Displayr export page) gets waited on at all
