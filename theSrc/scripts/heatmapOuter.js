@@ -21,9 +21,8 @@ module.exports = function (element, config) {
   const { width, height } = getContainerDimensions(rootElement)
   const uniqueClass = `heatmap-${uniqueId()}`
 
-  // The status is also set by the Heatmap constructor, but it must be set before the async work
-  // below, otherwise Displayr can treat the widget as rendered and screenshot it while it is still
-  // waiting on fonts or on the image data
+  // The status must be claimed before the async work below, otherwise Displayr can treat the
+  // widget as rendered and screenshot it while it is still waiting on fonts or on the image data
   rootElement.setAttribute('rhtmlwidget-status', 'loading')
 
   d3.select(element)
@@ -48,6 +47,7 @@ module.exports = function (element, config) {
         height,
       })
     })
+    .then(() => { rootElement.setAttribute('rhtmlwidget-status', 'ready') })
     .catch(error => {
       // The status must not be left as loading, or Displayr waits on a chart that will never
       // arrive, which for an image export means waiting out its screenshot timeout
