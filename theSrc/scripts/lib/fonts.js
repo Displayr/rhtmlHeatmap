@@ -2,11 +2,6 @@
 
 const _ = require('lodash')
 
-// NB labels are laid out by measuring them in the DOM (see rhtmlLabelUtils), so every font the
-// chart draws with must be loaded before layout starts. When the chart is rendered for an image
-// export it is drawn once, with no resize to trigger a re-layout, so a font that arrives after
-// layout leaves the labels positioned and truncated for the metrics of the fallback font.
-
 const FONT_FAMILY_OPTION_SUFFIX = '_font_family'
 
 // NB the font size is irrelevant to which font file is loaded, but the CSS font shorthand needs one
