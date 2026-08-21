@@ -21,7 +21,7 @@ module.exports = function (element, config) {
   const { width, height } = getContainerDimensions(rootElement)
   const uniqueClass = `heatmap-${uniqueId()}`
 
-  // the status is also set by the Heatmap constructor, but it must be set before the async work
+  // The status is also set by the Heatmap constructor, but it must be set before the async work
   // below, otherwise Displayr can treat the widget as rendered and screenshot it while it is still
   // waiting on fonts or on the image data
   rootElement.setAttribute('rhtmlwidget-status', 'loading')
@@ -32,7 +32,7 @@ module.exports = function (element, config) {
     .attr('width', width)
     .attr('height', height)
 
-  // fonts are waited on alongside the image load, not after it, so this costs no extra time
+  // Fonts are waited on alongside the image load, not after it, so this costs no extra time
   // when the fonts are already available
   Promise.all([loadImage(image), waitForFonts(options)])
     .then(([{ imgData, width, height }]) => processImageData({ imgData, width, height, matrix, cellNotes: options.shownote_in_cell }))
@@ -49,7 +49,7 @@ module.exports = function (element, config) {
       })
     })
     .catch(error => {
-      // the status must not be left as loading, or Displayr waits on a chart that will never
+      // The status must not be left as loading, or Displayr waits on a chart that will never
       // arrive, which for an image export means waiting out its screenshot timeout
       rootElement.setAttribute('rhtmlwidget-status', 'ready')
       throw error

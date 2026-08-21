@@ -4,14 +4,14 @@ const _ = require('lodash')
 
 const FONT_FAMILY_OPTION_SUFFIX = '_font_family'
 
-// the font size is irrelevant to which font file is loaded, but the CSS font shorthand needs one
+// The font size is irrelevant to which font file is loaded, but the CSS font shorthand needs one
 const FONT_VARIANTS_TO_LOAD = ['12px', 'bold 12px']
 
-// quoting the family keeps the shorthand parseable whatever the family is named. A generic
+// Quoting the family keeps the shorthand parseable whatever the family is named. A generic
 // family such as sans-serif then reads as a name and matches nothing, which is harmless
 const fontToLoad = (fontVariant, fontFamily) => `${fontVariant} "${fontFamily}"`
 
-// a font we cannot load must delay the chart, not prevent it
+// A font we cannot load must delay the chart, not prevent it
 const FONT_LOAD_TIMEOUT_IN_MILLISECONDS = 3000
 
 function fontFamiliesInUse (options) {
@@ -34,7 +34,7 @@ function waitForFonts (options) {
   const fontsToLoad = _.flatMap(fontFamiliesInUse(options),
     fontFamily => FONT_VARIANTS_TO_LOAD.map(fontVariant => fontToLoad(fontVariant, fontFamily)))
 
-  // a font that cannot be loaded must be ignored, not allowed to stop the chart rendering
+  // A font that cannot be loaded must be ignored, not allowed to stop the chart rendering
   fontsToLoad.forEach(font => fontSet.load(font).catch(() => {}))
 
   // fontSet.ready also waits on stylesheets that are still loading, which is how a font that
