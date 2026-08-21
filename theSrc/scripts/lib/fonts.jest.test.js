@@ -27,7 +27,7 @@ describe('fontFamiliesInUse', () => {
 })
 
 describe('waitForFonts', () => {
-  // NB document cannot be replaced wholesale under jsdom, so only the font set is stubbed, and
+  // document cannot be replaced wholesale under jsdom, so only the font set is stubbed, and
   // a document is only invented when the test environment provides none
   const documentWasInvented = (typeof document === 'undefined')
   const originalFontSet = documentWasInvented ? undefined : document.fonts
