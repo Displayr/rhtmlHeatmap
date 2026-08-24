@@ -25,46 +25,54 @@ module.exports = function (element, config) {
   // widget as rendered and screenshot it while it is still waiting on fonts or on the image data
   rootElement.setAttribute('rhtmlwidget-status', 'loading')
 
-  d3.select(element)
-    .append('svg')
-    .attr('class', `svgContent ${uniqueClass}`)
-    .attr('width', width)
-    .attr('height', height)
-
   // A resize renders from scratch and does not cancel the render it interrupts, so a chain can
   // still be in flight after its svg has been discarded. Only the render whose svg is still in
   // the container may report the status, or a stale chain marks a newer, unfinished chart ready
   const isCurrentRender = () => Boolean(rootElement.querySelector(`.svgContent.${uniqueClass}`))
 
-  // Fonts are waited on alongside the image load, not after it, so this costs no extra time
-  // when the fonts are already available
-  Promise.all([loadImage(image), waitForFonts(options)])
-    .then(([{ imgData, width, height }]) => processImageData({ imgData, width, height, matrix, cellNotes: options.shownote_in_cell }))
-    .then(merged => {
-      matrix.merged = merged
-      return new Heatmap({
-        selector: `.svgContent.${uniqueClass}`,
-        options,
-        matrix,
-        dendrogramRows: rows,
-        dendrogramColumns: cols,
-        width,
-        height,
+  try {
+    d3.select(element)
+      .append('svg')
+      .attr('class', `svgContent ${uniqueClass}`)
+      .attr('width', width)
+      .attr('height', height)
+
+    // Fonts are waited on alongside the image load, not after it, so this costs no extra time
+    // when the fonts are already available
+    Promise.all([loadImage(image), waitForFonts(options)])
+      .then(([{ imgData, width, height }]) => processImageData({ imgData, width, height, matrix, cellNotes: options.shownote_in_cell }))
+      .then(merged => {
+        matrix.merged = merged
+        return new Heatmap({
+          selector: `.svgContent.${uniqueClass}`,
+          options,
+          matrix,
+          dendrogramRows: rows,
+          dendrogramColumns: cols,
+          width,
+          height,
+        })
       })
-    })
-    .then(() => {
-      if (isCurrentRender()) {
-        rootElement.setAttribute('rhtmlwidget-status', 'ready')
-      }
-    })
-    .catch(error => {
-      // The status must not be left as loading, or Displayr waits on a chart that will never
-      // arrive, which for an image export means waiting out its screenshot timeout
-      if (isCurrentRender()) {
-        rootElement.setAttribute('rhtmlwidget-status', 'ready')
-      }
-      throw error
-    })
+      .then(() => {
+        if (isCurrentRender()) {
+          rootElement.setAttribute('rhtmlwidget-status', 'ready')
+        }
+      })
+      .catch(error => {
+        // The status must not be left as loading, or Displayr waits on a chart that will never
+        // arrive, which for an image export means waiting out its screenshot timeout
+        if (isCurrentRender()) {
+          rootElement.setAttribute('rhtmlwidget-status', 'ready')
+        }
+        throw error
+      })
+  } catch (error) {
+    // A synchronous failure here would otherwise leave the status claimed with no chain to
+    // release it. No newer render can have started while this one was still synchronous, so
+    // this is the current render and the status is reported without checking
+    rootElement.setAttribute('rhtmlwidget-status', 'ready')
+    throw error
+  }
 }
 
 function _initLogger (loggerSettings = 'info') {
@@ -90,9 +98,11 @@ function getLoggerNames () {
 }
 
 function loadImage (uri) {
-  // TODO add better img load fail -> reject wiring here
   return new Promise((resolve, reject) => {
     var img = new Image()
+    // Without this the promise never settles on a corrupt or malformed uri, and the render is
+    // left with no way to report that it is finished
+    img.onerror = () => reject(new Error('failed to load the heatmap colour image'))
     img.onload = function () {
       // Save size
       const width = img.width
