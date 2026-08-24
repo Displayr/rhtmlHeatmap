@@ -1,9 +1,8 @@
 /* global Image */
 
-import _ from 'lodash'
-import d3 from 'd3'
-import * as rootLog from 'loglevel'
-
+const _ = require('lodash')
+const d3 = require('d3')
+const rootLog = require('loglevel')
 const { waitForFonts } = require('./lib/fonts')
 const Heatmap = require('./lib/heatmapcore/heatmapcore')
 
@@ -38,8 +37,9 @@ module.exports = function (element, config) {
       .attr('height', height)
 
     // Fonts are waited on alongside the image load, not after it, so this costs no extra time
-    // when the fonts are already available
-    Promise.all([loadImage(image), waitForFonts(options)])
+    // when the fonts are already available. The chain is returned so that tests can await it;
+    // nothing consumes it in production, which leaves a failed render to Displayr's bug catcher
+    return Promise.all([loadImage(image), waitForFonts(options)])
       .then(([{ imgData, width, height }]) => processImageData({ imgData, width, height, matrix, cellNotes: options.shownote_in_cell }))
       .then(merged => {
         matrix.merged = merged
