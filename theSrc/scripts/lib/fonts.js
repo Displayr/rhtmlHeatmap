@@ -52,8 +52,12 @@ function waitForFonts (options) {
     timeoutId = setTimeout(resolve, FONT_LOAD_TIMEOUT_IN_MILLISECONDS)
   })
 
+  // Passed as both handlers so that a font set which rejects, against the spec, still stops the
+  // timer and still lets the chart render with whatever metrics are available
+  const stopWaiting = () => { clearTimeout(timeoutId) }
+
   return Promise.race([Promise.resolve(fontSet.ready), givenUpWaiting])
-    .then(() => { clearTimeout(timeoutId) })
+    .then(stopWaiting, stopWaiting)
 }
 
 module.exports = {

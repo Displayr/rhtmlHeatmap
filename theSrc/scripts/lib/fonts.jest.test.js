@@ -97,6 +97,15 @@ describe('waitForFonts', () => {
     await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
   })
 
+  test('resolves when the font set rejects, which the spec forbids but a shim may do', async () => {
+    withFontSet({
+      load: () => Promise.resolve([]),
+      ready: Promise.reject(new Error('not a conforming font set')),
+    })
+
+    await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
+  })
+
   test('resolves without waiting for a font set the browser does not provide', async () => {
     withFontSet(undefined)
 
