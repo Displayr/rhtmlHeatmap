@@ -1,0 +1,56 @@
+name: JS tests
+
+# Modelled on rhtmlCombinedScatter's js-tests.yaml, minus its visual job. The visual suite is not
+# runnable here yet: this repo is on rhtmlBuildUtils 7.1.1, whose puppeteer 3.3.0 ships Chromium 83,
+# whose --env is whitelisted to local/travis, whose --acceptNewSnapshots defaults to true so a missing
+# baseline is silently written and passes, and whose jest-image-snapshot swallows mismatches per test.
+# The committed baselines were also generated on Windows, so they would all fail on ubuntu at the
+# 0.0001% threshold. Adding it is a rhtmlBuildUtils upgrade, not a workflow file.
+
+on:
+  push:
+  workflow_dispatch:
+
+# One in-flight run per branch; a new push supersedes the previous one.
+concurrency:
+  group: js-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    name: Unit tests and lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      # No browser is launched here, so skip the Chromium download. puppeteer 3.3.0 honours this.
+      PUPPETEER_SKIP_DOWNLOAD: 'true'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      # The preinstall hook self-skips when CI is true, which the runner sets.
+      - name: Install dependencies
+        id: install
+        run: npm ci
+
+      # Every step below runs even if an earlier one failed, so one failure does not hide the rest.
+      # Gated on the install succeeding, so a broken npm ci does not cascade.
+      - name: Lint
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npx gulp lint
+
+      - name: Unit tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npx gulp testSpecs
+
+      # Deliberately not `gulp build`: its `clean` step deletes the tracked man/ and R/, which only
+      # makeDocs can rebuild, and makeDocs needs R and devtools. This task is the compile check we
+      # want, and it earns its place in this repo because inst/htmlwidgets/ is committed, so it
+      # catches a source change pushed without a rebuild.
+      - name: Compile widget bundle
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npx gulp compileWidgetEntryPoint
