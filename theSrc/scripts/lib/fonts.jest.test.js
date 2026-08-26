@@ -1,4 +1,4 @@
-const { fontFamiliesInUse, fontsInUse, waitForFonts } = require('./fonts.js')
+const { fontFamiliesInUse, fontsInUse, unloadedFamilies, waitForFonts } = require('./fonts.js')
 
 describe('fontFamiliesInUse', () => {
   test('collects every font family option', () => {
@@ -56,6 +56,12 @@ describe('waitForFonts', () => {
     document.fonts = fontSet
   }
 
+  // A font set holds one FontFace per declared @font-face, each with a family and a status
+  const fontSetOf = (faces, rest) => Object.assign({ forEach: (fn) => faces.forEach(fn) }, rest)
+
+  // Lets every already resolved promise chain run, without letting the poll interval tick
+  const flushMicrotasks = () => new Promise(resolve => setImmediate(resolve))
+
   afterEach(() => {
     if (documentWasInvented) {
       delete global.document
@@ -64,61 +70,124 @@ describe('waitForFonts', () => {
     }
   })
 
-  test('requests each configured family, then waits on the font set', async () => {
+  test('does not wait for a family the font set has already loaded', async () => {
     const requested = []
-    let readyHasResolved = false
-    withFontSet({
-      load: (fontSpecification) => { requested.push(fontSpecification); return Promise.resolve([]) },
-      ready: Promise.resolve().then(() => { readyHasResolved = true }),
-    })
+    withFontSet(fontSetOf([{ family: 'Circular', status: 'loaded' }], {
+      load: (font) => { requested.push(font); return Promise.resolve([]) },
+      ready: new Promise(() => {}),
+    }))
 
-    await waitForFonts({ title_font_family: 'Circular', xaxis_font_family: 'Circular' })
-
-    expect(requested).toEqual(['12px "Circular"'])
-    expect(readyHasResolved).toBe(true)
+    await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
+    expect(requested).toEqual([])
   })
 
-  test('quotes the family so a multi word name stays a parseable font shorthand', async () => {
-    const requested = []
-    withFontSet({
-      load: (fontSpecification) => { requested.push(fontSpecification); return Promise.resolve([]) },
+  test('matches a declared family regardless of quoting and case', async () => {
+    withFontSet(fontSetOf([{ family: '"circular"', status: 'loaded' }], {
+      load: () => Promise.resolve([]),
+      ready: new Promise(() => {}),
+    }))
+
+    await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
+  })
+
+  test('requests the faces it is waiting on, in normal only unless a title is bold', () => {
+    jest.useFakeTimers()
+    try {
+      const requested = []
+      withFontSet(fontSetOf([{ family: 'Circular', status: 'loading' }], {
+        load: (font) => { requested.push(font); return Promise.resolve([]) },
+        ready: Promise.resolve(),
+      }))
+
+      waitForFonts({ title_font_family: 'Circular' })
+      expect(requested).toEqual(['12px "Circular"'])
+
+      requested.length = 0
+      waitForFonts({ title_font_family: 'Circular', yaxis_title_bold: true })
+      expect(requested).toEqual(['12px "Circular"', 'bold 12px "Circular"'])
+    } finally {
+      jest.useRealTimers()
+    }
+  })
+
+  test('waits until the face reports loaded', async () => {
+    const face = { family: 'Circular', status: 'loading' }
+    withFontSet(fontSetOf([face], {
+      load: () => Promise.resolve([]),
+      ready: new Promise(() => {}),
+    }))
+
+    let hasResolved = false
+    const waiting = waitForFonts({ title_font_family: 'Circular' }).then(() => { hasResolved = true })
+
+    await flushMicrotasks()
+    expect(hasResolved).toBe(false)
+
+    face.status = 'loaded'
+    await waiting
+    expect(hasResolved).toBe(true)
+  })
+
+  // The case that matters in an export: the stylesheet declaring the family arrives late, so the
+  // set has no face for it at first and the chart must keep waiting rather than draw without it
+  test('waits for a family whose stylesheet has not arrived, then for its face', async () => {
+    const faces = []
+    withFontSet(fontSetOf(faces, {
+      load: () => Promise.resolve([]),
+      ready: new Promise(() => {}),
+    }))
+
+    let hasResolved = false
+    const waiting = waitForFonts({ title_font_family: 'Circular' }).then(() => { hasResolved = true })
+
+    await flushMicrotasks()
+    expect(hasResolved).toBe(false)
+
+    faces.push({ family: 'Circular', status: 'loaded' })
+    await waiting
+    expect(hasResolved).toBe(true)
+  })
+
+  test('stops waiting for a family the document turns out not to have', async () => {
+    withFontSet(fontSetOf([], {
+      // What Chrome answers for a family it has never heard of, which is why check is not the test
+      check: () => true,
+      load: () => Promise.resolve([]),
       ready: Promise.resolve(),
-    })
+    }))
 
-    await waitForFonts({ title_font_family: 'Open Sans' })
-
-    expect(requested).toEqual(['12px "Open Sans"'])
+    await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
   })
 
-  test('resolves when a font cannot be loaded', async () => {
-    withFontSet({
+  test('stops waiting for a face that failed to load', async () => {
+    withFontSet(fontSetOf([{ family: 'Circular', status: 'error' }], {
       load: () => Promise.reject(new Error('no such font')),
-      ready: Promise.resolve(),
-    })
+      ready: new Promise(() => {}),
+    }))
 
     await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
   })
 
   test('resolves when loading a font throws synchronously, as Blink does on an unparseable shorthand', async () => {
-    withFontSet({
+    withFontSet(fontSetOf([], {
       load: () => { throw new Error('Could not resolve as a font') },
       ready: Promise.resolve(),
-    })
+    }))
 
     await expect(waitForFonts({ title_font_family: 'a "quoted" name' })).resolves.toBeUndefined()
   })
 
   test('resolves when the font set has no load method', async () => {
-    withFontSet({ ready: Promise.resolve() })
+    withFontSet(fontSetOf([], { ready: Promise.resolve() }))
 
     await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
   })
 
   test('resolves when the font set rejects, which the spec forbids but a shim may do', async () => {
-    withFontSet({
+    withFontSet(fontSetOf([], {
       load: () => Promise.resolve([]),
       ready: Promise.reject(new Error('not a conforming font set')),
-    })
+    }))
 
     await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
   })
@@ -129,91 +198,13 @@ describe('waitForFonts', () => {
     await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
   })
 
-  test('requests the bold face only when the chart draws one', async () => {
-    const requested = []
-    withFontSet({
-      load: (fontSpecification) => { requested.push(fontSpecification); return Promise.resolve([]) },
-      ready: Promise.resolve(),
-    })
-
-    await waitForFonts({ title_font_family: 'Circular', yaxis_title_bold: true })
-
-    expect(requested).toEqual(['12px "Circular"', 'bold 12px "Circular"'])
-  })
-
-  // Fake timers, never advanced, so nothing can resolve through the timeout. A font set whose
-  // ready never settles then proves the wait ended at the loads rather than falling through to it
-  // A font set holds FontFace objects, one per declared @font-face, each with a family and a status
-  const fontSetOf = (faces, rest) => Object.assign({ forEach: (fn) => faces.forEach(fn) }, rest)
-
-  test('does not request a face the font set has already loaded', async () => {
+  test('gives up on a font that never settles', async () => {
     jest.useFakeTimers()
     try {
-      const requested = []
-      withFontSet(fontSetOf([{ family: 'Circular', status: 'loaded' }], {
-        load: (fontSpecification) => { requested.push(fontSpecification); return Promise.resolve([]) },
+      withFontSet(fontSetOf([{ family: 'Circular', status: 'loading' }], {
+        load: () => Promise.resolve([]),
         ready: new Promise(() => {}),
       }))
-
-      await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
-      expect(requested).toEqual([])
-    } finally {
-      jest.useRealTimers()
-    }
-  })
-
-  test('matches a declared family regardless of quoting and case', async () => {
-    jest.useFakeTimers()
-    try {
-      const requested = []
-      withFontSet(fontSetOf([{ family: '"circular"', status: 'loaded' }], {
-        load: (fontSpecification) => { requested.push(fontSpecification); return Promise.resolve([]) },
-        ready: new Promise(() => {}),
-      }))
-
-      await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
-      expect(requested).toEqual([])
-    } finally {
-      jest.useRealTimers()
-    }
-  })
-
-  test('stops at the loads once the family is registered', async () => {
-    jest.useFakeTimers()
-    try {
-      const faces = []
-      withFontSet(fontSetOf(faces, {
-        load: () => { faces.push({ family: 'Circular', status: 'loaded' }); return Promise.resolve([]) },
-        ready: new Promise(() => {}),
-      }))
-
-      await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
-    } finally {
-      jest.useRealTimers()
-    }
-  })
-
-  // The case that matters in an export: the stylesheet declaring the family has not arrived, so the
-  // set has no face for it and load resolves having done nothing. check would call that available
-  test('waits on the font set when the family is not declared yet', async () => {
-    let readyWasConsulted = false
-    withFontSet({
-      forEach: () => {},
-      // What Chrome answers for a family it has never heard of, which is why check is not the test
-      check: () => true,
-      load: () => Promise.resolve([]),
-      get ready () { readyWasConsulted = true; return Promise.resolve() },
-    })
-
-    await waitForFonts({ title_font_family: 'Circular' })
-
-    expect(readyWasConsulted).toBe(true)
-  })
-
-  test('stops waiting on a font set that never becomes ready', async () => {
-    jest.useFakeTimers()
-    try {
-      withFontSet({ load: () => Promise.resolve([]), ready: new Promise(() => {}) })
 
       const waiting = waitForFonts({ title_font_family: 'Circular' })
       jest.advanceTimersByTime(15000)
@@ -222,5 +213,29 @@ describe('waitForFonts', () => {
     } finally {
       jest.useRealTimers()
     }
+  })
+})
+
+describe('unloadedFamilies', () => {
+  const originalFontSet = document.fonts
+
+  afterEach(() => { document.fonts = originalFontSet })
+
+  test('names the families the browser cannot use yet', () => {
+    document.fonts = {
+      forEach: (fn) => [
+        { family: 'Circular', status: 'loaded' },
+        { family: 'Open Sans', status: 'loading' },
+      ].forEach(fn),
+    }
+
+    expect(unloadedFamilies({ title_font_family: 'Circular', xaxis_font_family: 'Open Sans' }))
+      .toEqual(['Open Sans'])
+  })
+
+  test('names nothing when the browser has no font set', () => {
+    document.fonts = undefined
+
+    expect(unloadedFamilies({ title_font_family: 'Circular' })).toEqual([])
   })
 })

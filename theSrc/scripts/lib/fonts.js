@@ -1,4 +1,4 @@
-/* global setTimeout, clearTimeout */
+/* global setTimeout, clearTimeout, setInterval, clearInterval */
 
 const _ = require('lodash')
 
@@ -12,6 +12,8 @@ const BOLD_VARIANT = 'bold 12px'
 // A font we cannot load must delay the chart, not prevent it. Long enough to outlast Chrome's
 // own block period, after which it paints the fallback face and the chart is measured wrong
 const FONT_LOAD_TIMEOUT_IN_MILLISECONDS = 15000
+
+const FONT_POLL_INTERVAL_IN_MILLISECONDS = 100
 
 // Quoting the family keeps the shorthand parseable whatever the family is named. A generic
 // family such as sans-serif then reads as a name and matches nothing, which is harmless
@@ -58,9 +60,9 @@ const facesFor = (fontSet, fontFamily) => {
   return faces
 }
 
-const isRegistered = (fontSet, fontFamily) => !_.isEmpty(facesFor(fontSet, fontFamily))
-
 const isLoaded = (fontSet, fontFamily) => _.some(facesFor(fontSet, fontFamily), face => face.status === 'loaded')
+
+const fontSetOrNull = () => (typeof document === 'undefined') ? null : (document.fonts || null)
 
 const requestLoad = (fontSet, font) => {
   try {
@@ -70,26 +72,66 @@ const requestLoad = (fontSet, font) => {
   }
 }
 
+// The families the chart will draw with that the browser cannot yet use
+function unloadedFamilies (options) {
+  const fontSet = fontSetOrNull()
+  if (!fontSet) {
+    return []
+  }
+  return fontFamiliesInUse(options).filter(fontFamily => !isLoaded(fontSet, fontFamily))
+}
+
+const hasFailed = (fontSet, fontFamily) => {
+  const faces = facesFor(fontSet, fontFamily)
+  return !_.isEmpty(faces) && _.every(faces, face => face.status === 'error')
+}
+
+// A family whose stylesheet has not arrived has no face to load yet, so asking once is not enough:
+// keep asking until every family has either loaded, failed, or run out of hope. The font set's
+// ready promise is what marks the last of those: it waits on pending stylesheets, so a family with
+// no face by then is one this document does not have, and waiting longer would only stall the chart
+function untilSettled (fontSet, options, fontFamilies) {
+  let documentHasFinishedLoadingFonts = false
+  Promise.resolve(fontSet.ready).then(
+    () => { documentHasFinishedLoadingFonts = true },
+    () => { documentHasFinishedLoadingFonts = true }
+  )
+
+  const isSettled = (fontFamily) => isLoaded(fontSet, fontFamily) ||
+    hasFailed(fontSet, fontFamily) ||
+    (documentHasFinishedLoadingFonts && _.isEmpty(facesFor(fontSet, fontFamily)))
+
+  const unsettled = () => fontFamilies.filter(fontFamily => !isSettled(fontFamily))
+
+  return new Promise(resolve => {
+    let pollId = null
+
+    const askAndCheck = () => {
+      const waitingOn = unsettled()
+      if (_.isEmpty(waitingOn)) {
+        clearInterval(pollId)
+        resolve()
+        return
+      }
+      fontsInUse(options, waitingOn.filter(fontFamily => !_.isEmpty(facesFor(fontSet, fontFamily))))
+        .forEach(font => requestLoad(fontSet, font))
+    }
+
+    pollId = setInterval(askAndCheck, FONT_POLL_INTERVAL_IN_MILLISECONDS)
+    askAndCheck()
+  })
+}
+
 function waitForFonts (options) {
-  const fontSet = (typeof document === 'undefined') ? null : document.fonts
+  const fontSet = fontSetOrNull()
   if (!fontSet) {
     return Promise.resolve()
   }
 
-  const fontFamilies = fontFamiliesInUse(options).filter(fontFamily => !isLoaded(fontSet, fontFamily))
+  const fontFamilies = unloadedFamilies(options)
   if (_.isEmpty(fontFamilies)) {
     return Promise.resolve()
   }
-
-  const loaded = Promise.all(fontsInUse(options, fontFamilies).map(font => requestLoad(fontSet, font)))
-    .then(() => {
-      // A family the set still has no face for is one whose stylesheet has not arrived. Only then is
-      // the set's ready promise worth waiting on, since that also waits on pending stylesheets, and
-      // on every other font the page happens to be loading
-      return _.every(fontFamilies, fontFamily => isRegistered(fontSet, fontFamily))
-        ? undefined
-        : Promise.resolve(fontSet.ready)
-    })
 
   let timeoutId = null
   const givenUpWaiting = new Promise(resolve => {
@@ -100,11 +142,15 @@ function waitForFonts (options) {
   // timer and still lets the chart render with whatever metrics are available
   const stopWaiting = () => { clearTimeout(timeoutId) }
 
-  return Promise.race([loaded, givenUpWaiting]).then(stopWaiting, stopWaiting)
+  // eslint-disable-next-line promise/no-nesting
+
+  return Promise.race([untilSettled(fontSet, options, fontFamilies), givenUpWaiting])
+    .then(stopWaiting, stopWaiting)
 }
 
 module.exports = {
   fontFamiliesInUse,
   fontsInUse,
+  unloadedFamilies,
   waitForFonts,
 }
