@@ -1,4 +1,4 @@
-const { fontFamiliesInUse, waitForFonts } = require('./fonts.js')
+const { fontFamiliesInUse, fontsInUse, waitForFonts } = require('./fonts.js')
 
 describe('fontFamiliesInUse', () => {
   test('collects every font family option', () => {
@@ -26,6 +26,23 @@ describe('fontFamiliesInUse', () => {
   })
 })
 
+describe('fontsInUse', () => {
+  test('pairs every family with the normal variant', () => {
+    expect(fontsInUse({ title_font_family: 'Circular', xaxis_font_family: 'Open Sans' }))
+      .toEqual(['12px "Circular"', '12px "Open Sans"'])
+  })
+
+  test('adds the bold variant when any bold option is set', () => {
+    expect(fontsInUse({ title_font_family: 'Circular', xaxis_title_bold: true }))
+      .toEqual(['12px "Circular"', 'bold 12px "Circular"'])
+  })
+
+  test('ignores a bold option that is turned off', () => {
+    expect(fontsInUse({ title_font_family: 'Circular', xaxis_title_bold: false }))
+      .toEqual(['12px "Circular"'])
+  })
+})
+
 describe('waitForFonts', () => {
   // document cannot be replaced wholesale under jsdom, so only the font set is stubbed, and
   // a document is only invented when the test environment provides none
@@ -47,7 +64,7 @@ describe('waitForFonts', () => {
     }
   })
 
-  test('requests each configured family in normal and bold, then waits on the font set', async () => {
+  test('requests each configured family, then waits on the font set', async () => {
     const requested = []
     let readyHasResolved = false
     withFontSet({
@@ -57,7 +74,7 @@ describe('waitForFonts', () => {
 
     await waitForFonts({ title_font_family: 'Circular', xaxis_font_family: 'Circular' })
 
-    expect(requested).toEqual(['12px "Circular"', 'bold 12px "Circular"'])
+    expect(requested).toEqual(['12px "Circular"'])
     expect(readyHasResolved).toBe(true)
   })
 
@@ -70,7 +87,7 @@ describe('waitForFonts', () => {
 
     await waitForFonts({ title_font_family: 'Open Sans' })
 
-    expect(requested).toEqual(['12px "Open Sans"', 'bold 12px "Open Sans"'])
+    expect(requested).toEqual(['12px "Open Sans"'])
   })
 
   test('resolves when a font cannot be loaded', async () => {
@@ -110,6 +127,66 @@ describe('waitForFonts', () => {
     withFontSet(undefined)
 
     await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
+  })
+
+  test('requests the bold face only when the chart draws one', async () => {
+    const requested = []
+    withFontSet({
+      load: (fontSpecification) => { requested.push(fontSpecification); return Promise.resolve([]) },
+      ready: Promise.resolve(),
+    })
+
+    await waitForFonts({ title_font_family: 'Circular', yaxis_title_bold: true })
+
+    expect(requested).toEqual(['12px "Circular"', 'bold 12px "Circular"'])
+  })
+
+  // Fake timers, never advanced, so nothing can resolve through the timeout. A font set whose
+  // ready never settles then proves the wait ended at the loads rather than falling through to it
+  test('does not request a font the browser can already use', async () => {
+    jest.useFakeTimers()
+    try {
+      const requested = []
+      withFontSet({
+        check: () => true,
+        load: (fontSpecification) => { requested.push(fontSpecification); return Promise.resolve([]) },
+        ready: new Promise(() => {}),
+      })
+
+      await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
+      expect(requested).toEqual([])
+    } finally {
+      jest.useRealTimers()
+    }
+  })
+
+  test('stops at the loads when they make the font usable', async () => {
+    jest.useFakeTimers()
+    try {
+      let loaded = false
+      withFontSet({
+        check: () => loaded,
+        load: () => { loaded = true; return Promise.resolve([]) },
+        ready: new Promise(() => {}),
+      })
+
+      await expect(waitForFonts({ title_font_family: 'Circular' })).resolves.toBeUndefined()
+    } finally {
+      jest.useRealTimers()
+    }
+  })
+
+  test('falls back to the font set once a load leaves the font still unusable', async () => {
+    let readyHasResolved = false
+    withFontSet({
+      check: () => false,
+      load: () => Promise.resolve([]),
+      ready: Promise.resolve().then(() => { readyHasResolved = true }),
+    })
+
+    await waitForFonts({ title_font_family: 'Circular' })
+
+    expect(readyHasResolved).toBe(true)
   })
 
   test('stops waiting on a font set that never becomes ready', async () => {
