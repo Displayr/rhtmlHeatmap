@@ -33,22 +33,33 @@ function usesBoldFonts (options) {
   return _.some(options, (value, key) => _.endsWith(key, BOLD_OPTION_SUFFIX) && Boolean(value))
 }
 
-function fontsInUse (options) {
+function fontsInUse (options, fontFamilies = fontFamiliesInUse(options)) {
   const fontVariants = usesBoldFonts(options) ? [NORMAL_VARIANT, BOLD_VARIANT] : [NORMAL_VARIANT]
 
-  return _.flatMap(fontFamiliesInUse(options),
+  return _.flatMap(fontFamilies,
     fontFamily => fontVariants.map(fontVariant => fontToLoad(fontVariant, fontFamily)))
 }
 
-// Blink throws instead of rejecting when it cannot parse the shorthand, so both calls need a
-// synchronous guard as well as a rejection handler. An unusable font is one we render without
-const canUse = (fontSet, font) => {
+// fontSet.check answers whether text would render, not whether the font we asked for is there: a
+// family the set has never heard of counts as available, on the assumption it is a system font.
+// That is exactly what a stylesheet still in flight looks like, so registration is what we ask about
+const facesFor = (fontSet, fontFamily) => {
+  const faces = []
   try {
-    return Boolean(fontSet.check(font))
+    fontSet.forEach(face => {
+      if (_.isString(face.family) && face.family.replace(/["']/g, '').toLowerCase() === fontFamily.toLowerCase()) {
+        faces.push(face)
+      }
+    })
   } catch (error) {
-    return false
+    // A font set we cannot enumerate is one we treat as knowing nothing
   }
+  return faces
 }
+
+const isRegistered = (fontSet, fontFamily) => !_.isEmpty(facesFor(fontSet, fontFamily))
+
+const isLoaded = (fontSet, fontFamily) => _.some(facesFor(fontSet, fontFamily), face => face.status === 'loaded')
 
 const requestLoad = (fontSet, font) => {
   try {
@@ -64,17 +75,17 @@ function waitForFonts (options) {
     return Promise.resolve()
   }
 
-  const fontsToLoad = fontsInUse(options).filter(font => !canUse(fontSet, font))
-  if (_.isEmpty(fontsToLoad)) {
+  const fontFamilies = fontFamiliesInUse(options).filter(fontFamily => !isLoaded(fontSet, fontFamily))
+  if (_.isEmpty(fontFamilies)) {
     return Promise.resolve()
   }
 
-  const loaded = Promise.all(fontsToLoad.map(font => requestLoad(fontSet, font)))
+  const loaded = Promise.all(fontsInUse(options, fontFamilies).map(font => requestLoad(fontSet, font)))
     .then(() => {
-      // A face that is still unusable is one whose stylesheet has not arrived, which the font set
-      // knows nothing about yet. Only then is its ready promise worth waiting on, since that also
-      // waits on pending stylesheets, and waits on every other font the page happens to be loading
-      return _.every(fontsToLoad, font => canUse(fontSet, font))
+      // A family the set still has no face for is one whose stylesheet has not arrived. Only then is
+      // the set's ready promise worth waiting on, since that also waits on pending stylesheets, and
+      // on every other font the page happens to be loading
+      return _.every(fontFamilies, fontFamily => isRegistered(fontSet, fontFamily))
         ? undefined
         : Promise.resolve(fontSet.ready)
     })
