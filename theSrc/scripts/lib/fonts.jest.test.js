@@ -216,7 +216,7 @@ describe('waitForFonts', () => {
       withFontSet({ load: () => Promise.resolve([]), ready: new Promise(() => {}) })
 
       const waiting = waitForFonts({ title_font_family: 'Circular' })
-      jest.advanceTimersByTime(3000)
+      jest.advanceTimersByTime(15000)
 
       await expect(waiting).resolves.toBeUndefined()
     } finally {

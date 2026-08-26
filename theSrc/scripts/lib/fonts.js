@@ -9,8 +9,9 @@ const BOLD_OPTION_SUFFIX = '_bold'
 const NORMAL_VARIANT = '12px'
 const BOLD_VARIANT = 'bold 12px'
 
-// A font we cannot load must delay the chart, not prevent it
-const FONT_LOAD_TIMEOUT_IN_MILLISECONDS = 3000
+// A font we cannot load must delay the chart, not prevent it. Long enough to outlast Chrome's
+// own block period, after which it paints the fallback face and the chart is measured wrong
+const FONT_LOAD_TIMEOUT_IN_MILLISECONDS = 15000
 
 // Quoting the family keeps the shorthand parseable whatever the family is named. A generic
 // family such as sans-serif then reads as a name and matches nothing, which is harmless
