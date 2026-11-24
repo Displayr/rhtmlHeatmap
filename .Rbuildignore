@@ -12,3 +12,5 @@ theSrc
 package-lock.json
 package.json
 
+^AGENTS\.md$
+^CLAUDE\.md$
